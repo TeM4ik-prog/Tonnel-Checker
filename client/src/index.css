@@ -78,3 +78,39 @@ body {
   scrollbar-width: none; /* Для Firefox */
 }
 
+
+/* _____ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a2a2a; 
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4a4a; 
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #616161; 
+}
+
+
+/* ____ */
+
+@keyframes moveBackground {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}

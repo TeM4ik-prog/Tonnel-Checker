@@ -2,8 +2,6 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { AtomIcon, Home, HomeIcon, MenuIcon, SidebarClose, BellIcon, Bell, ContactIcon, GlobeIcon, GroupIcon, HistoryIcon, TrophyIcon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { SidebarItem } from '../shared/sidebar/sidebar-item';
-import { SidebarSubItem } from '../shared/sidebar/sedebar-sub-item';
-import { RoutesConfig } from '@/types/pagesConfig';
 
 export const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,11 +9,23 @@ export const Sidebar = () => {
     const openSidebar = () => setIsOpen(true);
     const closeSidebar = () => setIsOpen(false);
 
+
+    const sidebarItems = [
+        { icon: <HomeIcon size={20} />, routeKey: "HOME" },
+        { icon: <TrophyIcon size={20} />, routeKey: "ACHIEVEMENTS" },
+        { icon: <HistoryIcon size={20} />, routeKey: "HISTORY" },
+        { icon: <HistoryIcon size={20} />, routeKey: "GYMN_HISTORY" },
+        { icon: <GroupIcon size={20} />, routeKey: "PATRIOTISM" },
+        { icon: <Bell size={20} />, routeKey: "ANNOUNCEMENTS" },
+        { icon: <GlobeIcon size={20} />, routeKey: "INTERNATIONAL_COOPERATION" },
+        { icon: <ContactIcon size={20} />, routeKey: "CONTACTS" },
+    ];
+
     return (
         <>
-            {isOpen && <div className="fixed inset-0 bg-black opacity-50 border-none" />}
+            {isOpen && <div className="fixed inset-0 bg-black z-50 opacity-50 border-none" />}
 
-            <div className="relative border-none inset-0">
+            <div className="relative border-none inset-0 z-20">
                 <MenuIcon onClick={openSidebar} size={30} />
 
                 <Transition show={isOpen} as={Fragment}
@@ -28,7 +38,7 @@ export const Sidebar = () => {
                 >
 
 
-                    <Dialog as="div" className="fixed inset-0 z-50 outline-none " onClose={closeSidebar}>
+                    <Dialog as="div" className="fixed inset-0 z-50 outline-none" onClose={closeSidebar}>
 
                         <div className="fixed inset-0 flex items-start justify-start">
                             <DialogPanel className="bg-gray-800  w-full  h-full p-5 text-white md:w-80">
@@ -38,27 +48,11 @@ export const Sidebar = () => {
                                     <SidebarClose className='ml-auto' onClick={closeSidebar} size={28} />
                                 </div>
 
-//FIXME later change
 
                                 <div className="flex flex-col gap-3">
-                                    <SidebarItem icon={<HomeIcon size={20} />} routeKey="HOME" />
-
-                                    <SidebarItem icon={<TrophyIcon size={20} />} routeKey="ACHIEVEMENTS">
-                                        <SidebarSubItem href={RoutesConfig.ANNOUNCEMENTS.subRoutes!.ANNOUNCEMENTS_NEWS.path} text={'text'} />
-                                    </SidebarItem>
-
-                                    <SidebarItem icon={<HistoryIcon size={20} />} routeKey="HISTORY" />
-
-                                    <SidebarItem icon={<GroupIcon size={20} />} routeKey="PATRIOTISM" />
-
-                                    {/* <SidebarItem icon={<Bell size={20} />} routeKey="ANNOUNCEMENTS">
-                                        <SidebarSubItem href={RoutesConfig.ANNOUNCEMENTS_NEWS.path} text={RoutesConfig.ANNOUNCEMENTS_NEWS.label} />
-                                        <SidebarSubItem href={RoutesConfig.ANNOUNCEMENTS_EVENTS.path} text={RoutesConfig.ANNOUNCEMENTS_EVENTS.label} />
-                                    </SidebarItem> */}
-
-                                    <SidebarItem icon={<GlobeIcon size={20} />} routeKey="INTERNATIONAL_COOPERATION" />
-
-                                    <SidebarItem icon={<ContactIcon size={20} />} routeKey="CONTACTS" />
+                                    {sidebarItems.map(({ icon, routeKey }) => (
+                                        <SidebarItem key={routeKey} icon={icon} routeKey={routeKey} closeSidebar={closeSidebar} />
+                                    ))}
                                 </div>
 
 

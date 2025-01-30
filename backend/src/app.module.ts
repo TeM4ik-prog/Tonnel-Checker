@@ -57,6 +57,5 @@ export class AppModule {
     // await this.databaseService.googleUser.deleteMany()
     // await this.databaseService.userBase.deleteMany()
 
-    await this.databaseService.game.deleteMany();
   }
 }

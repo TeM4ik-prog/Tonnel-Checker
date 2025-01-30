@@ -20,11 +20,7 @@ export interface IBasicUser {
   GoogleUser?;
 }
 
-// ______
-export enum GameTypes {
-  game = 'game',
-  app = 'app',
-}
+
 
 // export interface ITelegramAuth {
 //     id: number;

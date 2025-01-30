@@ -22,9 +22,9 @@ export class UsersService {
     this.googleUsersDb = dbService.googleUser;
   }
 
-  async findUserById(id: UserId) {
+  async findUserById(id: string) {
     const user = await this.userBaseDb.findUnique({
-      where: { id: +id },
+      where: { id },
       include: {
         EmailUser: true,
         TelegramUser: true,
@@ -35,7 +35,7 @@ export class UsersService {
     return user;
   }
 
-  async switchBanUser(userId: number | string) {}
+  async switchBanUser(userId: string) {}
 
   async findAll(query: usersSearchDto) {
     let { page = '1', limit = '15' } = query;
@@ -219,9 +219,9 @@ export class EmailUsersService extends UsersService {
     return createdUser;
   }
 
-  async changePassword(userId: string | number, password: string) {
+  async changePassword(userId: string, password: string) {
     return await this.emailUsersDb.update({
-      where: { id: +userId },
+      where: { id: userId },
       data: {
         password: await argon2.hash(password),
       },
@@ -238,9 +238,9 @@ export class EmailUsersService extends UsersService {
     return user;
   }
 
-  async findOneById(id: UserId) {
+  async findOneById(id: string) {
     return this.emailUsersDb.findUnique({
-      where: { id: +id },
+      where: { id },
     });
   }
 
@@ -286,9 +286,9 @@ export class TelegramUsersService extends UsersService {
     });
   }
 
-  async findOneById(id: UserId) {
+  async findOneById(id: string) {
     return this.telegramUsersDb.findUnique({
-      where: { id: +id },
+      where: { id },
     });
   }
 }
@@ -328,9 +328,9 @@ export class GoogleUsersService extends UsersService {
     });
   }
 
-  async findOneById(id: UserId) {
+  async findOneById(id: string) {
     return this.googleUsersDb.findUnique({
-      where: { id: +id },
+      where: { id },
     });
   }
 }
@@ -347,7 +347,7 @@ export class UsersAdminService extends UsersService {
 
   async switchBanAdmins(adminId: string) {
     const admin = await this.userBaseDb.findUnique({
-      where: { id: +adminId },
+      where: { id: adminId },
       select: { banned: true },
     });
 
@@ -356,7 +356,7 @@ export class UsersAdminService extends UsersService {
     const banned = !admin.banned;
 
     await this.userBaseDb.update({
-      where: { id: +adminId },
+      where: { id: adminId },
       data: {
         banned: banned,
       },

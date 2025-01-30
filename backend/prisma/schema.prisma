@@ -8,41 +8,46 @@ datasource db {
 }
 
 model VerificationCode {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(uuid())
   code      String
   expiresAt DateTime
-  userId    Int
+  userId    String
   user      EmailUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
 
 model UserBase {
-  id        Int      @id @default(autoincrement())
-  banned    Boolean  @default(false)
-  role      String   @default("user")
+  id     String  @id @default(uuid())
+  banned Boolean @default(false)
+  role   String  @default("user")
+
+  name     String  @default("User")
+  avatar   String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   EmailUser    EmailUser?
   TelegramUser TelegramUser?
-  VkUser       VkUser?
   GoogleUser   GoogleUser?
+
+
 }
 
 model EmailUser {
-  id       Int     @id @default(autoincrement())
+  id       String  @id @default(uuid())
   email    String  @unique
   password String?
 
-  userBaseId Int      @unique
+  userBaseId String   @unique
   userBase   UserBase @relation(fields: [userBaseId], references: [id])
 
   VerificationCode VerificationCode[]
 }
 
 model TelegramUser {
-  id         Int    @id @default(autoincrement())
+  id         String @id @default(uuid())
   telegramId String @unique
 
   firstName String
@@ -50,20 +55,12 @@ model TelegramUser {
   photoUrl  String
   authDate  DateTime
 
-  userBaseId Int      @unique
-  userBase   UserBase @relation(fields: [userBaseId], references: [id])
-}
-
-model VkUser {
-  id   Int    @id @default(autoincrement())
-  vkId String @unique
-
-  userBaseId Int      @unique
+  userBaseId String   @unique
   userBase   UserBase @relation(fields: [userBaseId], references: [id])
 }
 
 model GoogleUser {
-  id    Int    @id @default(autoincrement())
+  id    String @id @default(uuid())
   email String @unique
 
   name      String
@@ -71,15 +68,7 @@ model GoogleUser {
 
   photoUrl String
 
-  userBaseId Int      @unique
+  userBaseId String   @unique
   userBase   UserBase @relation(fields: [userBaseId], references: [id])
 }
 
-// ________
-
-model Game {
-  id    Int    @id @default(autoincrement())
-  title String @unique
-  image String
-  type  String
-}

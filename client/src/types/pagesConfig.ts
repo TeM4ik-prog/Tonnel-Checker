@@ -26,11 +26,20 @@ export interface Routes {
 export const RoutesConfig: { [key: string]: Route } = {
     HOME: { path: '/', label: 'Главная' },
     ACHIEVEMENTS: { path: '/achievements', label: 'Достижения современной Беларуси' },
-    HISTORY: { path: '/history', label: 'Истории гимназии' },
+    HISTORY: {
+        path: '/history', label: 'Государство(Истории)',
+        subRoutes: {
+            HISTORY_OF_THE_REPUBLIC: { path: '/history/materials', label: 'Материалы' },
+
+        },
+    },
+    GYMN_HISTORY: { path: '/gymn_history', label: "Гимназия(Истории)" },
+
+
     PATRIOTISM: { path: '/patriotism', label: 'Воспитание патриотов' },
     ANNOUNCEMENTS: {
         path: '/announcements',
-        label: 'Анонс мероприятий',
+        label: 'Мероприятия',
         subRoutes: {
             ANNOUNCEMENTS_NEWS: { path: '/announcements/news', label: 'Новости' },
             ANNOUNCEMENTS_EVENTS: { path: '/announcements/events', label: 'События' },
@@ -38,6 +47,11 @@ export const RoutesConfig: { [key: string]: Route } = {
     },
     INTERNATIONAL_COOPERATION: { path: '/international-cooperation', label: 'Международное сотрудничество' },
     CONTACTS: { path: '/contacts', label: 'Контакты' },
+
+
+
+
+
     ENTRY: { path: '/entry', label: '' },
 };
 

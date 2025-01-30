@@ -3,12 +3,14 @@ import { Home, Search, User } from 'lucide-react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { RoutesEnum } from '@/types/pagesConfig';
+import { RoutesConfig } from '@/types/pagesConfig';
 import { MainPage } from '@/pages/MainPage';
 import { AuthService } from './services/auth.service';
 import { login, logout, setLoading } from './store/user/user.slice';
 import { useDispatch } from 'react-redux';
 import { useUpdateUserTrigger } from './store/hooks';
+import { NotFoundPage } from './pages/NotFoundPage';
+import { EntryPage } from './pages/EntryPage';
 
 
 function App() {
@@ -48,12 +50,19 @@ function App() {
       <Router>
         <Header />
         <Suspense fallback={''}>
-          <Routes>
-            <Route path="HOME" element={<MainPage />} />
+          <main className='p-2'>
+
+            <Routes>
+              <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
+              <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
 
 
-            {/* <Route path='*' element={<NotFoundPage />} /> */}
-          </Routes>
+              <Route path='*' element={<NotFoundPage />} />
+            </Routes>
+
+
+          </main>
+
         </Suspense>
 
         <Footer />

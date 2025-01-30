@@ -1,14 +1,16 @@
-import { Home, Search, User } from "lucide-react"
-
 export const Footer: React.FC = () => {
-
     return (
-        <footer className="bg-gray-900 mt-auto text-gray-100 p-4">
-            <div className="flex justify-between">
-                <Home size={24} color="white" />
-                <Search size={32} className="text-gray-500" />
-                <User size={28} />
+        <footer className="bg-gray-900 text-gray-100 p-4 mt-auto">
+            <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+                <div className="mb-4 md:mb-0">
+                    <p>&copy; 2025 Гимназия. Все права защищены.</p>
+                </div>
+                <div className="flex space-x-4">
+                    <a href="#about" className="hover:text-cyan-400 transition-colors">О нас</a>
+                    <a href="#contact" className="hover:text-cyan-400 transition-colors">Контакты</a>
+                    <a href="#privacy" className="hover:text-cyan-400 transition-colors">Политика конфиденциальности</a>
+                </div>
             </div>
         </footer>
-    )
-}
+    );
+};

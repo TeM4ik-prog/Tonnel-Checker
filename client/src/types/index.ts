@@ -1,5 +1,7 @@
 import { AxiosInstance } from "axios";
 
+export const TelegramBot: string = "TgVerifyApp_bot"
+
 export interface IUser {
     id: number;
     role?: UserRole;

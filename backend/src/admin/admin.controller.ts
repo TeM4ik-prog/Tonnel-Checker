@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 @UseGuards(RolesGuard, JwtAuthGuard)
 @Roles(RolesClass.admin, RolesClass.superAdmin)
 export class AdminReportController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 }
 
 @Controller('admin/users')
@@ -42,7 +42,7 @@ export class AdminUsersController {
   }
 
   @Get('/:id')
-  async getUserDetailedInfo(@Param('id') id: number) {
+  async getUserDetailedInfo(@Param('id') id: string) {
     console.log(id);
     return await this.usersService.findUserById(id);
   }
