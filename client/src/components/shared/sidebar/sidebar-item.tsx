@@ -2,41 +2,45 @@ import { Routes, RoutesConfig } from "@/types/pagesConfig";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
 import { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SidebarSubItem } from "./sidebar-sub-item";
 
 interface Props {
-    icon: JSX.Element;
+    icon?: React.ElementType;
     routeKey: keyof Routes;
     children?: ReactNode;
     closeSidebar: () => void;
 }
 
-export const SidebarItem = ({ icon, routeKey, children, closeSidebar }: Props) => {
-    console.log(RoutesConfig[routeKey])
-
+export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Props) => {
+    const currentPath  = useLocation().pathname
+    
+    
     const data = RoutesConfig[routeKey]
-    if(!data) return
-    
-    
+    if (!data) return
     const { path, label, subRoutes } = data
 
+    if(!label) return
 
-    // return(<></>)
+
+
+    
+
+
     return (
         <Disclosure as="div" className="w-full">
-            {({ open }) => (
+            { ({ open }) => (
                 <>
-                    <div className="flex items-center justify-between w-full p-2 rounded hover:bg-gray-700 transition">
+                    <div className={`flex ${currentPath == path ? "bg-gray-600" : ''} items-center justify-between w-full p-2 rounded hover:bg-gray-700 transition`}>
                         {subRoutes ? (
-                            <DisclosureButton className="flex items-center w-full text-left">
-                                {icon}
+                            <DisclosureButton className="flex items-center w-full text-left ">
+                                {Icon && <Icon size={20} />}
                                 <span className="ml-3">{label}</span>
                             </DisclosureButton>
                         ) : (
                             <NavLink to={path} className="flex items-center w-full" onClick={closeSidebar}>
-                                {icon}
+                                {Icon && <Icon size={20} />}
                                 <span className="ml-3">{label}</span>
                             </NavLink>
                         )}

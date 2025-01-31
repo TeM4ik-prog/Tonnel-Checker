@@ -18,17 +18,17 @@ export const MainPage: React.FC = () => {
                             backgroundImage: "url('/belarusPhoto.jpg')",
                             backgroundSize: "cover",
                             backgroundPosition: "center",
-                            
+
                         }}
 
                         animate={{
                             backgroundPosition: ["0% 0%", "50% 50%", "100% 100%", "0% 0%"],
-                          }}
-                          transition={{
+                        }}
+                        transition={{
                             duration: 60,
                             repeat: Infinity,
                             ease: "linear",
-                          }}
+                        }}
                     >
                         <div className="absolute inset-0 bg-black opacity-50"></div>
 
@@ -73,8 +73,6 @@ export const MainPage: React.FC = () => {
 
 
             <ContentBlock>
-
-
                 <section className="bg-gray-800 py-16 px-6 text-center">
                     <h2 className="text-4xl font-bold text-red-400">Наши достижения</h2>
                     <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -94,6 +92,28 @@ export const MainPage: React.FC = () => {
                 </section>
 
             </ContentBlock>
+
+
+            <ContentBlock>
+
+                <section className="container flex flex-col mx-auto py-16 text-center gap-5">
+                    <h2 className="text-4xl font-bold text-blue-400">Мы есть в Telegram</h2>
+                    <img
+                        src="/telegramGymnLogo.jpg"
+                        alt="Telegram-канал"
+                        className="w-32 mx-auto rounded-full"
+                        
+                    />
+                    <p className="text-lg max-w-3xl mx-auto">
+                        Подписывайтесь на наш Telegram-канал, чтобы быть в курсе последних новостей и событий гимназии.
+                    </p>
+
+                    <Button text="Перейти в Telegram" href="https://t.me/gymn1minsk"  />
+
+                </section>
+
+            </ContentBlock>
+
 
 
 

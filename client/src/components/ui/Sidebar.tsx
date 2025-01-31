@@ -2,6 +2,7 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { AtomIcon, Home, HomeIcon, MenuIcon, SidebarClose, BellIcon, Bell, ContactIcon, GlobeIcon, GroupIcon, HistoryIcon, TrophyIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, ClubIcon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { SidebarItem } from '../shared/sidebar/sidebar-item';
+import { RouteKey, RoutesConfig } from '@/types/pagesConfig';
 
 export const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,18 +12,18 @@ export const Sidebar = () => {
 
 
 
-    const sidebarItems = [
-        { icon: <GroupIcon size={20} />, routeKey: "PATRIOTISM" },
-        { icon: <GlobeIcon size={20} />, routeKey: "INTERNATIONAL_COOPERATION" },
-        { icon: <BuildingIcon size={20} />, routeKey: "CENTRE" },
-        { icon: <ClubIcon size={20} />, routeKey: "SPORTS_CLUB" },
-        { icon: <FlagIcon size={20} />, routeKey: "FLAGSHIP" },
-        { icon: <BuildingIcon size={20} />, routeKey: "THEATRE" },
-        { icon: <PodcastIcon size={20} />, routeKey: "POST_1" },
-        { icon: <BookIcon size={20} />, routeKey: "VICTORY_DAY" },
-        { icon: <PenIcon size={20} />, routeKey: "LITERARY_IDEAL" },
-    ];
-    
+    // const sidebarItems = [
+    //     { icon: <GroupIcon size={20} />, routeKey: "PATRIOTISM" },
+    //     { icon: <GlobeIcon size={20} />, routeKey: "INTERNATIONAL_COOPERATION" },
+    //     { icon: <BuildingIcon size={20} />, routeKey: "CENTRE" },
+    //     { icon: <ClubIcon size={20} />, routeKey: "SPORTS_CLUB" },
+    //     { icon: <FlagIcon size={20} />, routeKey: "FLAGSHIP" },
+    //     { icon: <BuildingIcon size={20} />, routeKey: "THEATRE" },
+    //     { icon: <PodcastIcon size={20} />, routeKey: "POST_1" },
+    //     { icon: <BookIcon size={20} />, routeKey: "VICTORY_DAY" },
+    //     { icon: <PenIcon size={20} />, routeKey: "LITERARY_IDEAL" },
+    // ];
+
 
 
     return (
@@ -54,8 +55,8 @@ export const Sidebar = () => {
 
 
                                 <div className="flex flex-col gap-3">
-                                    {sidebarItems.map(({ icon, routeKey }) => (
-                                        <SidebarItem key={routeKey} icon={icon} routeKey={routeKey} closeSidebar={closeSidebar} />
+                                    {Object.entries(RoutesConfig).map(([routeKey, route]) => (
+                                        <SidebarItem key={routeKey} icon={route.icon} routeKey={routeKey} closeSidebar={closeSidebar} />
                                     ))}
                                 </div>
 

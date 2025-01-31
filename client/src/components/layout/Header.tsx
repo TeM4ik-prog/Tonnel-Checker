@@ -25,38 +25,43 @@ export const Header: React.FC = () => {
     const handleMouseLeave = () => setHoveredKey(null);
 
     const navLinks = useMemo(() => (
-        Object.entries(RoutesConfig).map(([key, { path, label, subRoutes }]) => {
+        Object.entries(RoutesConfig).map(([key, { path, label, showInHeader, subRoutes }]) => {
 
             const hasSubRoutes = subRoutes && hoveredKey === key
 
             return (
-                <NavLink
-                    key={key}
-                    to={!hasSubRoutes ? path : '#'}
-                    className="relative flex flex-col w-auto"
-                    onMouseEnter={() => handleMouseEnter(key)}
-                    onMouseLeave={handleMouseLeave}
-                >
-                    <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0">
-                        {label}
-                    </span>
+                <>
+                    {showInHeader && (
+                            <NavLink
+                                key={key}
+                                to={!hasSubRoutes ? path : '#'}
+                                className="relative flex flex-col w-auto"
+                                onMouseEnter={() => handleMouseEnter(key)}
+                                onMouseLeave={handleMouseLeave}
+                            >
+                                <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0">
+                                    {label}
+                                </span>
 
-                    {hasSubRoutes && (
-                        <div
-                            className="absolute top-7 left-0 border bg-gray-600 rounded p-1 z-40 overflow-visible transition-all duration-200"
-                        >
-                            {Object.entries(subRoutes).map(([subKey, { path: subPath, label: subLabel }]) => (
-                                <NavLink onClick={handleMouseLeave}
-                                    key={subKey}
-                                    to={subPath}
-                                    className="block text-sm hover:text-gray-300 p-2"
-                                >
-                                    {subLabel}
-                                </NavLink>
-                            ))}
-                        </div>
-                    )}
-                </NavLink>
+                                {hasSubRoutes && (
+                                    <div
+                                        className="absolute top-7 left-0 border bg-gray-600 rounded p-1 z-40 overflow-visible transition-all duration-200"
+                                    >
+                                        {Object.entries(subRoutes).map(([subKey, { path: subPath, label: subLabel }]) => (
+                                            <NavLink onClick={handleMouseLeave}
+                                                key={subKey}
+                                                to={subPath}
+                                                className="block text-sm hover:text-gray-300 p-2"
+                                            >
+                                                {subLabel}
+                                            </NavLink>
+                                        ))}
+                                    </div>
+                                )}
+                            </NavLink>
+                        )
+                    }
+                </>
             )
         })
     ), [hoveredKey]);
@@ -68,7 +73,7 @@ export const Header: React.FC = () => {
             )}
 
             <div className="flex justify-center items-center w-full h-full">
-                
+
                 <div className="flex items-center z-10 h-full">
                     <Link to={RoutesConfig.HOME.path}>
                         <img className="min-w-20" src="logo_green.svg" alt="Logo" />

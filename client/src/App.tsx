@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { useUpdateUserTrigger } from './store/hooks';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { EntryPage } from './pages/EntryPage';
+import { PostsPage } from './pages/PostsPage';
 
 
 function App() {
@@ -55,6 +56,8 @@ function App() {
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
+
+              <Route path={RoutesConfig.POSTS.path + "*"} element={<PostsPage />} />
 
 
               <Route path='*' element={<NotFoundPage />} />
