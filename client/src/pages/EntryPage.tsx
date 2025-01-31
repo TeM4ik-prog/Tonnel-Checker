@@ -54,7 +54,7 @@ export const EntryPage = () => {
 
                 dispatch(updateData())
                 toast.success('You are logged in')
-                navigate('/profile')
+                navigate('/')
             }
         } catch (err) {
             toast.error(handleError(err));
@@ -82,12 +82,13 @@ export const EntryPage = () => {
 
         console.log(user)
 
-        // try {
-        //   const data = await AuthService.Google.login(user)
-        //   handleEntryData(data)
-        // } catch (err) {
-        //   toast.error(handleError(err))
-        // }
+        try {
+            const data = await AuthService.Google.login(user)
+            console.log(data)
+            handleEntryData(data)
+        } catch (err) {
+            toast.error(handleError(err))
+        }
 
 
     }
@@ -98,7 +99,7 @@ export const EntryPage = () => {
         <Section>
 
 
-            <div className="bg-gray-700 p-8 rounded-lg w-10/12 lg:w-2/5 sm:">
+            <div className="bg-gray-700 p-5 rounded-lg min-w-max w-10/12 lg:w-2/5">
 
                 <div className="w-full flex flex-row justify-start gap-3">
                     <img src="icons/telegram.svg" />

@@ -46,7 +46,7 @@ export class AuthController {
 		protected readonly googleAuthService: GoogleUsersService,
 
 		protected readonly jwtService: JwtService,
-	) {}
+	) { }
 
 	@Get('profile')
 	@UseGuards(JwtAuthGuard)
@@ -58,8 +58,7 @@ export class AuthController {
 @Controller('/auth/email')
 export class EmailAuthController
 	extends AuthController
-	implements IAuthController
-{
+	implements IAuthController {
 	@UseGuards(LocalAuthGuard)
 	@Post('/login/admin')
 	async loginAdmin(
@@ -200,6 +199,8 @@ export class TelegramAuthController extends AuthController {
 export class GoogleAuthController extends AuthController {
 	@Post('/login')
 	async login(@Body() googleData: IGoogleJwtDto) {
+		console.log("start decode")
+
 		const decodedData: IGoogleAuthDto =
 			this.jwtService.decode(
 				googleData.credential,

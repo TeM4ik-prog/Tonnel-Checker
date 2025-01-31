@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
-import { AtomIcon, Home, HomeIcon, MenuIcon, SidebarClose, BellIcon, Bell, ContactIcon, GlobeIcon, GroupIcon, HistoryIcon, TrophyIcon } from 'lucide-react';
+import { AtomIcon, Home, HomeIcon, MenuIcon, SidebarClose, BellIcon, Bell, ContactIcon, GlobeIcon, GroupIcon, HistoryIcon, TrophyIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, ClubIcon } from 'lucide-react';
 import { Fragment, useState } from 'react';
 import { SidebarItem } from '../shared/sidebar/sidebar-item';
 
@@ -10,16 +10,20 @@ export const Sidebar = () => {
     const closeSidebar = () => setIsOpen(false);
 
 
+
     const sidebarItems = [
-        { icon: <HomeIcon size={20} />, routeKey: "HOME" },
-        { icon: <TrophyIcon size={20} />, routeKey: "ACHIEVEMENTS" },
-        { icon: <HistoryIcon size={20} />, routeKey: "HISTORY" },
-        { icon: <HistoryIcon size={20} />, routeKey: "GYMN_HISTORY" },
         { icon: <GroupIcon size={20} />, routeKey: "PATRIOTISM" },
-        { icon: <Bell size={20} />, routeKey: "ANNOUNCEMENTS" },
         { icon: <GlobeIcon size={20} />, routeKey: "INTERNATIONAL_COOPERATION" },
-        { icon: <ContactIcon size={20} />, routeKey: "CONTACTS" },
+        { icon: <BuildingIcon size={20} />, routeKey: "CENTRE" },
+        { icon: <ClubIcon size={20} />, routeKey: "SPORTS_CLUB" },
+        { icon: <FlagIcon size={20} />, routeKey: "FLAGSHIP" },
+        { icon: <BuildingIcon size={20} />, routeKey: "THEATRE" },
+        { icon: <PodcastIcon size={20} />, routeKey: "POST_1" },
+        { icon: <BookIcon size={20} />, routeKey: "VICTORY_DAY" },
+        { icon: <PenIcon size={20} />, routeKey: "LITERARY_IDEAL" },
     ];
+    
+
 
     return (
         <>

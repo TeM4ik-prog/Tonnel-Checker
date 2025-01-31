@@ -24,36 +24,32 @@ export interface Routes {
 }
 
 export const RoutesConfig: { [key: string]: Route } = {
-    HOME: { path: '/', label: 'Главная' },
-    ACHIEVEMENTS: { path: '/achievements', label: 'Достижения современной Беларуси' },
-    HISTORY: {
-        path: '/history', label: 'Государство(Истории)',
-        subRoutes: {
-            HISTORY_OF_THE_REPUBLIC: { path: '/history/materials', label: 'Материалы' },
-
-        },
-    },
-    GYMN_HISTORY: { path: '/gymn_history', label: "Гимназия(Истории)" },
-
-
-    PATRIOTISM: { path: '/patriotism', label: 'Воспитание патриотов' },
-    ANNOUNCEMENTS: {
-        path: '/announcements',
-        label: 'Мероприятия',
-        subRoutes: {
-            ANNOUNCEMENTS_NEWS: { path: '/announcements/news', label: 'Новости' },
-            ANNOUNCEMENTS_EVENTS: { path: '/announcements/events', label: 'События' },
-        },
-    },
-    INTERNATIONAL_COOPERATION: { path: '/international-cooperation', label: 'Международное сотрудничество' },
-    CONTACTS: { path: '/contacts', label: 'Контакты' },
-
-
-
-
-
+    HOME: { path: '/', label: '' },
     ENTRY: { path: '/entry', label: '' },
+
+    // __________
+
+    VICTORY_DAY: { path: '/victory-day', label: 'До лет Великой Победы' },
+
+    LITERARY_IDEAL: { path: '/literary-ideal', label: 'Лит.-ист. идеал' },
+
+    PATRIOTISM: { path: '/patriotism', label: 'Дискусионный клуб' },
+
+    INTERNATIONAL_COOPERATION: { path: '/international-cooperation', label: 'Ассоциация школ РФ и РБ' },
+
+    CENTRE: { path: '/centre', label: 'Медиацентр' },
+
+    SPORTS_CLUB: { path: '/sports-club', label: 'Спортивный клуб' },
+
+    FLAGSHIP: { path: '/flagship', label: 'Знамёнка' },
+
+    THEATRE: { path: '/theatre', label: 'Театр' },
+
+    POST_1: { path: '/post-1', label: 'Пост №1' },
+
+
 };
+
 
 
 
@@ -78,10 +74,6 @@ class ApiConfig {
         },
 
         telegram: {
-            login: "login",
-        },
-
-        vk: {
             login: "login",
         },
 
