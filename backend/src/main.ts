@@ -6,22 +6,14 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Разрешаем запросы с любого домена
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
-  });
+
 
   const PORT = 3000;
 
-  // Используем JSON парсер
   app.use(express.json());
 
-  // Глобальный префикс для API
   app.setGlobalPrefix('api');
 
-  // Обслуживание статики
   app.use(
     '/uploads',
     express.static(join(__dirname, '..', 'uploads')),
@@ -34,7 +26,6 @@ async function bootstrap() {
     express.static(join(__dirname, '../../client/dist')),
   );
 
-  // Обработка маршрутов: если не API, отправляем фронт
   app.use((req, res, next) => {
     if (req.path.startsWith('/api')) {
       next();
@@ -43,8 +34,7 @@ async function bootstrap() {
     }
   });
 
-  // Запускаем приложение, слушаем на всех интерфейсах
-  await app.listen(PORT, '0.0.0.0', () => {
+  await app.listen(PORT, () => {
     console.log(`Nest application is ready on http://localhost:${PORT}`);
   });
 }
