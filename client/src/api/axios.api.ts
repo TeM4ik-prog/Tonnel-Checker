@@ -6,7 +6,7 @@ const API_URL = "https://backend-tem4ik-prog-tem4ik-progs-projects.vercel.app";
 
 export const createAxiosInstance = (basePath: string) => {
     const instance = axios.create({
-        baseURL: `${API_URL}/api/${basePath}`, // Полный путь с базовым URL
+        baseURL: `/api/${basePath}`, // Полный путь с базовым URL
         headers: {
             Authorization: 'Bearer ' + (getTokenFromLocalStorage() || '')
         }
