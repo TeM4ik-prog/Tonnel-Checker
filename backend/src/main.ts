@@ -45,7 +45,7 @@ async function bootstrap() {
 
   // Запускаем приложение, слушаем на всех интерфейсах
   await app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Nest application is ready on http://0.0.0.0:${PORT}`);
+    console.log(`Nest application is ready on http://localhost:${PORT}`);
   });
 }
 bootstrap();
