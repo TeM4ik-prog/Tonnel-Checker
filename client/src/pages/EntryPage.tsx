@@ -154,7 +154,7 @@ export const EntryPage = () => {
 
                      </div> */}
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 items-center">
                         <TelegramLoginButton
                             botName={TelegramBot}
                             buttonSize="large"
@@ -162,7 +162,7 @@ export const EntryPage = () => {
                             usePic={false}
                             dataOnauth={EntryByTelegram}
                             className="telegram-login-container"
-                        />
+                        /> 
 
                         <RegistrationGoogleButton authHandler={EntryByGoogle} />
                     </div>
