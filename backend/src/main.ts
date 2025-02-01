@@ -34,7 +34,7 @@ async function bootstrap() {
     }
   });
 
-  await app.listen(PORT, '94.231.205.125', () => {
+  await app.listen(PORT, '0.0.0.0', () => {
     console.log(`Nest application is ready on http://localhost:${PORT}`);
   });
 }
