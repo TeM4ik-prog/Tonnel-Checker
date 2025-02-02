@@ -57,10 +57,10 @@ export const CreatePostsPage = () => {
 
     return (
         <Section>
-            <div className="bg-gray-700 p-6 rounded-lg min-w-max w-10/12 lg:w-2/5 mx-auto h-min">
+            <div className="bg-gray-700 p-6 rounded-lg min-w-max w-full lg:w-2/5 mx-auto h-min">
                 <h1 className="text-2xl text-center font-bold mb-6 text-white">Создать пост</h1>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     <Select
                         placeholder="Выберите категорию"
                         name="category"
