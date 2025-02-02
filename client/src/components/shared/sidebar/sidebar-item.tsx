@@ -1,4 +1,4 @@
-import { Routes, RoutesConfig } from "@/types/pagesConfig";
+import { POSTS_PATHS, Routes, RoutesConfig } from "@/types/pagesConfig";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
 import { ReactNode } from "react";
@@ -16,16 +16,22 @@ interface Props {
 export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Props) => {
     const currentPath  = useLocation().pathname
     
-    
     const data = RoutesConfig[routeKey]
     if (!data) return
-    const { path, label, subRoutes } = data
+    let { path, label, subRoutes } = data
+
+    for (let i = 0; i < POSTS_PATHS.length; i++) {
+        if(routeKey == POSTS_PATHS[i]){
+
+            path = RoutesConfig.POSTS.path + path
+        }
+    }
+
 
     if(!label) return
 
 
 
-    
 
 
     return (
@@ -63,7 +69,7 @@ export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Pr
                                 className="flex flex-col gap-2 pl-6 overflow-hidden"
                             >
                                 {Object.entries(subRoutes).map(([subKey, { path, label }]) => (
-                                    <SidebarSubItem key={subKey} text={label} href={path} closeSidebar={closeSidebar} />
+                                    <SidebarSubItem key={subKey} text={label} href={RoutesConfig.POSTS.path + path} closeSidebar={closeSidebar} />
                                 ))}
                             </motion.div>
                         </DisclosurePanel>

@@ -11,6 +11,11 @@ import { AdminModule } from './admin/admin.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { PostModule } from './post/post.module';
+import { CategoryModule } from './category/category.module';
+import { CategoryService } from './category/category.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,11 +24,19 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     AdminModule,
     JwtModule,
+    CategoryModule,
+    ScheduleModule.forRoot(),
+    PostModule,
+    CategoryModule,
+
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
 
-    ScheduleModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '../uploads'),
+      serveRoot: '/uploads',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],
@@ -34,6 +47,7 @@ export class AppModule {
     private readonly databaseService: DatabaseService,
     private readonly usersService: UsersService,
     private readonly emailUsersService: EmailUsersService,
+    private readonly categoryService: CategoryService,
   ) { }
 
   async onModuleInit() {
@@ -43,6 +57,10 @@ export class AppModule {
     // // создание администраторов и получение информации о создании
     const responseInfo = await this.emailUsersService.createAdminsOnInit();
     // console.log(responseInfo)
+
+
+    // создание категорий 
+    this.categoryService.onCreateCategories()
 
 
     // полная очистка базы данных

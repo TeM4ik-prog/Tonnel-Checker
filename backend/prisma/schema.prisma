@@ -22,8 +22,8 @@ model UserBase {
   banned Boolean @default(false)
   role   String  @default("user")
 
-  name     String  @default("User")
-  avatar   String?
+  name   String  @default("User")
+  avatar String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,8 +31,6 @@ model UserBase {
   EmailUser    EmailUser?
   TelegramUser TelegramUser?
   GoogleUser   GoogleUser?
-
-
 }
 
 model EmailUser {
@@ -72,3 +70,27 @@ model GoogleUser {
   userBase   UserBase @relation(fields: [userBaseId], references: [id])
 }
 
+// ________
+
+model Post {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  imageUrl    String
+  date        String
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String @unique
+  posts Post[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

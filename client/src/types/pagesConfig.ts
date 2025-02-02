@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2 } from "lucide-react";
 
 interface Route {
     path: string;
@@ -15,7 +15,7 @@ export interface Routes {
     [key: string]: Route;
 }
 
-export const RoutesConfig: { [key: string]: Route } = {
+export let RoutesConfigMain: { [key: string]: Route } = {
     HOME: { path: '/', label: 'Главная', showInHeader: false, icon: HomeIcon },
 
     // __________
@@ -81,7 +81,16 @@ export const RoutesConfig: { [key: string]: Route } = {
         label: 'Театр',
         shortLabel: 'Театр',
         showInHeader: true,
-        icon: LandmarkIcon
+        icon: LandmarkIcon,
+        // subRoutes: {
+        //     POST_1: {
+        //         path: '/post-1',
+        //         label: 'Пост ��1',
+        //         shortLabel: 'Пост ��1',
+        //         showInHeader: true,
+        //         icon: PodcastIcon,
+        //     }
+        // }
     },
 
     POST_1: {
@@ -96,8 +105,57 @@ export const RoutesConfig: { [key: string]: Route } = {
     ENTRY: { path: '/entry', label: '', showInHeader: false },
     POSTS: { path: '/posts', label: '', showInHeader: false },
 
-    
-};
+    CREATE_POSTS: { path: '/posts/create', icon: UserCircle2, label: 'создание постов', showInHeader: false },
+
+
+}
+
+
+
+function updateRoutesWithParentPath(routes: Record<string, any>, parentPath = '') {
+    return Object.entries(routes).reduce((acc, [key, value]) => {
+        const newPath = parentPath + value.path;
+
+        acc[key] = { ...value, path: newPath }; 
+        if (value.subRoutes) {
+            acc[key].subRoutes = updateRoutesWithParentPath(value.subRoutes, newPath);
+        }
+
+        return acc;
+    }, {} as Record<string, any>);
+}
+
+export const RoutesConfig: { [key: string]: Route } = updateRoutesWithParentPath(RoutesConfigMain);
+
+console.log(RoutesConfig)
+
+
+
+
+export const POSTS_PATHS = [
+    'VICTORY_DAY',
+    'LITERARY_IDEAL',
+    'PATRIOTISM',
+    'INTERNATIONAL_COOPERATION',
+    'CENTRE',
+    'SPORTS_CLUB',
+    'FLAGSHIP',
+    'THEATRE',
+    'POST_1',
+
+
+] as const
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -139,6 +197,19 @@ class ApiConfig {
             ban: "users/ban",
             passwordChange: "password/change",
         }
+    }
+
+    post = {
+        baseInstance: createAxiosInstance('post/'),
+
+    }
+
+    category = {
+        baseInstance: createAxiosInstance('category/'),
+
+
+
+
     }
 
 }

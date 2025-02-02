@@ -11,27 +11,12 @@ export const Sidebar = () => {
     const closeSidebar = () => setIsOpen(false);
 
 
-
-    // const sidebarItems = [
-    //     { icon: <GroupIcon size={20} />, routeKey: "PATRIOTISM" },
-    //     { icon: <GlobeIcon size={20} />, routeKey: "INTERNATIONAL_COOPERATION" },
-    //     { icon: <BuildingIcon size={20} />, routeKey: "CENTRE" },
-    //     { icon: <ClubIcon size={20} />, routeKey: "SPORTS_CLUB" },
-    //     { icon: <FlagIcon size={20} />, routeKey: "FLAGSHIP" },
-    //     { icon: <BuildingIcon size={20} />, routeKey: "THEATRE" },
-    //     { icon: <PodcastIcon size={20} />, routeKey: "POST_1" },
-    //     { icon: <BookIcon size={20} />, routeKey: "VICTORY_DAY" },
-    //     { icon: <PenIcon size={20} />, routeKey: "LITERARY_IDEAL" },
-    // ];
-
-
-
     return (
         <>
             {isOpen && <div className="fixed inset-0 bg-black z-50 opacity-50 border-none" />}
 
             <div className="relative border-none inset-0 z-20">
-                <MenuIcon onClick={openSidebar} size={30} />
+                <MenuIcon onClick={openSidebar} size={40} />
 
                 <Transition show={isOpen} as={Fragment}
                     enter="transition-transform duration-700"

@@ -1,21 +1,37 @@
-import { Post, PostProps } from "@/components/shared/post/post"
 import { PostsList } from "@/components/shared/post/postList";
+import { CategoryService } from "@/services/category.service";
+import { PostService } from "@/services/post.service";
+import { onRequest } from "@/types";
+import { RoutesConfig } from "@/types/pagesConfig";
+import { findCategoryByPath } from "@/utils";
+import { handleError } from "@/utils/handleError";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const PostsPage = () => {
+    const [posts, setPosts] = useState([])
+    const navigate = useNavigate()
 
-    const postsData: PostProps[] = []
+    const { category } = useParams<{ category: string }>();
+    const route = findCategoryByPath(category)
 
-    for (let i = 0; i < 10; i++) {
-        postsData.push(
-            {
-                title: "Президент Беларуси Александр Лукашенко поздравил учащихся с Днем знаний",
-                date: "1 сентября 2024",
-                source: "Гимназия №1 г. Минск",
-                link: "https://president.gov.by/ru/events/pozdravlenie-s-dnem-znanij",
-                content: "Традиционно, открывая новый учебный год, мы все вместе делаем шаг в будущее. ... Желаю всем успехов в учебе и жизни!"
-            }
-        )
+
+    const getPosts = async () => {
+        const data = await onRequest(PostService.getPosts(category!))
+        console.log(data)
+        if (data) setPosts(data)
     }
+
+    useEffect(() => {
+        getPosts()
+
+        if (!route) {
+            toast.error("Invalid category path");
+            navigate(RoutesConfig.HOME.path);
+        }
+    }, [route, navigate]);
+
 
 
 
@@ -26,8 +42,11 @@ export const PostsPage = () => {
 
         <>
 
+            <h1 className="text-3xl text-center font-bold m-5">{route?.label}</h1>
 
-            <PostsList posts={postsData} />
+
+            <PostsList posts={posts} />
+
 
 
 

@@ -12,6 +12,10 @@ import { useUpdateUserTrigger } from './store/hooks';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { EntryPage } from './pages/EntryPage';
 import { PostsPage } from './pages/PostsPage';
+import { CreatePostsPage } from './pages/CreatePostsPage';
+import { onRequest } from './types';
+import { CategoryService } from './services/category.service';
+import { setCategories } from './store/categories/categories.slice';
 
 
 function App() {
@@ -37,15 +41,22 @@ function App() {
     }
   }
 
+
+  const getCategories = async () => {
+    const data = await onRequest(CategoryService.getCategories())
+    console.log(data)
+    if(data){
+      dispatch(setCategories(data))
+    }
+  }
+
   useEffect(() => {
     checkAuth()
+    getCategories()
   }, [trigger])
 
   return (
     <div className='min-h-screen flex flex-col bg-gray-800'>
-
-
-
 
 
       <Router>
@@ -57,8 +68,9 @@ function App() {
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
 
-              <Route path={RoutesConfig.POSTS.path + "*"} element={<PostsPage />} />
+              <Route path={`${RoutesConfig.POSTS.path}/:category`} element={<PostsPage />} />
 
+              <Route path={RoutesConfig.CREATE_POSTS.path} element={<CreatePostsPage />} />
 
               <Route path='*' element={<NotFoundPage />} />
             </Routes>

@@ -20,12 +20,13 @@ type Props = {
     return (
       <div className="flex flex-col">
         <input
+        required
           type={type}
           name={name}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full p-3 mt-1 text-gray-900 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+          className={`w-full p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             error ? 'border-2 border-red-500' : ''
           } ${className}`}
         />
