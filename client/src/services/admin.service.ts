@@ -1,5 +1,5 @@
-import { apiConfig } from "../config/pages.config";
-import { ApiRoute } from "../interfaces/index.interface";
+import { ApiRoute } from "@/types";
+import { apiConfig } from "@/types/pagesConfig";
 
 
 export class adminService implements ApiRoute {
