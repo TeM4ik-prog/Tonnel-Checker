@@ -4,14 +4,15 @@ import { AxiosInstance } from "axios";
 export const TelegramBot: string = "TgVerifyApp_bot"
 
 export interface IUser {
-    id: number;
+    id: string;
     role?: UserRole;
     banned?: boolean;
+    name: string;
 
     EmailUser: {
-        id: number;
+        id: string;
         email: string;
-    }
+    } | null
 
     TelegramUser: {
         authDate: string; 
@@ -19,14 +20,15 @@ export interface IUser {
         photoUrl: string;
         telegramId: string; 
         username: string;
-    }
+    } | null
 
-    GoogleUser:{
-        id: number;
+    GoogleUser?:{
+        id: string;
         email: string;
         name: string;
         givenName: string;
         photoUrl: string;
+        userBaseId: string;
 
     }
 }

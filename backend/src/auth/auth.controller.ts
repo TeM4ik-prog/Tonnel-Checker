@@ -92,13 +92,13 @@ export class EmailAuthController
 
 		console.log(user);
 
-		if (
-			user &&
-			(user.userBase.role == RolesClass.admin ||
-				RolesClass.superAdmin)
-		) {
-			return { checkPassword: true };
-		}
+		// if (
+		// 	user &&
+		// 	(user.userBase.role == RolesClass.admin ||
+		// 		RolesClass.superAdmin)
+		// ) {
+		// 	return { checkPassword: true };
+		// }
 
 		if (!user) {
 			user = (
@@ -106,6 +106,7 @@ export class EmailAuthController
 			).EmailUser;
 			console.log(user);
 		}
+
 
 		await this.emailService.createVerificationCode(
 			user.id,

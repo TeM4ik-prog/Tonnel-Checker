@@ -1,7 +1,7 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2 } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon } from "lucide-react";
 
-interface Route {
+export interface Route {
     path: string;
     label: string;
     shortLabel?: string;
@@ -17,12 +17,13 @@ export interface Routes {
 
 export let RoutesConfigMain: { [key: string]: Route } = {
     HOME: { path: '/', label: 'Главная', showInHeader: false, icon: HomeIcon },
+    PROFILE: { path: '/profile', label: 'Личный кабинет', showInHeader: false, icon: UserCog2Icon },
 
     // __________
 
     VICTORY_DAY: {
         path: '/victory-day',
-        label: 'До лет Великой Победы',
+        label: '80 лет Великой Победы',
         shortLabel: 'Победа',
         showInHeader: true,
         icon: BookIcon
@@ -65,7 +66,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         label: 'Спортивный клуб',
         shortLabel: 'Спорт',
         showInHeader: true,
-        icon: LandmarkIcon
+        icon: RocketIcon
     },
 
     FLAGSHIP: {
@@ -81,7 +82,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         label: 'Театр',
         shortLabel: 'Театр',
         showInHeader: true,
-        icon: LandmarkIcon,
+        icon: DramaIcon,
         // subRoutes: {
         //     POST_1: {
         //         path: '/post-1',
@@ -101,9 +102,28 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         icon: PodcastIcon
     },
 
+    MUSEUM: {
+        path: '/museum',
+        label: 'Музей',
+        shortLabel: 'музей',
+        showInHeader: true,
+        icon: LandmarkIcon
+    },
+
+    GYMN_IMPROVING: {
+        path: '/gymn-improving',
+        label: 'Благоустраиваем гимназию',
+        shortLabel: 'Благоустройство',
+        showInHeader: true,
+        icon: SproutIcon
+
+    },
+
 
     ENTRY: { path: '/entry', label: '', showInHeader: false },
     POSTS: { path: '/posts', label: '', showInHeader: false },
+
+    INTERVIEWS: { path: '/interviews', label: 'Интервью учащихся', icon: StarIcon, showInHeader: false },
 
     CREATE_POSTS: { path: '/posts/create', icon: UserCircle2, label: 'создание постов', showInHeader: false },
 
@@ -116,7 +136,7 @@ function updateRoutesWithParentPath(routes: Record<string, any>, parentPath = ''
     return Object.entries(routes).reduce((acc, [key, value]) => {
         const newPath = parentPath + value.path;
 
-        acc[key] = { ...value, path: newPath }; 
+        acc[key] = { ...value, path: newPath };
         if (value.subRoutes) {
             acc[key].subRoutes = updateRoutesWithParentPath(value.subRoutes, newPath);
         }
@@ -126,11 +146,6 @@ function updateRoutesWithParentPath(routes: Record<string, any>, parentPath = ''
 }
 
 export const RoutesConfig: { [key: string]: Route } = updateRoutesWithParentPath(RoutesConfigMain);
-
-console.log(RoutesConfig)
-
-
-
 
 export const POSTS_PATHS = [
     'VICTORY_DAY',
@@ -142,6 +157,8 @@ export const POSTS_PATHS = [
     'FLAGSHIP',
     'THEATRE',
     'POST_1',
+    'MUSEUM',
+    'GYMN_IMPROVING'
 
 
 ] as const
@@ -206,10 +223,10 @@ class ApiConfig {
 
     category = {
         baseInstance: createAxiosInstance('category/'),
+    }
 
-
-
-
+    review = {
+        baseInstance: createAxiosInstance('review/'),
     }
 
 }

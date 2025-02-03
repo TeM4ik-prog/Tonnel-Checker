@@ -7,5 +7,8 @@ export enum CategoriesEnum {
     SPORTS_CLUB = 'sports-club',
     FLAGSHIP = 'flagship',
     THEATRE = 'theatre',
-    POST_1 = 'post-1'
+    POST_1 = 'post-1',
+    MUSEUM = 'museum',
+    GYMN_IMPROVING = 'gymn-improving',
+
 }

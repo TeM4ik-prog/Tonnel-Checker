@@ -1,5 +1,5 @@
 interface IPost {
-    categoryId: string;
+    categoryName: string;
     title: string;
     content: string;
     date: Date | null;

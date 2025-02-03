@@ -1,7 +1,9 @@
 import { RegistrationGoogleButton } from "@/components/shared/authButtons/googleButton/googleButton";
 import TelegramLoginButton from "@/components/shared/authButtons/tgButton/tgButton";
 import { Button } from "@/components/ui/Button"
+import { Modal } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
+import { ModalCheckCode } from "@/components/ui/ModalCheckCode";
 import { Section } from "@/components/ui/Section";
 import { AuthService } from "@/services/auth.service";
 import { login, updateData } from "@/store/user/user.slice";
@@ -19,29 +21,108 @@ export const EntryPage = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
 
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
 
-    const [errors, setErrors] = useState({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
+    const [isEmailSending, setIsEmailSending] = useState<boolean>(false)
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    const [isVerifyCodeDialogOpen, setIsVerifyCodeDialogOpen] = useState<boolean>(false)
 
-    const toggleState = () => {
-        setIsRegisterMode(!isRegisterMode);
-    };
+    const [code, setCode] = useState<string>('')
+    const [userId, setUserId] = useState<string>()
+
+    const [needToCheckPassword, setNeedToCheckPassword] = useState<boolean>(false)
+
+    const [isCodeVerified, setIsCodeVerified] = useState(false)
+
+
+
+    const sendCodeHandler = async () => {
+        setIsEmailSending(true)
+        try {
+            const data = await AuthService.Email.sendCode(email)
+
+            console.log(data)
+            if (data) {
+                if (data.verified) {
+                    setIsCodeVerified(true)
+                    return
+                }
+                else if (data.checkPassword) {
+                    setIsEmailSending(false)
+                    setNeedToCheckPassword(true)
+                    setIsCodeVerified(true)
+                    return
+                }
+                setIsVerifyCodeDialogOpen(true)
+                setUserId(data.userId)
+            }
+        } catch (err) {
+            setIsEmailSending(false)
+            // toast.error('Email is not exists')
+        }
+    }
+
+    const verifyCodeHandler = async () => {
+        try {
+            if (!userId) return
+            const data = await AuthService.Email.verifyCode(userId, code)
+            console.log(data)
+            if (data) {
+                setIsEmailSending(false)
+                setIsVerifyCodeDialogOpen(false)
+                setIsCodeVerified(true)
+                toast.success('Correct code')
+                handleEntryData(data)
+            }
+        } catch (err) {
+            toast.error(handleError(err))
+        }
+    }
+
+    const changeEmailHandler = (e: any) => {
+        if (!isCodeVerified) {
+            setEmail(e.target.value)
+        }
+    }
+
+    const loginAdmin = async () => {
+        try {
+            const data = await AuthService.Email.loginAdmin(email, password)
+            console.log(data)
+            handleEntryData(data)
+        } catch (err) {
+            toast.error(handleError(err))
+        }
+    }
+
+    const loginUser = async () => {
+        try {
+            const data = await AuthService.Email.login(email)
+            handleEntryData(data)
+        } catch (err) {
+            toast.error(handleError(err))
+        }
+    }
+
+    const entryHandler = (e: any) => {
+        e.preventDefault()
+        if (!isCodeVerified) {
+            if (isEmailSending) return
+            sendCodeHandler()
+
+            return
+        }
+        needToCheckPassword ? loginAdmin() : loginUser()
+    }
+
+    const IsValidCodeFrom = (): boolean => {
+        if (code.length == 6) {
+            return true
+        }
+        return false
+    }
 
 
     const handleEntryData = (responseData: any) => {
@@ -95,13 +176,9 @@ export const EntryPage = () => {
 
 
     return (
-
         <Section>
-
-
             <div className="bg-gray-700 p-5 rounded-lg min-w-max w-10/12 lg:w-2/5">
-
-                <div className="w-full flex flex-row justify-start gap-3">
+                <div className="w-full flex flex-row justify-start gap-3 mb-3">
                     <img src="icons/telegram.svg" />
                     <img src="icons/google.svg" />
 
@@ -110,49 +187,50 @@ export const EntryPage = () => {
 
                 </div>
 
-                {/* {!isRegisterMode ? 'Вход' : 'Регистрация'} */}
 
-                {/* <form className="space-y-4">
-        //             <Input
-        //                 name="username"
-        //                 placeholder="Имя пользователя"
-        //                 value={formData.username}
-        //                 onChange={handleChange}
-        //                 error={errors.username}
-        //             />
-        //             <Input
-        //                 name="email"
-        //                 type="email"
-        //                 placeholder="Ваш email"
-        //                 value={formData.email}
-        //                 onChange={handleChange}
-        //                 error={errors.email}
-        //             />
-        //             <Input
-        //                 name="password"
-        //                 type="password"
-        //                 placeholder="Пароль"
-        //                 value={formData.password}
-        //                 onChange={handleChange}
-        //                 error={errors.password}
-        //             />
+                <form onSubmit={entryHandler} className="flex flex-col gap-3">
+                    <Input
+                        name="email"
+                        type='email'
+                        placeholder="E-mail"
+                        onChange={changeEmailHandler}
+                        value={email}
+                    />
 
-        //             <div className="flex justify-center" >
-        //                 <Button text="Зарегистрироваться" />
-        //             </div>
-                 </form> */}
+                    {/* {needToCheckPassword && (
+              <input
+                ref={passwordInputRef}
+                type='password'
+                autoComplete="true"
+                placeholder='Пароль'
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                required
+                className="form-entry__input"
+              />
+            )} */}
+
+                    {!isCodeVerified ? (
+                        <>
+                            {isEmailSending ? (
+                                <Button formSubmit={true} text="Идет отправка кода..." />
+                            ) : (
+                                <Button formSubmit={true} text="Отправить код" />
+                            )}
+                        </>
+                    ) : (
+                        <Button formSubmit={true} text="Войти" />
+                    )}
+                </form>
 
                 <div className="flex flex-col gap-5 mt-5">
-                    {/* <div className="flex items-center justify-center">
-        //                 <div className="flex-grow h-px bg-white opacity-50"></div>
-        //                 <span className=" relative px-2 text-white font-semibold tracking-wide uppercase text-xs cursor-pointer group">
-        //                     Другие способы входа
-        //                 </span>
-        //                 <div className="flex-grow h-px bg-white opacity-50"></div>
-
-
-
-                     </div> */}
+                    <div className="flex items-center justify-center">
+                        <div className="flex-grow h-px bg-white opacity-50"></div>
+                        <span className=" relative px-2 text-white font-semibold tracking-wide uppercase text-xs cursor-pointer group">
+                            Другие способы входа
+                        </span>
+                        <div className="flex-grow h-px bg-white opacity-50"></div>
+                    </div>
 
                     <div className="flex flex-col gap-4 items-center">
                         <TelegramLoginButton
@@ -162,23 +240,28 @@ export const EntryPage = () => {
                             usePic={false}
                             dataOnauth={EntryByTelegram}
                             className="telegram-login-container"
-                        /> 
+                        />
 
                         <RegistrationGoogleButton authHandler={EntryByGoogle} />
                     </div>
-
-
                 </div>
-
-                {/* <div className="flex mt-6 items-center gap-2 justify-center flex-row text-center text-gray-300">
-                     <span>Уже есть аккаунт? </span>
-                     <p className="underline cursor-pointer" onClick={toggleState}>
-                         {isRegisterMode ? 'Войти' : 'Зарегистрироваться'}
-                     </p>
-                 </div> */}
             </div>
+
+
+            <ModalCheckCode
+                isOpen={isVerifyCodeDialogOpen}
+                onClose={() => { setIsVerifyCodeDialogOpen(false), setIsEmailSending(false) }}
+                title="Верификация"
+                buttonOpenText="Открыть"
+                buttonColor="blue"
+                code={code}
+                setCode={setCode}
+                IsValidCodeFrom={IsValidCodeFrom}
+                verifyCodeHandler={verifyCodeHandler}
+            />
+
+
 
         </Section >
     )
-
 }

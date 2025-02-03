@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from './store';
 import { UserState } from '@/types/states';
 import { Category } from '@/types';
+import { Route, RouteKey, RoutesConfig } from '@/types/pagesConfig';
 
 
 export const useAuth = () => {
@@ -32,17 +33,36 @@ export const useGetUserRole = () => {
 // __________
 
 
-export const useCategories = (): { categories: Category[], categoriesNames: string[], categoriesIds: string[] } => {
+export const useCategories = (): { categories: Route[], categoriesNames: string[], categoriesIds: string[] } => {
     try {
         const categories = useSelector((state: RootState) => state.categoriesSlice.categories)
-
-
         if (!categories.length) return { categories: [], categoriesNames: [], categoriesIds: [] }
 
-        const categoriesNames = categories.map((category) => category.name) || []
+        const categoriesNamesEn = categories.map((category) => category.name) || []
+        const categoriesNamesRu: string[] = []
+        const categoriesResult: Route[] = []
+
+        for (let i = 0; i < categoriesNamesEn.length; i++) {
+            const element = categoriesNamesEn[i]
+
+            for (const key in RoutesConfig) {
+                const route = RoutesConfig[key]
+
+                if ('/' + element == route.path) {
+                    categoriesNamesRu.push(route.label)
+                    categoriesResult.push(route)
+                }
+            }
+        }
+
+        console.log(categoriesResult)
+
+
+
         const categoriesIds = categories.map((category) => category.id) || []
-        return { categories, categoriesNames, categoriesIds }
-    } catch (error) {
+        return { categories: categoriesResult, categoriesNames: categoriesNamesRu, categoriesIds }
+    } catch (err) {
+        console.log(err)
         return { categories: [], categoriesNames: [], categoriesIds: [] }
 
     }

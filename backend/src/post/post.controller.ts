@@ -24,8 +24,6 @@ export class PostController {
 
   @Get(':category')
   findAll(@Param('category') categoryName: string) {
-    console.log('GET ALL');
-    console.log(categoryName)
     return this.postService.findAll(categoryName);
   }
 

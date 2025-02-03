@@ -41,6 +41,7 @@ export class PostService {
     return await this.dbService.post.findMany({
       where: {
         categoryId: category.id,
+        
       },
     })
   }

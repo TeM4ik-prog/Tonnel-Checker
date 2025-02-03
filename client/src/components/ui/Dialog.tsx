@@ -6,12 +6,13 @@ interface Props {
   title: string;
   buttonFC: () => void;
   content: string;
-  buttonText: string;
+  buttonOpenText: string;
+  buttonCloseText: string;
   buttonColor: 'red' | 'blue';
 
 }
 
-export const Modal = ({ title, buttonText, buttonColor, content, buttonFC }: Props) => {
+export const Modal = ({ title, buttonOpenText, buttonCloseText, buttonColor, content, buttonFC }: Props) => {
   let [isOpen, setIsOpen] = useState(false)
 
   function open() {
@@ -25,7 +26,7 @@ export const Modal = ({ title, buttonText, buttonColor, content, buttonFC }: Pro
   return (
     <>
       <Button
-        text={"Удалить"}
+        text={buttonOpenText}
         FC={open}
         color={buttonColor}
 
@@ -36,16 +37,16 @@ export const Modal = ({ title, buttonText, buttonColor, content, buttonFC }: Pro
           <div className="flex min-h-full items-center justify-center backdrop-blur-sm z-0 p-4">
             <DialogPanel
               transition
-              className="w-full max-w-md bg-gray-900 rounded-2xl  p-6 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+              className="w-full max-w-md bg-gray-900 rounded-2xl p-6 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
             >
-              <DialogTitle as="h3" className="text-base/7 font-medium  text-white">
+              <DialogTitle as="h3" className="text-2xl font-medium  text-white">
                 {title}
               </DialogTitle>
-              <p className="mt-2 text-sm/6 text-white/50">
+              <p className="mt-2 text-1xl text-white/50">
                 {content}
               </p>
               <div className="mt-4">
-                <Button text={buttonText} color={buttonColor}
+                <Button text={buttonCloseText} color={buttonColor}
                   FC={() => {
                     buttonFC()
                     close()

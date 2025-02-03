@@ -1,29 +1,48 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, Children } from "react";
 
 interface SectionProps {
   children: ReactNode;
 }
 
 export const Section = ({ children }: SectionProps) => {
-  const [headerHeight, setHeaderHeight] = useState(0)
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   useEffect(() => {
     const updateHeaderHeight = () => {
-      const header = document.querySelector("header")
+      const header = document.querySelector("header");
       if (header) {
         setHeaderHeight(header.offsetHeight);
       }
     };
 
-    updateHeaderHeight()
-    window.addEventListener("resize", updateHeaderHeight)
+    const updateWindowHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
 
-    return () => window.removeEventListener("resize", updateHeaderHeight)
-  }, [])
+    updateHeaderHeight();
+    updateWindowHeight();
+
+    window.addEventListener("resize", () => {
+      updateHeaderHeight();
+      updateWindowHeight();
+    });
+
+    return () => window.removeEventListener("resize", updateWindowHeight);
+  }, []);
+
+
+  // if (Children.count(children) === 1) {
+  //   return <div className="flex flex-col w-full justify-center items-center">{children}</div>;
+  // }
 
   return (
-    <section className="flex w-full justify-center items-center" style={{ height: `calc(100vh - ${headerHeight + 16}px)` }}>
+    <section
+      className="flex flex-col w-full justify-center items-center"
+      style={{ height: `calc(${windowHeight}px - ${headerHeight + 16}px)` }}
+    >
       {children}
     </section>
   );
 };
+

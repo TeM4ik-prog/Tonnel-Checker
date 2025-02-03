@@ -26,7 +26,7 @@ type Props = {
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+          className={`w-full p-3 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
             error ? 'border-2 border-red-500' : ''
           } ${className}`}
         />

@@ -16,6 +16,7 @@ import { CategoryModule } from './category/category.module';
 import { CategoryService } from './category/category.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -37,6 +38,8 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', '../uploads'),
       serveRoot: '/uploads',
     }),
+
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],

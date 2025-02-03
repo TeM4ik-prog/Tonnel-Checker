@@ -89,7 +89,7 @@ export const Header: React.FC = () => {
                         {!user ? (
                             <Button text="Войти" routeKey="ENTRY" />
                         ) : (
-                            <Button text="Выйти" FC={handleLogout} routeKey="HOME" color="red" />
+                            <Button text="Профиль" routeKey="PROFILE" />
                         )}
 
                         <Sidebar />

@@ -16,6 +16,9 @@ import { CreatePostsPage } from './pages/CreatePostsPage';
 import { onRequest } from './types';
 import { CategoryService } from './services/category.service';
 import { setCategories } from './store/categories/categories.slice';
+import { InterviewsPage } from './pages/InterviewsPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { Section } from './components/ui/Section';
 
 
 function App() {
@@ -45,7 +48,7 @@ function App() {
   const getCategories = async () => {
     const data = await onRequest(CategoryService.getCategories())
     console.log(data)
-    if(data){
+    if (data) {
       dispatch(setCategories(data))
     }
   }
@@ -62,7 +65,10 @@ function App() {
       <Router>
         <Header />
         <Suspense fallback={''}>
-          <main className='p-2'>
+
+
+  
+            <main className='p-2'>
 
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
@@ -72,11 +78,18 @@ function App() {
 
               <Route path={RoutesConfig.CREATE_POSTS.path} element={<CreatePostsPage />} />
 
+              <Route path={RoutesConfig.INTERVIEWS.path} element={<InterviewsPage />} />
+
+              <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
+
+
+
               <Route path='*' element={<NotFoundPage />} />
             </Routes>
 
 
-          </main>
+            </main>
+          
 
         </Suspense>
 

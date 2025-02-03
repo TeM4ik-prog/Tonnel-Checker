@@ -10,12 +10,14 @@ import { useState } from "react";
 import 'react-datepicker/dist/react-datepicker.css';
 
 import DatePicker from 'react-datepicker';
+import { toast } from "react-toastify";
+import { ReviewService } from "@/services/review.service";
 
 export const CreatePostsPage = () => {
     const { categories, categoriesNames } = useCategories();
 
     const [formData, setFormData] = useState<IPost>({
-        categoryId: '',
+        categoryName: '',
         title: '',
         content: '',
         date: new Date(Date.now()),
@@ -28,7 +30,7 @@ export const CreatePostsPage = () => {
     };
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFormData((prev) => ({ ...prev, categoryId: e.target.value }));
+        setFormData((prev) => ({ ...prev, categoryName: e.target.value }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,19 +46,60 @@ export const CreatePostsPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
-        const formData = new FormData(e.target as HTMLFormElement); // Передаем элемент формы
-    
-        if (formData.get('image')) {
-            console.log('Image selected:', formData.get('image'));
+
+        const formDataSubmit = new FormData(e.target as HTMLFormElement)
+
+        const category = categories.find(c => c.label === formData.categoryName);
+        if (!category) {
+            toast.error('категория не надена');
+            return
         }
-    
-        const data = await onRequest(PostService.createPost(formData));
+        console.log(category.path.replace('/', ' '))
+
+        formDataSubmit.set('category', category.path.replace('/', ''))
+
+
+        const data = await onRequest(PostService.createPost(formDataSubmit));
         console.log(data);
     };
 
+
+    // __________________________
+
+
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [text, setText] = useState("");
+
+    // Обработчик загрузки файла
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setVideoFile(file);
+        }
+    };
+
+    // Обработчик изменения текста
+    const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setText(e.target.value);
+    };
+
+    // Функция для отправки формы
+    const handleSubmitReview = async () => {
+        if (videoFile && text) {
+
+            console.log("Видео и текст отправлены");
+
+            const data = await onRequest(ReviewService.postReview({videoFile: videoFile, text: text}))
+
+
+
+        } else {
+            alert("Пожалуйста, загрузите видео и напишите текст.");
+        }
+    };
+
     return (
-        <Section>
+        <div className="flex flex-col gap-3">
             <div className="bg-gray-700 p-6 rounded-lg min-w-max w-full lg:w-2/5 mx-auto h-min">
                 <h1 className="text-2xl text-center font-bold mb-6 text-white">Создать пост</h1>
 
@@ -64,7 +107,7 @@ export const CreatePostsPage = () => {
                     <Select
                         placeholder="Выберите категорию"
                         name="category"
-                        value={formData.categoryId}
+                        value={formData.categoryName}
                         onChange={handleCategoryChange}
                         options={categoriesNames}
                     />
@@ -125,6 +168,47 @@ export const CreatePostsPage = () => {
                     </div>
                 </form>
             </div>
-        </Section>
+
+
+            <div className="bg-gray-700 p-6 rounded-lg min-w-max w-full lg:w-2/5 mx-auto h-min">
+                <h1 className="text-2xl text-center font-bold mb-6 text-white">Создать интервью</h1>
+
+                <div className="mb-4">
+                    <label htmlFor="video-upload" className="text-white block mb-2">
+                        Загрузить видео:
+                    </label>
+                    <input
+                        id="video-upload"
+                        type="file"
+                        accept="video/*"
+                        onChange={handleFileChange}
+                        className="text-sm text-gray-500 border border-gray-300 rounded-lg p-2 w-full"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="video-text" className="text-white block mb-2">
+                        Текст к видео:
+                    </label>
+                    <textarea
+                        id="video-text"
+                        value={text}
+                        onChange={handleTextChange}
+                        rows={4}
+                        placeholder="Напишите текст для видео..."
+                        className="text-sm text-gray-500 border border-gray-300 rounded-lg p-2 w-full"
+                    />
+                </div>
+
+                <div className="flex justify-center">
+                    <button
+                        onClick={handleSubmitReview}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        Создать интервью
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 };

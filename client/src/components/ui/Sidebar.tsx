@@ -31,9 +31,9 @@ export const Sidebar = () => {
                     <Dialog as="div" className="fixed inset-0 z-50 outline-none" onClose={closeSidebar}>
 
                         <div className="fixed inset-0 flex items-start justify-start">
-                            <DialogPanel className="bg-gray-800  w-full  h-full p-5 text-white md:w-80">
+                            <DialogPanel className="bg-gray-800 w-full overflow-y-auto h-full p-5 text-white md:w-80">
 
-                                <div className="flex justify-between items-center mb-5">
+                                <div className="sticky justify-between items-center mb-5">
                                     {/* <DialogTitle className="text-xl font-bold">Sidebar</DialogTitle> */}
                                     <SidebarClose className='ml-auto' onClick={closeSidebar} size={28} />
                                 </div>

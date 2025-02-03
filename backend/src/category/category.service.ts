@@ -27,7 +27,7 @@ export class CategoryService {
 
     for (const existingCategory of existingCategories) {
       if (!categories.includes(existingCategory.name as CategoriesEnum)) {
-        await this.delete(existingCategory.name);
+        await this.delete(existingCategory.id);
       }
     }
   }
