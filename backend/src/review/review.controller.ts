@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Res, UploadedFile, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -44,20 +44,20 @@ export class ReviewController {
     }
   }
 
-  @Post('create')
+  @Post()
   @UseInterceptors(FileInterceptor('videoFile'))  // Для загрузки видео
   async createReview(
     @Body() body: { text: string },    // Текст отзыва
     @UploadedFile() videoFile,  // Загруженное видео
   ) {
 
-    console.log(videoFile, body)
-    // return this.reviewService.createReview(body.text, videoFile);
+    return this.reviewService.create(body.text, `/uploads/videos/${videoFile.filename}`)
+
   }
 
   @Get()
   findAll() {
-    return this.reviewService.findAll();
+    return this.reviewService.findAll()
   }
 
   @Get(':id')
@@ -65,13 +65,9 @@ export class ReviewController {
     return this.reviewService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewService.update(+id, updateReviewDto);
-  }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+  delete(@Param('id') id: string) {
+    return this.reviewService.delete(id);
   }
 }
