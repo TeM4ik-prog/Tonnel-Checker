@@ -34,14 +34,10 @@ export const PostsPage = () => {
 
     useEffect(() => {
         getPosts()
-
         if (!route) {
             toast.error("Invalid category path");
             navigate(RoutesConfig.HOME.path);
         }
-
-
-
     }, [route, navigate]);
 
 
@@ -51,12 +47,13 @@ export const PostsPage = () => {
 
 
     return (
-        <>
-            <h1 className="text-3xl text-center font-bold m-5">{route?.label}</h1>
+        <Section className="!justify-start" hightCheck={posts && posts.length <= 0}>
+            <h1 className="text-3xl text-center font-bold m-5 ">{route?.label}</h1>
             {isLoading && <Loader />}
 
             {!isLoading && <PostsList posts={posts} />}
-        </>
+        </Section>
+
 
     )
 }

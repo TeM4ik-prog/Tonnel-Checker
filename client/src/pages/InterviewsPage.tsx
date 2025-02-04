@@ -45,15 +45,11 @@ export const InterviewsPage: React.FC = () => {
 
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-
-
     const getAllReviews = async () => {
         const data = await onRequest(ReviewService.getReviews())
-
         if (data) {
             setReviews(data)
         }
-
     }
 
     const handleDelete = async (id: string) => {
@@ -64,8 +60,6 @@ export const InterviewsPage: React.FC = () => {
 
     useEffect(() => {
         getAllReviews()
-
-
     }, [])
 
 
@@ -80,24 +74,13 @@ export const InterviewsPage: React.FC = () => {
                             key={review.id}
                             className="p-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700"
                         >
-                            <p className="text-white mb-2">{review.content}</p>
+                            <p className="whitespace-pre-line text-white mb-2">{review.content}</p>
 
-                            {/* <button
-                                className="w-full text-blue-400 hover:underline"
-                                onClick={() =>
-                                    setSelectedVideo(selectedVideo === review.imageUrl ? null : review.imageUrl)
-                                }
-                            >
-                                {selectedVideo === review.imageUrl ? "Скрыть видео" : "Показать видео"}
-                            </button> */}
-
-                            {/* {selectedVideo === review.imageUrl && ( */}
-                                <video
-                                    controls
-                                    className="w-full max-h-96 mt-2 rounded-lg"
-                                    src={review.imageUrl}
-                                />
-                            {/* )} */}
+                            <video
+                                controls
+                                className="w-full max-h-96 mt-2 rounded-lg"
+                                src={review.imageUrl}
+                            />
 
                             <p className="text-gray-400 text-sm mt-2">
                                 {new Date(review.createdAt).toLocaleDateString("ru-RU")}

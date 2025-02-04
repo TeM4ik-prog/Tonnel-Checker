@@ -2,13 +2,16 @@ import { useEffect, useState, ReactNode, Children } from "react";
 
 interface SectionProps {
   children: ReactNode;
+  className?: string;
+  hightCheck?: boolean;
 }
 
-export const Section = ({ children }: SectionProps) => {
+export const Section = ({ children, className, hightCheck = true }: SectionProps) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   useEffect(() => {
+    if(!hightCheck) return
     const updateHeaderHeight = () => {
       const header = document.querySelector("header");
       if (header) {
@@ -38,8 +41,8 @@ export const Section = ({ children }: SectionProps) => {
 
   return (
     <section
-      className="flex flex-col w-full justify-center items-center"
-      style={{ height: `calc(${windowHeight}px - ${headerHeight + 16}px)` }}
+      className={`flex flex-col h-full w-full justify-center items-center ${className}`}
+      style={{ height: hightCheck ? `calc(${windowHeight}px - ${headerHeight + 16}px)` : '100%' }}
     >
       {children}
     </section>
