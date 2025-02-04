@@ -83,20 +83,26 @@ export const CreatePostsPage = () => {
         setText(e.target.value);
     };
 
-    // Функция для отправки формы
     const handleSubmitReview = async () => {
         if (videoFile && text) {
-
             console.log("Видео и текст отправлены");
-
-            const data = await onRequest(ReviewService.postReview({videoFile: videoFile, text: text}))
-
-
-
+    
+            try {
+                const formData = new FormData();
+                formData.append("videoFile", videoFile);
+                formData.append("text", text);
+    
+                const data = await ReviewService.postReview(formData);  
+    
+                console.log("Ответ от сервера:", data);
+            } catch (error) {
+                console.error("Ошибка при отправке:", error);
+            }
         } else {
             alert("Пожалуйста, загрузите видео и напишите текст.");
         }
     };
+    
 
     return (
         <div className="flex flex-col gap-3">

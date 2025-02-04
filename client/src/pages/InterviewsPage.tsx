@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Dialog";
 import ContentBlock from "@/components/ui/ContentBlock";
+import { onRequest } from "@/types";
+import { ReviewService } from "@/services/review.service";
 
 const MAX_TEXT_LENGTH = 100; // Максимальная длина текста до скрытия
 
@@ -30,23 +32,89 @@ const interviews = [
     },
 ];
 
+interface Review {
+    id: string;
+    content: string;
+    imageUrl: string;
+    createdAt: string;
+}
+
 export const InterviewsPage: React.FC = () => {
     const [selectedInterview, setSelectedInterview] = useState<typeof interviews[number] | null>(null);
+    const [reviews, setReviews] = useState<Review[]>([])
 
-    const openInterview = (interview: typeof interviews[number]) => {
-        setSelectedInterview(interview);
-    };
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-    const closeInterview = () => {
-        setSelectedInterview(null);
-    };
+
+
+    const getAllReviews = async () => {
+        const data = await onRequest(ReviewService.getReviews())
+
+        if (data) {
+            setReviews(data)
+        }
+
+    }
+
+    const handleDelete = async (id: string) => {
+        await onRequest(ReviewService.deleteReview(id))
+        // setSelectedInterview(null);
+        getAllReviews()
+    }
+
+    useEffect(() => {
+        getAllReviews()
+
+
+    }, [])
+
 
     return (
         <>
-            <video width="100%" controls>
-                <source src="http://localhost:3000/api/review/video_2025-02-03_21-08-05.mp4" type="video/mp4" />
-                Ваш браузер не поддерживает видео.
-            </video>
+            <div className="max-w-3xl mx-auto space-y-6 md:w-full">
+                <h2 className="text-2xl font-bold text-white text-center">Интервью учащихся</h2>
+
+                <div className="space-y-4">
+                    {reviews.map((review) => (
+                        <div
+                            key={review.id}
+                            className="p-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700"
+                        >
+                            <p className="text-white mb-2">{review.content}</p>
+
+                            {/* <button
+                                className="w-full text-blue-400 hover:underline"
+                                onClick={() =>
+                                    setSelectedVideo(selectedVideo === review.imageUrl ? null : review.imageUrl)
+                                }
+                            >
+                                {selectedVideo === review.imageUrl ? "Скрыть видео" : "Показать видео"}
+                            </button> */}
+
+                            {/* {selectedVideo === review.imageUrl && ( */}
+                                <video
+                                    controls
+                                    className="w-full max-h-96 mt-2 rounded-lg"
+                                    src={review.imageUrl}
+                                />
+                            {/* )} */}
+
+                            <p className="text-gray-400 text-sm mt-2">
+                                {new Date(review.createdAt).toLocaleDateString("ru-RU")}
+                            </p>
+
+
+                            <Modal title="Удаление поста"
+                                content="Выдействительно хотите его удалить?"
+                                buttonColor="red"
+                                buttonCloseText="Удалить"
+                                buttonOpenText="Удалить"
+                                buttonFC={() => handleDelete(review.id)} />
+
+                        </div>
+                    ))}
+                </div>
+            </div>
 
 
 

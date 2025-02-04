@@ -125,7 +125,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     INTERVIEWS: { path: '/interviews', label: 'Интервью учащихся', icon: StarIcon, showInHeader: false },
 
-    CREATE_POSTS: { path: '/posts/create', icon: UserCircle2, label: 'создание постов', showInHeader: false },
+    CREATE_POSTS: { path: '/posts-reviews/create', icon: UserCircle2, label: 'создание постов и интерью', showInHeader: false },
 
 
 }

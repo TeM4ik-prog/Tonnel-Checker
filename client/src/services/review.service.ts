@@ -11,8 +11,18 @@ export class reviewService implements ApiRoute {
         this.baseUrl = apiConfig.review;
     }
 
+    async getReviews() {
+        const { data } = await this.instance.get('')
+        return data
+    }
+
     async postReview(reviewData: any) {
         const { data } = await this.instance.post('', reviewData)
+        return data
+    }
+
+    async deleteReview(id: string) {
+        const { data } = await this.instance.delete(id)
         return data
     }
 }
