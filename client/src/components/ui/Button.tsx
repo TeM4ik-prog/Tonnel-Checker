@@ -1,4 +1,5 @@
 import { RouteKey, Routes, RoutesConfig } from "@/types/pagesConfig";
+import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 
 
@@ -15,13 +16,16 @@ interface Props {
 
     formSubmit?: boolean
     disabled?: boolean
+    className?: string;
+
+    icon?:  ReactNode
 
 
 
 }
 
-export const Button = ({ text, FC, routeKey, widthMin = false, href, openNewPage = false, disabled = false, formSubmit = false, color = "blue" }: Props) => {
-    const buttonColor = color === "red" ? "bg-red-500" : "bg-blue-500 "
+export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, className, openNewPage = false, disabled = false, formSubmit = false, color = "blue" }: Props) => {
+    const buttonColor = color === "red" ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
     const buttonWidth = widthMin ? "w-full" : "w-min"
 
 
@@ -30,9 +34,10 @@ export const Button = ({ text, FC, routeKey, widthMin = false, href, openNewPage
     const renderButton = () => {
         return (
             <button
-                onClick={FC} className={`${buttonColor} ${buttonWidth}  text-nowrap transition hover:bg-opacity-75 text-white font-bold py-2 px-4 rounded`}
+                onClick={FC} className={`${buttonColor} ${buttonWidth} ${className} flex flex-row items-center text-nowrap transition  text-white font-bold py-2 px-4 rounded`}
                 disabled={disabled}
             >
+                {icon}
                 {text}
             </button>
         )

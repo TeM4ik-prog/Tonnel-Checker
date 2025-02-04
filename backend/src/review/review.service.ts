@@ -9,20 +9,24 @@ export class ReviewService {
     protected dbService: DatabaseService,
   ) { }
 
-  async create(text: string, imagePath: string) {
-    console.log(text, imagePath)
+  async create(text: string, sourcePath: string) {
+    console.log(text, sourcePath)
 
 
     return await this.dbService.review.create({
       data: {
         content: text,
-        imageUrl: imagePath,
+        sourceUrl: sourcePath,
       },
     })
   }
 
   async findAll() {
-    return await this.dbService.review.findMany()
+    return await this.dbService.review.findMany({
+      orderBy:{
+        createdAt: 'desc'
+      }
+    })
   }
 
   findOne(id: number) {

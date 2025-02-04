@@ -17,6 +17,12 @@ import { CategoryService } from './category/category.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ReviewModule } from './review/review.module';
+import { CommentModule } from './comment/comment.module';
+import { MulterModule } from '@nestjs/platform-express';
+
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { transliterate } from 'transliteration';
 
 @Module({
   imports: [
@@ -40,6 +46,8 @@ import { ReviewModule } from './review/review.module';
     }),
 
     ReviewModule,
+
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],
@@ -67,7 +75,7 @@ export class AppModule {
 
 
     // полная очистка базы данных
-    // await this.cleanDatabase();
+    await this.cleanDatabase();
   }
 
   async cleanDatabase() {
@@ -77,6 +85,8 @@ export class AppModule {
     // await this.databaseService.vkUser.deleteMany()
     // await this.databaseService.googleUser.deleteMany()
     // await this.databaseService.userBase.deleteMany()
+
+    await this.databaseService.review.deleteMany();
 
   }
 }

@@ -45,10 +45,10 @@ export class ReviewController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('videoFile'))  // Для загрузки видео
+  @UseInterceptors(FileInterceptor('videoFile'))
   async createReview(
-    @Body() body: { text: string },    // Текст отзыва
-    @UploadedFile() videoFile,  // Загруженное видео
+    @Body() body: { text: string },   
+    @UploadedFile() videoFile, 
   ) {
 
     return this.reviewService.create(body.text, `/uploads/videos/${videoFile.filename}`)
@@ -70,4 +70,7 @@ export class ReviewController {
   delete(@Param('id') id: string) {
     return this.reviewService.delete(id);
   }
+
+
+  
 }

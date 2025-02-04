@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
+import { CommentService } from "@/services/comment.service";
 import { useUserData } from "@/store/hooks";
 import { updateData } from "@/store/user/user.slice";
 import { IUser, onRequest } from "@/types";
@@ -36,21 +37,23 @@ export const ProfilePage = () => {
 
     const { TelegramUser, GoogleUser, EmailUser, role } = user;
 
-
     const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setReview(e.target.value);
     };
 
-    // const handleReviewSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault()
-    //     if (review.trim()) {
-    //         const data = await onRequest(ReviewService.postReview(review))
-    //         if (data) {
-    //             toast.success("Отзыв отправлен")
-    //             setReview("")
-    //         }
-    //     }
-    // };
+
+    const handleReviewSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        const formData = new FormData(e.target as HTMLFormElement);
+
+        const data = await onRequest(CommentService.postComment(formData))
+        if (data) {
+            toast.success("Отзыв отправлен")
+            setReview("")
+        }
+
+    };
 
     return (
         <div className="flex flex-col gap-3 max-w-4xl mx-auto bg-gray-900 text-white rounded-3xl shadow-xl p-5">
@@ -122,14 +125,30 @@ export const ProfilePage = () => {
 
             <div className="mt-6 space-y-4">
                 <h3 className="text-xl font-semibold text-gray-200">Оставьте отзыв</h3>
-                <form onSubmit={() => { }} className="bg-gray-800 p-3 rounded-lg shadow-md">
+                <form onSubmit={handleReviewSubmit} className="bg-gray-800 p-3 rounded-lg shadow-md">
                     <textarea
+                        name="text"
                         value={review}
                         onChange={handleReviewChange}
                         placeholder="Введите ваш отзыв..."
                         className="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
                         rows={4}
+                        required
                     />
+
+                    <div className="mb-4">
+                        <label htmlFor="video-upload" className="text-white block mb-2">
+                            Загрузить фото или видео:
+                        </label>
+                        <input
+                            name="sourceFile"
+                            id="media-upload"
+                            type="file"
+                            accept="image/*,video/*"
+                            className="text-sm text-gray-500 border border-gray-300 rounded-lg p-2 w-full"
+                        />
+                    </div>
+
                     <div className="mt-4 flex justify-end">
                         <Button formSubmit={true} text="Отправить" />
                     </div>

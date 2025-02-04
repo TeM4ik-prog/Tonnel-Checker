@@ -12,23 +12,23 @@ import { transliterate } from 'transliteration';
     DatabaseModule,
 
     MulterModule.register({
-          storage: diskStorage({
-            destination: './uploads/videos',
-            filename: (_, file, callback) => {
-              let originalName = Buffer.from(file.originalname, 'latin1').toString('utf8'); // Преобразуем кодировку
-        
-              originalName = originalName.replace(/\s+/g, '_'); // Убираем пробелы
-        
-              if (/[а-яА-ЯёЁ]/.test(originalName)) {
-                originalName = transliterate(originalName); // Транслит на латиницу
-              }
-        
-              callback(null, originalName);
-            },
-          }),
-        }),
+      storage: diskStorage({
+        destination: './uploads/videos',
+        filename: (_, file, callback) => {
+          let originalName = Buffer.from(file.originalname, 'latin1').toString('utf8')
+
+          originalName = originalName.replace(/\s+/g, '_')
+
+          if (/[а-яА-ЯёЁ]/.test(originalName)) {
+            originalName = transliterate(originalName)
+          }
+
+          callback(null, originalName);
+        },
+      }),
+    }),
   ],
   controllers: [ReviewController],
   providers: [ReviewService],
 })
-export class ReviewModule {}
+export class ReviewModule { }

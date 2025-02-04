@@ -5,6 +5,10 @@ import { Modal } from "@/components/ui/Dialog";
 import ContentBlock from "@/components/ui/ContentBlock";
 import { onRequest } from "@/types";
 import { ReviewService } from "@/services/review.service";
+import { PageContainer } from "@/components/layout/PageContainer";
+import { Block } from "@/components/layout/Block";
+import { ReviewList } from "@/components/shared/review/reviewList";
+import { IReview } from "@/components/shared/review/review";
 
 const MAX_TEXT_LENGTH = 100; // Максимальная длина текста до скрытия
 
@@ -32,16 +36,10 @@ const interviews = [
     },
 ];
 
-interface Review {
-    id: string;
-    content: string;
-    imageUrl: string;
-    createdAt: string;
-}
 
 export const InterviewsPage: React.FC = () => {
     const [selectedInterview, setSelectedInterview] = useState<typeof interviews[number] | null>(null);
-    const [reviews, setReviews] = useState<Review[]>([])
+    const [reviews, setReviews] = useState<IReview[]>([])
 
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
@@ -52,95 +50,19 @@ export const InterviewsPage: React.FC = () => {
         }
     }
 
-    const handleDelete = async (id: string) => {
-        await onRequest(ReviewService.deleteReview(id))
-        // setSelectedInterview(null);
-        getAllReviews()
-    }
+    
 
     useEffect(() => {
         getAllReviews()
     }, [])
 
-
     return (
         <>
-            <div className="max-w-3xl mx-auto space-y-6 md:w-full">
-                <h2 className="text-2xl font-bold text-white text-center">Интервью учащихся</h2>
-
+            <PageContainer title={'Интервью учащихся'}>
                 <div className="space-y-4">
-                    {reviews.map((review) => (
-                        <div
-                            key={review.id}
-                            className="p-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700"
-                        >
-                            <p className="whitespace-pre-line text-white mb-2">{review.content}</p>
-
-                            <video
-                                controls
-                                className="w-full max-h-96 mt-2 rounded-lg"
-                                src={review.imageUrl}
-                            />
-
-                            <p className="text-gray-400 text-sm mt-2">
-                                {new Date(review.createdAt).toLocaleDateString("ru-RU")}
-                            </p>
-
-
-                            <Modal title="Удаление поста"
-                                content="Выдействительно хотите его удалить?"
-                                buttonColor="red"
-                                buttonCloseText="Удалить"
-                                buttonOpenText="Удалить"
-                                buttonFC={() => handleDelete(review.id)} />
-
-                        </div>
-                    ))}
+                    <ReviewList reviews={reviews}/>
                 </div>
-            </div>
-
-
-
-            {/* <ContentBlock>
-                <motion.section
-                    className="container mx-auto text-center"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 1 }}
-                >
-                    <h1 className="text-4xl font-bold text-green-400 mb-8">Интервью учащихся</h1>
-                    <div className="grid grid-cols-1 gap-8 max-w-3xl mx-auto sm:px-6 lg:px-8">
-                        {interviews.map((interview) => (
-                            <motion.div
-                                key={interview.id}
-                                className="flex flex-col gap-3 p-6 bg-gray-700 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
-                                onClick={() => openInterview(interview)}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                            >
-                                <h3 className="text-xl font-semibold">{interview.name}</h3>
-                                <p className="text-gray-300">{interview.position}</p>
-                                <p className="text-lg">
-                                    {interview.text.length > MAX_TEXT_LENGTH
-                                        ? `${interview.text.substring(0, MAX_TEXT_LENGTH)}...`
-                                        : interview.text}
-                                </p>
-
-                                <Modal
-                                    title={interview.name}
-                                    content={interview.text}
-                                    buttonCloseText="Хорошо"
-                                    buttonOpenText="Подробнее"
-                                    buttonColor="blue"
-                                    buttonFC={closeInterview}
-                                />
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.section>
-            </ContentBlock> */}
-
+            </PageContainer >
         </>
     );
 };

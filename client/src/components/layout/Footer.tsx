@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
                         Object.entries(RoutesConfig).map(([key, { path, label, showInHeader, subRoutes }]) => (
                             <>
                                 {showInHeader && (
-                                    <a key={key} href={path} className="hover:text-cyan-400 transition-colors">
+                                    <a key={key} href={RoutesConfig.POSTS.path + path} className="hover:text-cyan-400 transition-colors">
                                         {label}
                                     </a>
                                 )}

@@ -32,10 +32,10 @@ export const MainPage: React.FC = () => {
                             Время выбрало нас!
                         </h1>
                         <p className="text-lg md:text-xl max-w-2xl z-10">
-                            Мы воспитываем патриотов, развиваем традиции и передаем культурное наследие Беларуси.
+                            Любим своё Отечество, сохраняем традиции, ценим настоящее, строим будущее
                         </p>
 
-                        <Button color="red" text="Интервью учащихся" formSubmit={false} href={RoutesConfig.INTERVIEWS.path} />
+                        <Button color="red" text="Патриотизм - это..." formSubmit={false} href={RoutesConfig.INTERVIEWS.path} />
                     </motion.section>
 
 

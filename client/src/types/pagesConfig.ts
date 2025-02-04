@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon } from "lucide-react";
 
 export interface Route {
     path: string;
@@ -125,6 +125,15 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     INTERVIEWS: { path: '/interviews', label: 'Интервью учащихся', icon: StarIcon, showInHeader: false },
 
+    LOVE_GYMN:{
+        path: '/love-gymn',
+        label: 'Люблю свою Гимназию',
+        shortLabel: 'Люблю свою Гимназию',
+        showInHeader: false,
+        icon: HeartIcon,
+
+    },
+
     CREATE_POSTS: { path: '/posts-reviews/create', icon: UserCircle2, label: 'создание постов и интерью', showInHeader: false },
 
 
@@ -205,8 +214,7 @@ class ApiConfig {
             login: 'login'
         }
     }
-
-
+    
     admin = {
         baseInstance: createAxiosInstance('admin/'),
         users: {
@@ -218,7 +226,6 @@ class ApiConfig {
 
     post = {
         baseInstance: createAxiosInstance('post/'),
-
     }
 
     category = {
@@ -226,7 +233,11 @@ class ApiConfig {
     }
 
     review = {
-        baseInstance: createAxiosInstance('review/'),
+        baseInstance: createAxiosInstance('review/'),        
+    }
+
+    comment = {
+        baseInstance: createAxiosInstance('comment/'),
     }
 
 }

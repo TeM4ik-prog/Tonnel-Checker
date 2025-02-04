@@ -70,7 +70,6 @@ export const CreatePostsPage = () => {
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [text, setText] = useState("");
 
-    // Обработчик загрузки файла
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -78,7 +77,6 @@ export const CreatePostsPage = () => {
         }
     };
 
-    // Обработчик изменения текста
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setText(e.target.value);
     };

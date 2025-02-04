@@ -44,6 +44,13 @@ export class PostService {
         categoryId: category.id,
 
       },
+
+      orderBy:{
+        createdAt: 'desc'
+      }
+
+      
+      
     })
   }
 

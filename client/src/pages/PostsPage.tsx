@@ -1,3 +1,4 @@
+import { PageContainer } from "@/components/layout/PageContainer";
 import { PostsList } from "@/components/shared/post/postList";
 import { Loader } from "@/components/ui/Loader";
 import { Section } from "@/components/ui/Section";
@@ -47,11 +48,12 @@ export const PostsPage = () => {
 
 
     return (
-        <Section className="!justify-start" hightCheck={posts && posts.length <= 0}>
-            <h1 className="text-3xl text-center font-bold m-5 ">{route?.label}</h1>
-            {isLoading && <Loader />}
+        <Section className="!justify-start" hightCheck={!Array.isArray(posts) || posts.length == 0}>
+            <PageContainer title={route?.label}>
+                {isLoading && <Loader />}
+                {!isLoading && <PostsList posts={posts} />}
+            </PageContainer>
 
-            {!isLoading && <PostsList posts={posts} />}
         </Section>
 
 

@@ -10,19 +10,10 @@ export const PostsList = ({ posts }: Props) => {
 
     if (!Array.isArray(posts) || posts.length == 0) {
         return (
-
-            // <Section>
-
-
-
-                <div className="flex flex-col gap-3 justify-center items-center w-full mt-32">
-                    <div className="text-gray-400 text-2xl">Здесь пока постов нет!</div>
-                    <Button routeKey="HOME" text="На главную" />
-                </div>
-
-            // </Section>
-
-
+            <div className="flex flex-col gap-3 justify-center items-center w-full mt-32">
+                <div className="text-gray-400 text-2xl">Здесь пока постов нет!</div>
+                <Button routeKey="HOME" text="На главную" />
+            </div>
         )
     }
 

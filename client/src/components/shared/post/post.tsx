@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import { Input } from "@/components/ui/Input";
+import { Block } from "@/components/layout/Block";
+import { PencilIcon } from "lucide-react";
 
 
 export interface PostProps {
@@ -79,7 +81,7 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
 
 
     return (
-        <div className="bg-gray-700 shadow-lg rounded-lg overflow-hidden w-full md:w-2/3 lg:w-1/2 mx-auto mb-8">
+        <Block>
 
             <div className="relative">
 
@@ -95,18 +97,13 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
                 </div>
             </div>
 
-
             <div className="flex flex-col gap-3 px-6 py-4">
                 <motion.p className="whitespace-pre-line text-gray-100 overflow-hidden transition-all"
-                // animate={{ maxHeight: isExpanded ? "100%" : "8rem" }} // Анимация раскрытия
-                // initial={false}
                 >
                     {!isExpanded && content.length > MAX_TEXT_LENGTH
                         ? `${content.substring(0, MAX_TEXT_LENGTH).trim()}...`
                         : content}
                 </motion.p>
-
-
 
                 {content.length > MAX_TEXT_LENGTH && (
                     <button
@@ -116,19 +113,6 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
                         {isExpanded ? "Скрыть" : "Открыть подробнее"}
                     </button>
                 )}
-
-
-
-
-
-                {/* <NavLink
-                    to={`/category/${categoryId}`}
-                    className="inline-block text-blue-400 hover:text-blue-600 mt-4"
-                >
-                    Перейти к категории
-                </NavLink> */}
-
-
             </div>
 
             {updateDataOpen ? (
@@ -166,8 +150,6 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
 
                     </form>
 
-
-
                     <Modal title="Удаление поста"
                         content="Вы действительно хотите его удалить?"
                         buttonColor="red"
@@ -176,12 +158,8 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
                         buttonFC={handleDelete}
                     />
                 </>
-            ) : <Button text="Редактировать" FC={handleUpdateDataOpen} />}
+            ) : <Button text="" icon={<PencilIcon/>} FC={handleUpdateDataOpen} className="absolute top-0 right-0"/>}
 
-
-
-
-
-        </div >
+        </Block >
     );
 };

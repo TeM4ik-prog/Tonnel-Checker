@@ -19,6 +19,7 @@ import { setCategories } from './store/categories/categories.slice';
 import { InterviewsPage } from './pages/InterviewsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { Section } from './components/ui/Section';
+import { LoveGymnPage } from './pages/LoveGymnPage';
 
 
 function App() {
@@ -68,7 +69,7 @@ function App() {
 
 
   
-            <main className='p-2'>
+            <main className='p-2 h-full'>
 
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
@@ -81,6 +82,8 @@ function App() {
               <Route path={RoutesConfig.INTERVIEWS.path} element={<InterviewsPage />} />
 
               <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
+
+              <Route path={RoutesConfig.LOVE_GYMN.path} element={<LoveGymnPage />} />
 
 
 
