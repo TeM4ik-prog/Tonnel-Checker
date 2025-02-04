@@ -108,13 +108,15 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
 
 
 
+                {content.length > MAX_TEXT_LENGTH && (
+                    <button
+                        onClick={toggleExpand}
+                        className="flex relative left-0 text-blue-400 hover:text-blue-600 transition-colors"
+                    >
+                        {isExpanded ? "Скрыть" : "Открыть подробнее"}
+                    </button>
+                )}
 
-                <button
-                    onClick={toggleExpand}
-                    className="flex relative left-0 text-blue-400 hover:text-blue-600 transition-colors"
-                >
-                    {isExpanded ? "Скрыть" : "Открыть подробнее"}
-                </button>
 
 
 
