@@ -31,8 +31,8 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     LITERARY_IDEAL: {
         path: '/literary-ideal',
-        label: 'Лит.-ист. идеал',
-        shortLabel: 'Литература',
+        label: 'Литературно-исторический диалог',
+        shortLabel: 'Диалог',
         showInHeader: true,
         icon: PenIcon
     },
@@ -71,7 +71,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     FLAGSHIP: {
         path: '/flagship',
-        label: 'Знамёнка',
+        label: 'Знамённая группа',
         shortLabel: 'Знамёнка',
         showInHeader: true,
         icon: FlagIcon
@@ -104,7 +104,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     MUSEUM: {
         path: '/museum',
-        label: 'Музей',
+        label: 'Музей "Нашчадкi Ф.Скорины"',
         shortLabel: 'музей',
         showInHeader: true,
         icon: LandmarkIcon

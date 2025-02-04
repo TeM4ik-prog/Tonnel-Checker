@@ -10,9 +10,11 @@ interface Props {
   buttonCloseText: string;
   buttonColor: 'red' | 'blue';
 
+  children?: React.ReactNode;
+
 }
 
-export const Modal = ({ title, buttonOpenText, buttonCloseText, buttonColor, content, buttonFC }: Props) => {
+export const Modal = ({ title, buttonOpenText, buttonCloseText, buttonColor, content, children, buttonFC }: Props) => {
   let [isOpen, setIsOpen] = useState(false)
 
   function open() {
@@ -45,6 +47,10 @@ export const Modal = ({ title, buttonOpenText, buttonCloseText, buttonColor, con
               <p className="mt-2 text-1xl text-white/50">
                 {content}
               </p>
+
+              {children}
+
+              
               <div className="mt-4">
                 <Button text={buttonCloseText} color={buttonColor}
                   FC={() => {

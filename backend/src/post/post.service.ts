@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DatabaseService } from '@/database/database.service';
 import { CategoryService } from '@/category/category.service';
+import { updatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
@@ -17,7 +18,7 @@ export class PostService {
       throw new NotFoundException('Category not found');
     }
 
-    const {content, title, date} = data.createPostDto
+    const { content, title, date } = data.createPostDto
 
 
 
@@ -41,7 +42,7 @@ export class PostService {
     return await this.dbService.post.findMany({
       where: {
         categoryId: category.id,
-        
+
       },
     })
   }
@@ -50,8 +51,15 @@ export class PostService {
     return `This action returns a #${id} post`;
   }
 
-  update(id: number, updatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: string, updatePostDto: updatePostDto) {
+    console.log(id, updatePostDto)
+
+    await this.dbService.post.update({
+      where: {
+        id,
+      },
+      data: updatePostDto
+    })
   }
 
   async delete(id: string) {

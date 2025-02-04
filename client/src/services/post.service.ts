@@ -21,6 +21,11 @@ export class postService implements ApiRoute {
         return data
     }
 
+    async updatePost(postId: string, postData: any) {
+        const { data } = await this.instance.patch(`/${postId}`, postData)
+        return data
+    }
+
 
     async deletePost(id: string) {
         const { data } = await this.instance.delete(`/${id}`)

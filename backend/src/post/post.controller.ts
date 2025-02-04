@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { updatePostDto } from './dto/update-post.dto';
 
 
 @Controller('post')
@@ -33,8 +34,8 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  update(@Param('id') id: string, @Body() updatePostDto: updatePostDto) {
+    return this.postService.update(id, updatePostDto);
   }
 
   @Delete(':id')
