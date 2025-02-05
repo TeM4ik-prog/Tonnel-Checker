@@ -26,21 +26,43 @@ export class CommentService {
 
   async findAll() {
     return await this.dbService.comment.findMany({
-      orderBy:{
+      orderBy: {
         createdAt: 'desc'
       }
     })
   }
 
+  async findAllMy(userId: string) {
+    return await this.dbService.comment.findMany({
+      // where: {
+        
+      // },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+  }
+
+
+
   async findOne(id: string) {
     return `This action returns a #${id} comment`;
   }
 
-  async update(id: string, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async update(id: string, updateReviewDto: UpdateCommentDto) {
+    console.log(id, updateReviewDto)
+
+    return await this.dbService.comment.update({
+      where: {
+        id,
+      },
+      data: updateReviewDto,
+    })
   }
 
   async remove(id: string) {
-    return `This action removes a #${id} comment`;
+    return await this.dbService.comment.delete({
+      where: { id },
+    })
   }
 }

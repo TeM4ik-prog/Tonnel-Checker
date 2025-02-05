@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Header, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Header, Res, UseGuards } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -7,8 +7,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import { Response } from 'express';
 import * as path from 'path';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @Controller('comment')
+@UseGuards(JwtAuthGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) { }
 
@@ -48,8 +50,8 @@ export class CommentController {
   @Post()
   @UseInterceptors(FileInterceptor('sourceFile'))
   async createReview(
-    @Body() body: { text: string },    
-    @UploadedFile() sourceFile,  
+    @Body() body: { text: string },
+    @UploadedFile() sourceFile,
   ) {
 
     console.log(sourceFile)
@@ -57,6 +59,11 @@ export class CommentController {
 
     return this.commentService.create(body.text, `${(sourceFile.destination).slice(1)}/${sourceFile.filename}`)
 
+  }
+
+  @Get('my')
+  findAllMy() {
+    return this.commentService.findAllMy()
   }
 
   @Get()
@@ -70,12 +77,13 @@ export class CommentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(id, updateCommentDto);
+  updateReview(@Param('id') id: string, @Body() UpdateReviewDto: UpdateCommentDto) {
+    return this.commentService.update(id, UpdateReviewDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    console.log('delete')
     return this.commentService.remove(id);
   }
 }

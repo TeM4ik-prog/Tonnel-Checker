@@ -33,12 +33,19 @@ export class ReviewService {
     return `This action returns a #${id} review`;
   }
 
-  update(id: number, updateReviewDto: UpdateReviewDto) {
-    return `This action updates a #${id} review`;
+  async update(id: string, updateReviewDto: UpdateReviewDto) {
+    console.log(id, updateReviewDto)
+
+    return await this.dbService.review.update({
+      where: {
+        id,
+      },
+      data: updateReviewDto,
+    })
   }
 
   async delete(id: string) {
-    return await this.dbService.review.delete({
+    return await this.dbService.comment.delete({
       where: { id },
     })
   }

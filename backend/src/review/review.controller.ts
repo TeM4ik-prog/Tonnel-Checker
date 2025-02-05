@@ -50,9 +50,7 @@ export class ReviewController {
     @Body() body: { text: string },   
     @UploadedFile() videoFile, 
   ) {
-
     return this.reviewService.create(body.text, `/uploads/videos/${videoFile.filename}`)
-
   }
 
   @Get()
@@ -65,6 +63,10 @@ export class ReviewController {
     return this.reviewService.findOne(+id);
   }
 
+  @Patch(':id')
+  updateReview(@Param('id') id: string, @Body() UpdateReviewDto: UpdateReviewDto) {
+    return this.reviewService.update(id, UpdateReviewDto);
+  }
 
   @Delete(':id')
   delete(@Param('id') id: string) {
