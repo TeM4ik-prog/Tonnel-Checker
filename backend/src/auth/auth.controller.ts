@@ -25,7 +25,7 @@ import {
 } from './dto/entry-dto';
 import { LocalAuthGuard } from './guards/local-auth-guard';
 import { EmailService } from '@/email/email.service';
-import { RolesClass } from '@/types/types';
+import { IBasicUser, RolesClass } from '@/types/types';
 
 interface IAuthController {
 	// TODO Change Interfaces abd args
@@ -108,14 +108,8 @@ export class EmailAuthController
 		}
 
 
-		await this.emailService.createVerificationCode(
-			user.id,
-			verificationCode,
-		);
-		await this.emailService.sendVerificationCode(
-			user.email,
-			verificationCode,
-		);
+		await this.emailService.createVerificationCode(user.id, verificationCode);
+		await this.emailService.sendVerificationCode(user.email,verificationCode);
 		return {
 			message:
 				'User registered successfully. Please check your email for the verification code',
@@ -149,23 +143,16 @@ export class EmailAuthController
 		},
 	) {
 		console.log(body);
-		const result =
-			await this.emailService.verifyCode(
-				body.userId,
-				body.code,
-			);
-		if (!result)
-			throw new BadRequestException(
-				'Invalid or expired verification code',
-			);
-		const validUser =
-			await this.usersService.findUserById(
-				body.userId,
-			);
+		const result = await this.emailService.verifyCode(
+			body.userId,
+			body.code,
+		)
+		if (!result) throw new BadRequestException('Invalid or expired verification code');
+		const validUser = await this.usersService.findEmailUserByIdAndReturnBase(body.userId)
 
-		return await this.authService.login(
-			validUser,
-		);
+		console.log(validUser)
+
+		return await this.authService.login(validUser);
 	}
 
 	// @Patch('changePassword')

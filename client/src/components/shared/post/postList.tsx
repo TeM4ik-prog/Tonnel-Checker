@@ -19,7 +19,7 @@ export const PostsList = ({ posts }: Props) => {
 
 
     return (
-        <div className="flex flex-col w-full gap-3 justify-center items-center">
+        <div className="flex flex-col w-full gap-4 justify-center items-center md:w-2/3 lg:w-1/2">
 
 
             {

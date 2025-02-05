@@ -20,6 +20,7 @@ import { InterviewsPage } from './pages/InterviewsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { Section } from './components/ui/Section';
 import { LoveGymnPage } from './pages/LoveGymnPage';
+import { ContactPage } from './pages/ContactPage';
 
 
 function App() {
@@ -84,6 +85,8 @@ function App() {
               <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
 
               <Route path={RoutesConfig.LOVE_GYMN.path} element={<LoveGymnPage />} />
+
+              <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} />
 
 
 

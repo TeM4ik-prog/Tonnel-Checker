@@ -28,6 +28,8 @@ model UserBase {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  Comments Comment[]
+
   EmailUser    EmailUser?
   TelegramUser TelegramUser?
   GoogleUser   GoogleUser?
@@ -96,8 +98,8 @@ model Category {
 }
 
 model Review {
-  id      String @id @default(uuid())
-  content String
+  id        String @id @default(uuid())
+  content   String
   sourceUrl String
 
   createdAt DateTime @default(now())
@@ -105,10 +107,12 @@ model Review {
 }
 
 model Comment {
-  id      String @id @default(uuid())
-  content String
+  id        String @id @default(uuid())
+  content   String
   sourceUrl String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  UserBase   UserBase? @relation(fields: [userBaseId], references: [id])
+  userBaseId String?
 }

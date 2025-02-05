@@ -3,14 +3,14 @@ import { Modal } from "@/components/ui/Dialog";
 import { PostService } from "@/services/post.service";
 import { onRequest } from "@/types";
 import { addDays, format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import { Input } from "@/components/ui/Input";
 import { Block } from "@/components/layout/Block";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, SaveIcon, XIcon } from "lucide-react";
 
 
 export interface PostProps {
@@ -23,11 +23,13 @@ export interface PostProps {
 }
 
 export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostProps) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggleExpand = () => setIsExpanded((prev) => !prev);
-
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
+    const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
     const handleUpdateDataOpen = () => setUpdateDataOpen((prev) => !prev);
+    const toggleExpand = () => setIsExpanded((prev) => !prev);
+    const toggleFullscreen = () => setIsFullscreen((prev) => !prev);
 
     const MAX_TEXT_LENGTH = 300;
     const formattedDate: string = date ? format(addDays(new Date(date), 1), "dd MMMM yyyy") : '';
@@ -80,16 +82,36 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
     };
 
 
+    useEffect(() => {
+        if (isFullscreen) {
+            document.documentElement.style.overflow = "hidden";
+        } else {
+            document.documentElement.style.overflow = "auto";
+        }
+    }, [isFullscreen]);
+
+
     return (
         <Block>
 
+            {isFullscreen && (
+                <div
+                    className="fixed inset-0 p-4 bg-black bg-opacity-90 flex justify-center items-center z-50"
+                    onClick={toggleFullscreen}>
+                    <img
+                        src={imageUrl || "/uploads/default-image.jpg"}
+                        alt="Fullscreen Post"
+                        className="max-w-full max-h-full shadow-lg"
+                    />
+                </div>
+            )}
+
             <div className="relative">
-
-
                 <img
                     src={imageUrl || "/uploads/default-image.jpg"}
                     alt="Post Image"
-                    className="object-contain w-full h-72 md:h-80 lg:h-96"
+                    className="object-contain w-full h-72 md:h-80 lg:h-96 cursor-pointer"
+                    onClick={toggleFullscreen}
                 />
                 <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent p-4 w-full">
                     <h2 className="text-3xl font-semibold text-white">{title}</h2>
@@ -98,7 +120,7 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
             </div>
 
             <div className="flex flex-col gap-3 px-6 py-4">
-                <motion.p className="whitespace-pre-line text-gray-100 overflow-hidden transition-all"
+                <motion.p className="whitespace-pre-line lg:text-xl text-lg text-gray-100 overflow-hidden transition-all"
                 >
                     {!isExpanded && content.length > MAX_TEXT_LENGTH
                         ? `${content.substring(0, MAX_TEXT_LENGTH).trim()}...`
@@ -115,16 +137,16 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
                 )}
             </div>
 
+
+
             {updateDataOpen ? (
-                <>
-                    <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-1 w-full">
+                <Block lighter={true}>
+                    <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-y-2 w-full">
                         <Input
                             name="title"
                             placeholder="Заголовок"
                             value={formData.title}
                             onChange={handleChange}
-
-
                         />
 
                         <DatePicker
@@ -141,24 +163,29 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
                             placeholder="Текст"
                             value={formData.content}
                             onChange={handleChange}
-                            rows={4}
-                            className="w-full max-h-96 p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                            rows={14}
+
+                            className="w-full min-h-max p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                         />
 
-                        <Button formSubmit={true} text="Сохранить" />
+                        <div className="flex flex-row gap-5">
+                            <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
 
+                            <Modal title="Удаление поста"
+                                content="Вы действительно хотите удалить пост?"
+                                buttonColor="red"
+                                buttonCloseText="Удалить"
+                                buttonOpenText="Удалить"
+                                buttonFC={handleDelete}
+                            />
 
+                            <Button icon={<XIcon />} FC={handleUpdateDataOpen} text="Закрыть" />
+                        </div>
                     </form>
-
-                    <Modal title="Удаление поста"
-                        content="Вы действительно хотите его удалить?"
-                        buttonColor="red"
-                        buttonCloseText="Удалить"
-                        buttonOpenText="Удалить"
-                        buttonFC={handleDelete}
-                    />
-                </>
-            ) : <Button text="" icon={<PencilIcon/>} FC={handleUpdateDataOpen} className="absolute top-0 right-0"/>}
+                </Block>
+            ) : (
+                <Button text="" icon={<PencilIcon />} FC={handleUpdateDataOpen} className="absolute top-0 right-0" />
+            )}
 
         </Block >
     );

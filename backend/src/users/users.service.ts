@@ -22,9 +22,9 @@ export class UsersService {
     this.googleUsersDb = dbService.googleUser;
   }
 
-  async findUserById(id: string) {
+  async findUserById(userBaseId: string) {
     const user = await this.userBaseDb.findUnique({
-      where: { id },
+      where: { id: userBaseId },
       include: {
         EmailUser: true,
         TelegramUser: true,
@@ -35,7 +35,22 @@ export class UsersService {
     return user;
   }
 
-  async switchBanUser(userId: string) {}
+  async findEmailUserByIdAndReturnBase(emailUserId: string) {
+    const user = await this.emailUsersDb.findUnique({
+      where: { id: emailUserId },
+      select:{
+
+        userBaseId: true,
+        id: true,
+      }
+    })
+
+    return await this.userBaseDb.findUnique({
+      where: { id: user.userBaseId },
+    })
+  }
+
+  async switchBanUser(userId: string) { }
 
   async findAll(query: usersSearchDto) {
     let { page = '1', limit = '15' } = query;
@@ -97,36 +112,18 @@ export class UsersService {
     };
   }
 
-  // async generateUsers(count: number) {
-  //   const users = [];
-  //   for (let i = 0; i < count; i++) {
-  //     const user = {
-  //       employeeID: `emp${i + 1}`,
-  //       phone: `+123456789${i}`,
-  //       email: `user${i + 1}@example.com`,
-  //       name: `User ${i + 1}`,
-  //       password: await argon2.hash(`password${i + 1}`),
-  //       organizationId: null,
-  //     };
 
-  //     users.push(user)
-  //   }
+  async changeName(newName: string, userId: string){
+    const user = await this.findUserById(userId)
 
-  //   for (const user of users) {
-  //     try {
-  //       await this.createFakeUser(user);
-  //     } catch (error) {
-  //       console.error(`Error creating user`);
-  //       console.log(error)
-  //     }
-  //   }
-  // }
+    if(!user) throw new BadRequestException('User not found');
 
-  // async createFakeUser(users: []) {
-  //   await this.databaseService.user.createMany({
-  //     data: users,
-  //   })
-  // }
+    return await this.dbService.userBase.update({
+      where: { id: userId },
+      data: { name: newName },
+    })
+
+  }
 }
 
 @Injectable()

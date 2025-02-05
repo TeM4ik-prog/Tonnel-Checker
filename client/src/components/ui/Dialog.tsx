@@ -4,7 +4,7 @@ import { Button } from './Button';
 
 interface Props {
   title: string;
-  buttonFC: () => void;
+  buttonFC: any;
   content: string;
   buttonOpenText: string;
   buttonCloseText: string;

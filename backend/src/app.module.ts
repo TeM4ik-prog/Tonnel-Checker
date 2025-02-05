@@ -75,7 +75,7 @@ export class AppModule {
 
 
     // полная очистка базы данных
-    await this.cleanDatabase();
+    // await this.cleanDatabase();
   }
 
   async cleanDatabase() {

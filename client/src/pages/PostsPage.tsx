@@ -48,7 +48,7 @@ export const PostsPage = () => {
 
 
     return (
-        <Section className="!justify-start" hightCheck={!Array.isArray(posts) || posts.length == 0}>
+         <Section className="!justify-start" hightCheck={!Array.isArray(posts) || posts.length == 0}>
             <PageContainer title={route?.label}>
                 {isLoading && <Loader />}
                 {!isLoading && <PostsList posts={posts} />}

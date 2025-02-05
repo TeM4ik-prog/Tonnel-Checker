@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Header, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Header, Res, UseGuards, Req } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -8,11 +8,18 @@ import * as fs from 'fs';
 import { Response } from 'express';
 import * as path from 'path';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { UserId } from '@/userid.decorator';
 
 @Controller('comment')
-@UseGuards(JwtAuthGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) { }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/me')
+  findAllMy(@UserId() userId: string) {
+    console.log(userId)
+    return this.commentService.findAllMy(userId)
+  }
 
   @Get(':filename')
   @Header('Content-Type', 'video/mp4')
@@ -47,24 +54,39 @@ export class CommentController {
     }
   }
 
+  @Delete('me/:id')
+  @UseGuards(JwtAuthGuard)
+  deleteMyComment(@Param('id') id: string, @UserId() userId: string) {
+    console.log(id, userId)
+    return this.commentService.removeUserComment(id, userId)
+  }
+  @Patch('me/:id')
+  @UseGuards(JwtAuthGuard)
+  updateMyComment(@Param('id') id: string, @Body() updateReviewDto: UpdateCommentDto, @UserId() userId: string) {
+    console.log('patch', id, userId)
+    return this.commentService.updateUserComment(id, updateReviewDto, userId)
+
+  }
+
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('sourceFile'))
   async createReview(
     @Body() body: { text: string },
     @UploadedFile() sourceFile,
+    @UserId() userId: string
   ) {
 
+    console.log(body)
     console.log(sourceFile)
     console.log((sourceFile.destination).slice(1))
+    console.log(userId)
 
-    return this.commentService.create(body.text, `${(sourceFile.destination).slice(1)}/${sourceFile.filename}`)
+    return this.commentService.create(body.text, `${(sourceFile.destination).slice(1)}/${sourceFile.filename}`, userId)
 
   }
 
-  @Get('my')
-  findAllMy() {
-    return this.commentService.findAllMy()
-  }
+
 
   @Get()
   findAll() {
@@ -77,11 +99,13 @@ export class CommentController {
   }
 
   @Patch(':id')
-  updateReview(@Param('id') id: string, @Body() UpdateReviewDto: UpdateCommentDto) {
-    return this.commentService.update(id, UpdateReviewDto);
+  @UseGuards(JwtAuthGuard)
+  updateReview(@Param('id') id: string, @Body() updateReviewDto: UpdateCommentDto) {
+    return this.commentService.update(id, updateReviewDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     console.log('delete')
     return this.commentService.remove(id);

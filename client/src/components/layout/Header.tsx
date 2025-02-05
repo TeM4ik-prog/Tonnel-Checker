@@ -37,8 +37,8 @@ export const Header: React.FC = () => {
                             to={!hasSubRoutes ? RoutesConfig.POSTS.path + path : '#'}
                             className="relative flex flex-col w-auto"
                             onMouseEnter={() => handleMouseEnter(key)}
-                            onMouseLeave={handleMouseLeave}
-                        >
+                            onMouseLeave={handleMouseLeave}>
+                                
                             <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0">
                                 {label}
                             </span>
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
 
                 <div className="flex items-center z-10 h-full">
                     <Link to={RoutesConfig.HOME.path}>
-                        <img className="min-w-20" src="/logo_green.svg" alt="Logo" />
+                        <img className="w-32" src="/logo_green.svg" alt="Logo" />
                     </Link>
                 </div>
 

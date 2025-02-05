@@ -4,6 +4,10 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { ReviewList } from "@/components/shared/review/reviewList";
 import { CommentService } from "@/services/comment.service";
 import { IReview } from "@/components/shared/review/review";
+import { returnObjectFromForm } from "@/utils";
+import { ReviewService } from "@/services/review.service";
+import { toast } from "react-toastify";
+import { useUserData } from "@/store/hooks";
 
 
 const interviews = [
@@ -35,12 +39,36 @@ const interviews = [
 export const LoveGymnPage: React.FC = () => {
     const [comments, setComments] = useState<IReview[]>([])
 
+    const { user } = useUserData()
+
     const getAllComments = async () => {
-        const data = await onRequest(CommentService.getComments())
+        console.log(user?.id)
+        const data: IReview[] = await onRequest(CommentService.getComments())
         console.log(data)
         if (data) {
             setComments(data)
         }
+    }
+
+    const handleCommentUpdate = async (id: string, e: React.FormEvent) => {
+        e.preventDefault()
+
+        const formObject = returnObjectFromForm(e)
+
+        const data = await onRequest(CommentService.updateComment(id, formObject))
+
+        console.log("Ответ от сервера:", data);
+
+        toast.success(`Post updated successfully`)
+        window.location.reload()
+
+        console.log(data);
+    };
+
+    const handleCommentDelete = async (id: string) => {
+        console.log(id)
+        await onRequest(CommentService.deleteComment(id))
+        window.location.reload();
     }
 
     useEffect(() => {
@@ -49,8 +77,8 @@ export const LoveGymnPage: React.FC = () => {
 
     return (
         <>
-            <PageContainer title="Люблю свою гимназию">                
-                    <ReviewList reviews={comments} />
+            <PageContainer title="Люблю свою гимназию">
+                <ReviewList  reviews={comments} handleUpdate={handleCommentUpdate} handleDelete={handleCommentDelete} />
             </PageContainer>
         </>
     );

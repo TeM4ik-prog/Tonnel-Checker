@@ -1,5 +1,6 @@
 import { handleError } from "@/utils/handleError";
 import { AxiosInstance } from "axios";
+import { toast } from "react-toastify";
 
 export const TelegramBot: string = "TgVerifyApp_bot"
 
@@ -15,14 +16,14 @@ export interface IUser {
     } | null
 
     TelegramUser: {
-        authDate: string; 
+        authDate: string;
         firstName: string;
         photoUrl: string;
-        telegramId: string; 
+        telegramId: string;
         username: string;
     } | null
 
-    GoogleUser?:{
+    GoogleUser?: {
         id: string;
         email: string;
         name: string;
@@ -40,7 +41,7 @@ export type userIdParam = number | string
 export enum UserRole {
     Admin = 'admin',
     User = 'user',
-    SuperAdmin ='superAdmin',
+    SuperAdmin = 'superAdmin',
 }
 
 
@@ -69,6 +70,13 @@ export interface Category {
 
 
 
+export interface IReviewUpdate {
+    content: string
+
+}
+
+
+
 
 
 
@@ -77,7 +85,9 @@ export async function onRequest<T>(request: Promise<T>): Promise<T | null> {
         return await request;
     } catch (err) {
         handleError(err);
-        return null;
+        const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка';
+        toast.error(errorMessage);
+        return null
     }
 }
 

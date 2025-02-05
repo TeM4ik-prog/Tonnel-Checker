@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon } from "lucide-react";
 
 export interface Route {
     path: string;
@@ -57,7 +57,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/centre',
         label: 'Медиацентр',
         shortLabel: 'Медиа',
-        showInHeader: true,
+        showInHeader: false,
         icon: BuildingIcon
     },
 
@@ -98,7 +98,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/post-1',
         label: 'Пост №1',
         shortLabel: 'Пост №1',
-        showInHeader: true,
+        showInHeader: false,
         icon: PodcastIcon
     },
 
@@ -106,7 +106,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/museum',
         label: 'Музей "Нашчадкi Ф.Скорины"',
         shortLabel: 'музей',
-        showInHeader: true,
+        showInHeader: false,
         icon: LandmarkIcon
     },
 
@@ -114,7 +114,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/gymn-improving',
         label: 'Благоустраиваем гимназию',
         shortLabel: 'Благоустройство',
-        showInHeader: true,
+        showInHeader: false,
         icon: SproutIcon
 
     },
@@ -125,12 +125,21 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     INTERVIEWS: { path: '/interviews', label: 'Интервью учащихся', icon: StarIcon, showInHeader: false },
 
-    LOVE_GYMN:{
+    LOVE_GYMN: {
         path: '/love-gymn',
         label: 'Люблю свою Гимназию',
         shortLabel: 'Люблю свою Гимназию',
         showInHeader: false,
         icon: HeartIcon,
+
+    },
+
+    CONTACTS: {
+        path: '/contacts',
+        label: 'Контакты',
+        shortLabel: 'Контакты',
+        showInHeader: false,
+        icon: Contact2Icon,
 
     },
 
@@ -167,7 +176,7 @@ export const POSTS_PATHS = [
     'THEATRE',
     'POST_1',
     'MUSEUM',
-    'GYMN_IMPROVING'
+    'GYMN_IMPROVING',
 
 
 ] as const
@@ -214,7 +223,7 @@ class ApiConfig {
             login: 'login'
         }
     }
-    
+
     admin = {
         baseInstance: createAxiosInstance('admin/'),
         users: {
@@ -233,11 +242,19 @@ class ApiConfig {
     }
 
     review = {
-        baseInstance: createAxiosInstance('review/'),        
+        baseInstance: createAxiosInstance('review/'),
     }
 
     comment = {
         baseInstance: createAxiosInstance('comment/'),
+
+        myComments: 'me'
+    }
+
+    users = {
+        baseInstance: createAxiosInstance('users/'),
+
+        
     }
 
 }

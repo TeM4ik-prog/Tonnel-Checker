@@ -13,7 +13,7 @@ export const PageContainer = ({ title, children }: Props) => {
 
         <motion.section
             key={title}
-            className="flex flex-col gap-5 justify-center items-center"
+            className="flex flex-col min-h-screen w-full gap-5 justify-start items-center"
 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

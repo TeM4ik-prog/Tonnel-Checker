@@ -5,7 +5,7 @@ import { Select } from "@/components/ui/Select";
 import { PostService } from "@/services/post.service";
 import { useCategories } from "@/store/hooks";
 import { onRequest } from "@/types";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -28,6 +28,8 @@ export const CreatePostsPage = () => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
+    
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFormData((prev) => ({ ...prev, categoryName: e.target.value }));
@@ -62,6 +64,8 @@ export const CreatePostsPage = () => {
         const data = await onRequest(PostService.createPost(formDataSubmit));
         console.log(data);
     };
+
+    
 
 
     // __________________________

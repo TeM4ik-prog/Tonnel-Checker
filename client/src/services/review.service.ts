@@ -15,15 +15,20 @@ export class reviewService implements ApiRoute {
         const { data } = await this.instance.get('')
         return data
     }
- 
+
 
     async postReview(reviewData: any) {
         const { data } = await this.instance.post('', reviewData)
         return data
     }
 
+    async updateReview(reviewId: string, formData: any) {
+        const { data } = await this.instance.patch(`/${reviewId}`, formData)
+        return data
+    }
+
     async deleteReview(id: string) {
-        const { data } = await this.instance.delete(id)
+        const { data } = await this.instance.delete(`/${id}`)
         return data
     }
 }

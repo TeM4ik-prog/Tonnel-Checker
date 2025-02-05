@@ -6,9 +6,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { transliterate } from 'transliteration';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [DatabaseModule,
+    UsersModule,
 
     MulterModule.register({
       storage: diskStorage({
