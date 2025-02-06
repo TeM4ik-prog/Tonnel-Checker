@@ -1,3 +1,5 @@
+https://mygymnasium1-by.ru/
+
 # 🎓 Gymnasium Site  
 
 ## 🛠 Технологии  
