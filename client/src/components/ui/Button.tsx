@@ -34,7 +34,7 @@ export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, class
     const renderButton = () => {
         return (
             <button
-                onClick={FC} className={`${buttonColor} ${buttonWidth} ${className} flex flex-row items-center text-nowrap transition font-bold text-white gap-1  py-2 px-4 rounded`}
+                onClick={FC} className={`${buttonColor} ${buttonWidth} ${className} flex flex-row items-center text-nowrap transition font-bold text-white gap-3 py-2 px-4 rounded`}
                 disabled={disabled}
             >
                 {icon}

@@ -6,7 +6,7 @@ import { ReviewService } from "@/services/review.service";
 import { useUserData } from "@/store/hooks";
 import { IReviewUpdate, IUser, onRequest, UserRole } from "@/types";
 import { returnObjectFromForm } from "@/utils";
-import { PencilIcon, SaveIcon, XIcon } from "lucide-react";
+import { PencilIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -18,39 +18,26 @@ export interface IReview {
     createdAt: string;
 
     UserBase: IUser;
-    profileElem: boolean
+    profileElem: boolean;
+    canEdit: boolean;
 
     handleUpdate: (id: string, e: React.FormEvent) => Promise<void>;
     handleDelete: (reviewId: string) => Promise<void>;
 }
 
 
-export const Review = ({ id, content, sourceUrl, handleUpdate, handleDelete, profileElem, UserBase, createdAt }: IReview) => {
+export const Review = ({ id, content, sourceUrl, handleUpdate, handleDelete, profileElem, UserBase, canEdit = false, createdAt }: IReview) => {
     const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
     const handleUpdateDataOpen = () => setUpdateDataOpen((prev) => !prev);
 
     const isVideo = sourceUrl.endsWith(".mp4") || sourceUrl.endsWith(".webm");
     const { user } = useUserData()
 
-    console.log(profileElem)
-
-    // let isEditable = false
-
     if (UserBase) {
         if (!profileElem && UserBase?.id == user?.id) {
             return
         }
     }
-
-
-
-
-
-
-
-
-
-
 
     const [formData, setFormData] = useState<IReviewUpdate>({
         content: content
@@ -62,12 +49,10 @@ export const Review = ({ id, content, sourceUrl, handleUpdate, handleDelete, pro
     };
 
 
-
     return (
 
         <Block className="p-4 flex flex-col gap-3" >
             <p className="whitespace-pre-line text-white ">{UserBase?.name || ''}</p>
-
 
             <div className="relative rounded overflow-hidden">
                 {isVideo ? (
@@ -90,45 +75,39 @@ export const Review = ({ id, content, sourceUrl, handleUpdate, handleDelete, pro
                 </div>
             </div>
 
-
-
             <p className="whitespace-pre-line text-white ">{content}</p>
 
-
-            {updateDataOpen ? (
-                <Block lighter={true}>
-                    <form onSubmit={(e) => { handleUpdate(id, e), handleUpdateDataOpen() }} className="flex flex-col gap-y-2 w-full">
-                        <Input
-                            name="content"
-                            placeholder="Заголовок"
-                            value={formData.content}
-                            onChange={handleChange}
-                        />
-
-                        <div className="flex flex-row gap-5">
-                            <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
-
-
-                            <Modal title="Удаление поста"
-                                content="Выдействительно хотите его удалить?"
-                                buttonColor="red"
-                                buttonCloseText="Удалить"
-                                buttonOpenText="Удалить"
-                                buttonFC={() => { handleDelete(id), handleUpdateDataOpen() }}
-                            />
-
-                            <Button icon={<XIcon />} FC={handleUpdateDataOpen} text="Закрыть" />
-
-                        </div>
-
-                    </form>
-                </Block>
-            ) : (
+            {canEdit && (
                 <>
-                    {/* {!isEditable && ( */}
-                    <Button text="" icon={<PencilIcon />} FC={handleUpdateDataOpen} className="absolute top-0 right-0" />
+                    {updateDataOpen ? (
+                        <Block lighter={true}>
+                            <form onSubmit={(e) => { handleUpdate(id, e), handleUpdateDataOpen() }} className="flex flex-col gap-y-2 w-full">
+                                <Input
+                                    name="content"
+                                    placeholder="Заголовок"
+                                    value={formData.content}
+                                    onChange={handleChange}
+                                />
 
-                    {/* )} */}
+                                <div className="flex flex-row gap-5">
+                                    <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
+
+                                    <Modal title="Удаление поста"
+                                        content="Выдействительно хотите его удалить?"
+                                        buttonColor="red"
+                                        buttonCloseText="Удалить"
+                                        buttonOpenText="Удалить"
+                                        buttonFC={() => { handleDelete(id), handleUpdateDataOpen() }}
+                                        icon={<Trash2Icon />}
+                                    />
+
+                                    <Button icon={<XIcon />} FC={handleUpdateDataOpen} text="Закрыть" />
+                                </div>
+                            </form>
+                        </Block>
+                    ) : (
+                        <Button text="" icon={<PencilIcon />} FC={handleUpdateDataOpen} className="absolute top-0 right-0" />
+                    )}
                 </>
             )}
 

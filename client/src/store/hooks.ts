@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { RootState } from './store';
 import { UserState } from '@/types/states';
-import { Category } from '@/types';
+import { Category, UserRole } from '@/types';
 import { Route, RouteKey, RoutesConfig } from '@/types/pagesConfig';
 
 

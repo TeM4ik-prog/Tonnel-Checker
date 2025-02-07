@@ -13,7 +13,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { EntryPage } from './pages/EntryPage';
 import { PostsPage } from './pages/PostsPage';
 import { CreatePostsPage } from './pages/CreatePostsPage';
-import { onRequest } from './types';
+import { onRequest, UserRole } from './types';
 import { CategoryService } from './services/category.service';
 import { setCategories } from './store/categories/categories.slice';
 import { InterviewsPage } from './pages/InterviewsPage';
@@ -21,6 +21,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { Section } from './components/ui/Section';
 import { LoveGymnPage } from './pages/LoveGymnPage';
 import { ContactPage } from './pages/ContactPage';
+import { ProtectedRoute } from './components/layout/protectedRoute';
 
 
 function App() {
@@ -69,16 +70,14 @@ function App() {
         <Suspense fallback={''}>
 
 
-  
-            <main className='p-2 h-full'>
+
+          <main className='p-2 h-full'>
 
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
 
               <Route path={`${RoutesConfig.POSTS.path}/:category`} element={<PostsPage />} />
-
-              <Route path={RoutesConfig.CREATE_POSTS.path} element={<CreatePostsPage />} />
 
               <Route path={RoutesConfig.INTERVIEWS.path} element={<InterviewsPage />} />
 
@@ -89,13 +88,18 @@ function App() {
               <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} />
 
 
+              <Route path={RoutesConfig.CREATE_POSTS.path} element={
+                <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                  <CreatePostsPage />
+                </ProtectedRoute>
+              } />
 
               <Route path='*' element={<NotFoundPage />} />
             </Routes>
 
 
-            </main>
-          
+          </main>
+
 
         </Suspense>
 

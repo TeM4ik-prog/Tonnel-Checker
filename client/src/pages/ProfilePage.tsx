@@ -4,20 +4,23 @@ import { IReview } from "@/components/shared/review/review";
 import { ReviewList } from "@/components/shared/review/reviewList";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Dialog";
+import { FileUploader } from "@/components/ui/FileUploader";
 import { Input } from "@/components/ui/Input";
 import { Section } from "@/components/ui/Section";
+import Textarea from "@/components/ui/Textarea";
 import { CommentService } from "@/services/comment.service";
 import { UserService } from "@/services/user.service";
-import { useUserData } from "@/store/hooks";
+import { useGetUserRole, useUserData } from "@/store/hooks";
 import { updateData } from "@/store/user/user.slice";
-import { IUser, onRequest } from "@/types";
+import { IUser, onRequest, UserRole } from "@/types";
 import { RoutesConfig } from "@/types/pagesConfig";
 import { returnObjectFromForm } from "@/utils";
 import { removeTokenFromLocalStorage } from "@/utils/localstorage";
-import { PencilIcon, XIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { FolderUpIcon, ImageUp, LogOutIcon, PencilIcon, Upload, XIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaTelegram, FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const ProfilePage = () => {
@@ -26,8 +29,13 @@ export const ProfilePage = () => {
     const [review, setReview] = useState("");
     const [myReviews, setMyReviews] = useState<IReview[]>([]);
 
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const toggleFormSubmit = () => setFormSubmitted((prev) => !prev)
+
     const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
     const handleUpdateDataOpen = () => setUpdateDataOpen((prev) => !prev);
+
+    const userRole = useGetUserRole()
 
     const [formData, setFormData] = useState({
         newName: '',
@@ -38,11 +46,10 @@ export const ProfilePage = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-
-
     const handleLogout = () => {
         removeTokenFromLocalStorage();
         dispatch(updateData())
+        window.location.reload()
     }
 
     const handleMyReviews = (async () => {
@@ -91,9 +98,6 @@ export const ProfilePage = () => {
         setReview(e.target.value)
     }
 
-
-
-
     const handleUserReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -103,7 +107,10 @@ export const ProfilePage = () => {
 
         if (data) {
             toast.success("Отзыв отправлен")
-            setReview("")
+            setReview('')
+
+            toggleFormSubmit()
+            
             handleMyReviews()
         }
     }
@@ -124,9 +131,10 @@ export const ProfilePage = () => {
 
 
 
+
     return (
         <PageContainer title="Профиль">
-            <div className="flex w-full flex-col gap-3 mx-auto bg-gray-900 text-white rounded-3xl shadow-xl p-5">
+            <div className="flex w-full flex-col gap-3 mx-auto lg:w-1/2 bg-gray-900 text-white rounded-3xl shadow-xl p-5">
 
                 <div className="flex flex-row justify-between">
                     <h3 className="text-xl font-semibold text-gray-200">Информация об аккаунте</h3>
@@ -139,11 +147,22 @@ export const ProfilePage = () => {
                             buttonCloseText="Выйти"
                             buttonOpenText="Выйти"
                             buttonFC={handleLogout}
+
+                            icon={<LogOutIcon />}
                         />
 
                         <Button text="" FC={handleUpdateDataOpen} icon={<PencilIcon />} />
                     </div>
                 </div>
+
+
+                {userRole == UserRole.Admin && (
+                    <Block className="flex flex-row flex-wrap justify-start p-4">
+                        <Button text="Создать пост или интервью" icon={<FolderUpIcon />} href={RoutesConfig.CREATE_POSTS.path} />
+
+                    </Block>
+                )}
+
 
                 <div className="flex items-center space-x-6">
                     <div className="flex flex-col">
@@ -227,47 +246,46 @@ export const ProfilePage = () => {
                     </ul>
                 </div>
 
-                <div className="mt-6 space-y-4">
-                    <h3 className="text-xl font-semibold text-gray-200">Оставьте отзыв</h3>
-                    <form onSubmit={handleUserReviewSubmit} className="bg-gray-800 p-3 rounded-lg shadow-md">
-                        <textarea
+
+
+
+                <div className="mt-6">
+                    <h3 className="text-xl font-semibold mb-3 text-gray-200">Оставьте отзыв</h3>
+                    <form onSubmit={handleUserReviewSubmit} className="flex flex-col gap-3 bg-gray-800 p-3 rounded-lg shadow-md">
+                        <Textarea
                             name="text"
+                            placeholder="Введите ваш отзыв..."
                             value={review}
                             onChange={handleReviewChange}
-                            placeholder="Введите ваш отзыв..."
-                            className="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
                             rows={4}
-                            required
+                            required={true}
                         />
 
-                        <div className="mb-4">
-                            <label htmlFor="video-upload" className="text-white block mb-2">
-                                Загрузить фото или видео:
-                            </label>
-                            <input
-                                name="sourceFile"
-                                id="media-upload"
-                                type="file"
-                                accept="image/*,video/*"
-                                className="text-sm text-gray-500 border border-gray-300 rounded-lg p-2 w-full"
-                            />
-                        </div>
+                        <FileUploader
+                            formSubmitted={formSubmitted}
+                            buttonText="Загрузить фото или видео"
+                            icon={<ImageUp />}
+                            imageAccept={true}
+                            videoAccept={true}
+                        />
 
-                        <div className="mt-4 flex justify-end">
-                            <Button formSubmit={true} text="Отправить" />
+
+                        <div className="flex justify-end">
+                            <Button formSubmit={true} icon={<Upload />} text="Отправить" />
                         </div>
                     </form>
                 </div>
             </div>
 
 
-            <Block lighter={true} className="flex flex-col justify-center items-center">
-                <h2 className="text-3xl font-semibold text-gray-900">Мои отзывы</h2>
-                <ReviewList profileElem={true} reviews={myReviews} handleUpdate={handleUserCommentUpdate} handleDelete={handleCommentDelete} />
 
+            {myReviews.length > 0 && (
+                <>
+                    <h2 className="text-3xl font-semibold text-gray-200">Мои отзывы</h2>
+                    <ReviewList canEditReviews={true} profileElem={true} reviews={myReviews} handleUpdate={handleUserCommentUpdate} handleDelete={handleCommentDelete} />
 
-            </Block>
-
+                </>
+            )}
 
         </PageContainer>
 

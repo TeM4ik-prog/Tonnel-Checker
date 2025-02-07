@@ -1,4 +1,4 @@
-import { MenuIcon } from "lucide-react";
+import { LogInIcon, LogOut, MenuIcon, UserCog2 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { useUserData } from "@/store/hooks";
 import { Sidebar } from "../ui/Sidebar";
@@ -38,7 +38,7 @@ export const Header: React.FC = () => {
                             className="relative flex flex-col w-auto"
                             onMouseEnter={() => handleMouseEnter(key)}
                             onMouseLeave={handleMouseLeave}>
-                                
+
                             <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0">
                                 {label}
                             </span>
@@ -87,9 +87,9 @@ export const Header: React.FC = () => {
 
                     <div className="flex flex-col gap-2 ml-auto justify-between self-center items-end h-full">
                         {!user ? (
-                            <Button text="Войти" routeKey="ENTRY" />
+                            <Button text="Войти" icon={<LogInIcon />} routeKey="ENTRY" />
                         ) : (
-                            <Button text="Профиль" routeKey="PROFILE" />
+                            <Button text="Профиль" icon={<UserCog2 />} routeKey="PROFILE" />
                         )}
 
                         <Sidebar />

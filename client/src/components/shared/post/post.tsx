@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import { Input } from "@/components/ui/Input";
 import { Block } from "@/components/layout/Block";
-import { PencilIcon, SaveIcon, XIcon } from "lucide-react";
+import { PencilIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
 
 
 export interface PostProps {
@@ -20,9 +20,10 @@ export interface PostProps {
     content: string;
     imageUrl: string;
     categoryId: string;
+    canEdit?: boolean;
 }
 
-export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostProps) => {
+export const Post = ({ id, title, date, content, imageUrl, categoryId, canEdit = false }: PostProps) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
     const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -138,53 +139,57 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId }: PostPro
             </div>
 
 
+            {canEdit && (
+                <>
+                    {updateDataOpen ? (
+                        <Block lighter={true}>
+                            <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-y-2 w-full">
+                                <Input
+                                    name="title"
+                                    placeholder="Заголовок"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                />
 
-            {updateDataOpen ? (
-                <Block lighter={true}>
-                    <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-y-2 w-full">
-                        <Input
-                            name="title"
-                            placeholder="Заголовок"
-                            value={formData.title}
-                            onChange={handleChange}
-                        />
+                                <DatePicker
+                                    name="date"
+                                    showIcon
+                                    className="w-full text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                    selected={formattedDate ? formData.date : undefined}
+                                    onChange={handleEndTimeChange}
+                                    dateFormat="yyyy/MM/dd"
+                                />
 
-                        <DatePicker
-                            name="date"
-                            showIcon
-                            className="w-full text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                            selected={formattedDate ? formData.date : undefined}
-                            onChange={handleEndTimeChange}
-                            dateFormat="yyyy/MM/dd"
-                        />
+                                <textarea
+                                    name="content"
+                                    placeholder="Текст"
+                                    value={formData.content}
+                                    onChange={handleChange}
+                                    rows={14}
 
-                        <textarea
-                            name="content"
-                            placeholder="Текст"
-                            value={formData.content}
-                            onChange={handleChange}
-                            rows={14}
+                                    className="w-full min-h-max p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                />
 
-                            className="w-full min-h-max p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                        />
+                                <div className="flex flex-row gap-5">
+                                    <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
 
-                        <div className="flex flex-row gap-5">
-                            <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
+                                    <Modal title="Удаление поста"
+                                        content="Вы действительно хотите удалить пост?"
+                                        buttonColor="red"
+                                        buttonCloseText="Удалить"
+                                        buttonOpenText="Удалить"
+                                        buttonFC={handleDelete}
+                                        icon={<Trash2Icon />}
+                                    />
 
-                            <Modal title="Удаление поста"
-                                content="Вы действительно хотите удалить пост?"
-                                buttonColor="red"
-                                buttonCloseText="Удалить"
-                                buttonOpenText="Удалить"
-                                buttonFC={handleDelete}
-                            />
-
-                            <Button icon={<XIcon />} FC={handleUpdateDataOpen} text="Закрыть" />
-                        </div>
-                    </form>
-                </Block>
-            ) : (
-                <Button text="" icon={<PencilIcon />} FC={handleUpdateDataOpen} className="absolute top-0 right-0" />
+                                    <Button icon={<XIcon />} FC={handleUpdateDataOpen} text="Закрыть" />
+                                </div>
+                            </form>
+                        </Block>
+                    ) : (
+                        <Button text="" icon={<PencilIcon />} FC={handleUpdateDataOpen} className="absolute top-0 right-0" />
+                    )}
+                </>
             )}
 
         </Block >

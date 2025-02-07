@@ -9,6 +9,7 @@ import { AuthService } from "@/services/auth.service";
 import { login, updateData } from "@/store/user/user.slice";
 import { TelegramBot } from "@/types";
 import { IGoogleAuth, ITelegramAuth } from "@/types/auth";
+import { RoutesConfig } from "@/types/pagesConfig";
 import { handleError } from "@/utils/handleError";
 import { setTokenToLocalStorage } from "@/utils/localstorage";
 import { useState } from "react";
@@ -134,8 +135,8 @@ export const EntryPage = () => {
                 setTokenToLocalStorage(responseData.token)
 
                 dispatch(updateData())
-                toast.success('You are logged in')
-                navigate('/')
+                toast.success('Вы успешно вошли!')
+                navigate(RoutesConfig.PROFILE.path)
             }
         } catch (err) {
             toast.error(handleError(err));
@@ -197,18 +198,15 @@ export const EntryPage = () => {
                         value={email}
                     />
 
-                    {/* {needToCheckPassword && (
-              <input
-                ref={passwordInputRef}
-                type='password'
-                autoComplete="true"
-                placeholder='Пароль'
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-                required
-                className="form-entry__input"
-              />
-            )} */}
+                    {needToCheckPassword && (
+                        <Input name="password"
+                            type="password"
+                            placeholder="Пароль"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+
+                    )}
 
                     {!isCodeVerified ? (
                         <>

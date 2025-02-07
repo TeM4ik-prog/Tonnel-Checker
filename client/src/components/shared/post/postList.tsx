@@ -4,9 +4,10 @@ import { Section } from "@/components/ui/Section";
 
 interface Props {
     posts: PostProps[];
+    canEditPosts?: boolean;
 }
 
-export const PostsList = ({ posts }: Props) => {
+export const PostsList = ({ posts, canEditPosts = false }: Props) => {
 
     if (!Array.isArray(posts) || posts.length == 0) {
         return (
@@ -24,7 +25,7 @@ export const PostsList = ({ posts }: Props) => {
 
             {
                 posts.map((post: PostProps, index) => (
-                    <Post key={index} {...post} />
+                    <Post key={index} {...post} canEdit={canEditPosts} />
                 ))
             }
 

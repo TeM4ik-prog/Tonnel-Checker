@@ -57,7 +57,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/centre',
         label: 'Медиацентр',
         shortLabel: 'Медиа',
-        showInHeader: false,
+        showInHeader: true,
         icon: BuildingIcon
     },
 
@@ -98,7 +98,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/post-1',
         label: 'Пост №1',
         shortLabel: 'Пост №1',
-        showInHeader: false,
+        showInHeader: true,
         icon: PodcastIcon
     },
 
@@ -106,7 +106,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/museum',
         label: 'Музей "Нашчадкi Ф.Скорины"',
         shortLabel: 'музей',
-        showInHeader: false,
+        showInHeader: true,
         icon: LandmarkIcon
     },
 
@@ -114,7 +114,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         path: '/gymn-improving',
         label: 'Благоустраиваем гимназию',
         shortLabel: 'Благоустройство',
-        showInHeader: false,
+        showInHeader: true,
         icon: SproutIcon
 
     },
@@ -143,7 +143,9 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     },
 
-    CREATE_POSTS: { path: '/posts-reviews/create', icon: UserCircle2, label: 'создание постов и интерью', showInHeader: false },
+    
+    // создание постов и интерью
+    CREATE_POSTS: { path: '/posts-reviews/create', icon: UserCircle2, label: '', showInHeader: false },
 
 
 }
@@ -254,7 +256,7 @@ class ApiConfig {
     users = {
         baseInstance: createAxiosInstance('users/'),
 
-        
+
     }
 
 }

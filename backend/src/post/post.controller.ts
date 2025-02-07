@@ -10,7 +10,7 @@ export class PostController {
   constructor(private readonly postService: PostService) { }
 
   @Post()
-  @UseInterceptors(FilesInterceptor('image'))
+  @UseInterceptors(FilesInterceptor('sourceFile'))
   create(
     @UploadedFiles() file,
     @Body() createPostDto: CreatePostDto,

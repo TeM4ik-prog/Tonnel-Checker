@@ -45,12 +45,13 @@ export class ReviewController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('videoFile'))
+  @UseInterceptors(FileInterceptor('sourceFile'))
   async createReview(
-    @Body() body: { text: string },   
-    @UploadedFile() videoFile, 
+    @Body() body: { text: string },
+    @UploadedFile() sourceFile,
   ) {
-    return this.reviewService.create(body.text, `/uploads/videos/${videoFile.filename}`)
+    console.log(body, sourceFile)
+    return this.reviewService.create(body.text, `/uploads/videos/${sourceFile.filename}`)
   }
 
   @Get()
@@ -74,5 +75,5 @@ export class ReviewController {
   }
 
 
-  
+
 }

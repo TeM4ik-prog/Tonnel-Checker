@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { onRequest } from "@/types";
+import { onRequest, UserRole } from "@/types";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ReviewList } from "@/components/shared/review/reviewList";
 import { CommentService } from "@/services/comment.service";
@@ -38,6 +38,8 @@ const interviews = [
 
 export const LoveGymnPage: React.FC = () => {
     const [comments, setComments] = useState<IReview[]>([])
+    const [canEdit, setCanEdit] = useState<boolean>(false)
+
 
     const { user } = useUserData()
 
@@ -75,10 +77,22 @@ export const LoveGymnPage: React.FC = () => {
         getAllComments()
     }, [])
 
+
+    useEffect(() => {
+        if (user?.role && user.role === UserRole.Admin) {
+            setCanEdit(true)
+            console.log("admin")
+        }
+    }, [user])
+
     return (
         <>
             <PageContainer title="Люблю свою гимназию">
-                <ReviewList  reviews={comments} handleUpdate={handleCommentUpdate} handleDelete={handleCommentDelete} />
+                <ReviewList
+                    canEditReviews={canEdit}
+                    reviews={comments}
+                    handleUpdate={handleCommentUpdate}
+                    handleDelete={handleCommentDelete} />
             </PageContainer>
         </>
     );

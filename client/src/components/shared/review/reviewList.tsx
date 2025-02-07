@@ -4,11 +4,12 @@ import { IReview, Review } from "./review"
 interface Props {
     reviews: IReview[],
     profileElem?: boolean;
+    canEditReviews?: boolean;
     handleUpdate: (id: string, e: React.FormEvent) => Promise<void>
     handleDelete: (reviewId: string) => Promise<void>
 }
 
-export const ReviewList = ({ reviews, handleUpdate, handleDelete, profileElem = false }: Props) => {
+export const ReviewList = ({ reviews, handleUpdate, handleDelete, profileElem = false, canEditReviews = false }: Props) => {
 
 
     return (
@@ -18,7 +19,11 @@ export const ReviewList = ({ reviews, handleUpdate, handleDelete, profileElem = 
 
                     <>
                         {reviews.map((review: IReview, index: number) => (
-                            <Review key={index} {...review} handleUpdate={handleUpdate} profileElem={profileElem} handleDelete={handleDelete} />
+                            <Review key={index} {...review}
+                                canEdit={canEditReviews}
+                                handleUpdate={handleUpdate}
+                                profileElem={profileElem}
+                                handleDelete={handleDelete} />
 
                         ))}
                     </>
