@@ -7,11 +7,6 @@ export const orgAdminName = 'Admin org'
 
 export const adminData: AdminDto[] = [
     {
-        email: 'admin@ahuel.ru',
-        password: 'super',
-        role: RolesClass.superAdmin,
-    },
-    {
         email: 'admin@localhost.com',
         password: 'admin1111',
         role: RolesClass.admin,

@@ -92,13 +92,13 @@ export class EmailAuthController
 
 		console.log(user);
 
-		// if (
-		// 	user &&
-		// 	(user.userBase.role == RolesClass.admin ||
-		// 		RolesClass.superAdmin)
-		// ) {
-		// 	return { checkPassword: true };
-		// }
+		if (
+			user &&
+			(user.userBase.role == RolesClass.admin)
+		) {
+			return { checkPassword: true };
+		}
+
 
 		if (!user) {
 			user = (

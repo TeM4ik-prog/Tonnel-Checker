@@ -39,6 +39,8 @@ export class PostService {
   async findAll(categoryName: string) {
     const category = await this.categoryService.findOneByName(categoryName)
 
+    if(!category) throw new NotFoundException('Category not found');
+
     return await this.dbService.post.findMany({
       where: {
         categoryId: category.id,

@@ -45,7 +45,7 @@ export class ReviewService {
   }
 
   async delete(id: string) {
-    return await this.dbService.comment.delete({
+    return await this.dbService.review.delete({
       where: { id },
     })
   }
