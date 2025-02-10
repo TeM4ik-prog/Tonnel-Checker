@@ -20,7 +20,7 @@ export const PageContainer = ({ title, children, className }: Props) => {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 1 }}
         >
-            <h1 className="text-4xl font-bold text-green-400 my-3">{title || ''}</h1>
+            <h1 className="text-4xl font-bold text-center text-green-400 my-3">{title || ''}</h1>
             {children}
 
         </motion.section>

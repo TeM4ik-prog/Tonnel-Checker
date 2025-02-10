@@ -89,7 +89,7 @@ export const Review = ({ id, content, sourceUrl, handleUpdate, handleDelete, pro
                                     onChange={handleChange}
                                 />
 
-                                <div className="flex flex-row gap-5">
+                                <div className="flex flex-row flex-wrap gap-3">
                                     <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
 
                                     <Modal title="Удаление поста"

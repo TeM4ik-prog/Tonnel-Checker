@@ -3,12 +3,13 @@ import { Button } from "../ui/Button";
 import { useUserData } from "@/store/hooks";
 import { Sidebar } from "../ui/Sidebar";
 import { Link, NavLink } from "react-router-dom";
-import { RoutesConfig } from "@/types/pagesConfig";
+import { POSTS_PATHS, RoutesConfig } from "@/types/pagesConfig";
 import { useState, useMemo } from "react";
 import { removeTokenFromLocalStorage } from "@/utils/localstorage";
 import { updateData } from "@/store/user/user.slice";
 import { useDispatch } from "react-redux";
 import { observe } from "react-intersection-observer";
+import { isPostRoute } from "@/utils";
 
 export const Header: React.FC = () => {
     const { user } = useUserData();
@@ -26,15 +27,15 @@ export const Header: React.FC = () => {
 
     const navLinks = useMemo(() => (
         Object.entries(RoutesConfig).map(([key, { path, label, showInHeader, subRoutes }]) => {
-
             const hasSubRoutes = subRoutes && hoveredKey === key
+            let link = !hasSubRoutes ? isPostRoute(key) + path : '#'
 
             return (
                 <>
                     {showInHeader && (
                         <NavLink
                             key={key}
-                            to={!hasSubRoutes ? RoutesConfig.POSTS.path + path : '#'}
+                            to={link}
                             className="relative flex flex-col w-auto"
                             onMouseEnter={() => handleMouseEnter(key)}
                             onMouseLeave={handleMouseLeave}>

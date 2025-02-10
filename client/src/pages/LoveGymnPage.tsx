@@ -56,21 +56,16 @@ export const LoveGymnPage: React.FC = () => {
         e.preventDefault()
 
         const formObject = returnObjectFromForm(e)
-
         const data = await onRequest(CommentService.updateComment(id, formObject))
 
-        console.log("Ответ от сервера:", data);
-
-        toast.success(`Post updated successfully`)
-        window.location.reload()
-
-        console.log(data);
+        toast.success('Комментарий изменен')
+        getAllComments()
     };
 
     const handleCommentDelete = async (id: string) => {
-        console.log(id)
         await onRequest(CommentService.deleteComment(id))
-        window.location.reload();
+        getAllComments()
+        toast.success('Комментарий удален')
     }
 
     useEffect(() => {

@@ -16,6 +16,13 @@ export class reviewService implements ApiRoute {
         return data
     }
 
+    async getNewspapers() {
+        const { data } = await this.instance.get(this.baseUrl.newspapers)
+        return data
+    }
+
+    
+
 
     async postReview(reviewData: any) {
         const { data } = await this.instance.post('', reviewData)

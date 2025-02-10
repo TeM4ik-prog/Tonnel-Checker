@@ -172,7 +172,7 @@ export const POSTS_PATHS = [
     'LITERARY_IDEAL',
     'PATRIOTISM',
     'INTERNATIONAL_COOPERATION',
-    'CENTRE',
+    // 'CENTRE',
     'SPORTS_CLUB',
     'FLAGSHIP',
     'THEATRE',
@@ -245,6 +245,8 @@ class ApiConfig {
 
     review = {
         baseInstance: createAxiosInstance('review/'),
+
+        newspapers: 'getNewspapers'
     }
 
     comment = {

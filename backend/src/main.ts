@@ -26,6 +26,10 @@ async function bootstrap() {
     express.static(join(__dirname, '..', 'uploads/videos')),
   );
   app.use(
+    '/newspapers',
+    express.static(join(__dirname, '..', 'uploads/newspapers')),
+  );
+  app.use(
     '/public',
     express.static(join(__dirname, '..', 'public')),
   );

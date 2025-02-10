@@ -170,7 +170,7 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId, canEdit =
                                     className="w-full min-h-max p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                                 />
 
-                                <div className="flex flex-row gap-5">
+                                <div className="flex flex-row flex-wrap gap-3">
                                     <Button formSubmit={true} icon={<SaveIcon />} text="Сохранить" />
 
                                     <Modal title="Удаление поста"

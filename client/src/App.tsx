@@ -22,6 +22,7 @@ import { Section } from './components/ui/Section';
 import { LoveGymnPage } from './pages/LoveGymnPage';
 import { ContactPage } from './pages/ContactPage';
 import { ProtectedRoute } from './components/layout/protectedRoute';
+import { NewspaperPage } from './pages/NewspaperPage';
 
 
 function App() {
@@ -86,6 +87,8 @@ function App() {
               <Route path={RoutesConfig.LOVE_GYMN.path} element={<LoveGymnPage />} />
 
               <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} />
+
+              <Route path={RoutesConfig.CENTRE.path} element={<NewspaperPage />} />
 
 
               <Route path={RoutesConfig.CREATE_POSTS.path} element={

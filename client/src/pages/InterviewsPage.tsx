@@ -33,20 +33,16 @@ export const InterviewsPage: React.FC = () => {
         e.preventDefault()
 
         const formObject = returnObjectFromForm(e)
-
         const data = await onRequest(ReviewService.updateReview(id, formObject))
 
-        console.log("Ответ от сервера:", data);
-
-        toast.success(`Post updated successfully`)
-        window.location.reload()
-
-        console.log(data);
+        toast.success('Интервью изменено')
+        getAllReviews()
     };
 
     const handleReviewDelete = async (id: string) => {
         await onRequest(ReviewService.deleteReview(id))
-        window.location.reload();
+        toast.success('Интервью удалено')
+        getAllReviews()
     }
 
     useEffect(() => {

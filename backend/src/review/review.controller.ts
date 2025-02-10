@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Res, UploadedFile, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Header, Res, UploadedFile, UseInterceptors, UploadedFiles, NotFoundException } from '@nestjs/common';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -6,10 +6,66 @@ import * as fs from 'fs';
 import { Response } from 'express';
 import * as path from 'path';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import * as pdfParse from 'pdf-parse'
 
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) { }
+
+  // 
+
+  // http://localhost:3000/api/review/newspapers/
+  @Get("newspapers/:filename")
+  getFile(@Param("filename") filename: string, @Res() res: Response) {
+    const filePath = path.resolve('', 'uploads/newspapers', filename)
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException("Файл не найден");
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    return res.sendFile(filePath);
+  }
+
+
+  @Get('getNewspapers')
+  async getFiles(@Res() res: Response) {
+    const directoryPath = path.resolve('', 'uploads/newspapers')
+
+    fs.readdir(directoryPath, async (err, files) => {
+      if (err) {
+        return res.status(500).send('Не удалось прочитать папку')
+      }
+
+      const pdfFiles = files.filter(file => file.endsWith('.pdf'))
+      const filesInfo = []
+
+      for (const file of pdfFiles) {
+        const filePath = path.join(directoryPath, file)
+        const pdfBuffer = fs.readFileSync(filePath)
+
+        try {
+          const data = await pdfParse(pdfBuffer)
+          const title = data.info.Title || file
+
+          filesInfo.push({
+            title,
+            filePath: `${file}`,
+          })
+        } catch (error) {
+          filesInfo.push({
+            title: file, 
+            filePath: `${file}`,
+          })
+        }
+      }
+
+      return res.json(filesInfo)
+    })
+  }
+
+  // 
+
 
   @Get(':filename')
   @Header('Content-Type', 'video/mp4')

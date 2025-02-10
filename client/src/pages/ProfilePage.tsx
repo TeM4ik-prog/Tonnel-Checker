@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Dialog";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { Input } from "@/components/ui/Input";
+import { Loader } from "@/components/ui/Loader";
 import { Section } from "@/components/ui/Section";
 import Textarea from "@/components/ui/Textarea";
 import { CommentService } from "@/services/comment.service";
@@ -34,6 +35,8 @@ export const ProfilePage = () => {
 
     const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
     const handleUpdateDataOpen = () => setUpdateDataOpen((prev) => !prev);
+
+    const [isSourceLoading, setIsSourceLoading] = useState<boolean>(false)
 
     const userRole = useGetUserRole()
 
@@ -101,6 +104,8 @@ export const ProfilePage = () => {
     const handleUserReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        setIsSourceLoading(true)
+
         const formData = new FormData(e.target as HTMLFormElement);
 
         const data = await onRequest(CommentService.postComment(formData))
@@ -110,9 +115,11 @@ export const ProfilePage = () => {
             setReview('')
 
             toggleFormSubmit()
-            
+
             handleMyReviews()
         }
+
+        setIsSourceLoading(false)
     }
 
 
@@ -269,9 +276,11 @@ export const ProfilePage = () => {
                             videoAccept={true}
                         />
 
+                        {isSourceLoading && <Loader />}
+
 
                         <div className="flex justify-end">
-                            <Button formSubmit={true} icon={<Upload />} text="Отправить" />
+                            <Button disabled={isSourceLoading} formSubmit={true} icon={<Upload />} text="Отправить" />
                         </div>
                     </form>
                 </div>

@@ -23,6 +23,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { transliterate } from 'transliteration';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -48,6 +49,8 @@ import { transliterate } from 'transliteration';
     ReviewModule,
 
     CommentModule,
+
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuard],
