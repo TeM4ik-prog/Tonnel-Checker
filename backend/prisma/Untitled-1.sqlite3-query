@@ -1,7 +1,0 @@
--- database: ./dev.db
-
--- Чтобы выполнить весь файл, нажмите кнопку ▷ в правом верхнем углу окна.
-
-SELECT * FROM Post;
-SELECT string_agg(content, ' ') AS all_content
-FROM Post;
