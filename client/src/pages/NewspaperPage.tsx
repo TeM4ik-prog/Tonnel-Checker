@@ -9,7 +9,6 @@ import { useState, useEffect } from "react"
 const NewspaperPage = () => {
     const [files, setFiles] = useState<{ title: string; filePath: string }[]>([])
 
-
     const getNewspapers = async () => {
         const data = await onRequest(ReviewService.getNewspapers())
         console.log(data)
@@ -32,9 +31,7 @@ const NewspaperPage = () => {
                     Выберите файл для просмотра:
                 </h2>
                 <ul className="space-y-4 ">
-
                     {(!files || files.length == 0) && <Loader />}
-
 
                     {files.map((file) => (
                         <li key={file.filePath} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 gap-6">
@@ -52,4 +49,5 @@ const NewspaperPage = () => {
     )
 }
 
-export { NewspaperPage }
+export default NewspaperPage
+

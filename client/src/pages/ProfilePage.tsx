@@ -21,10 +21,9 @@ import { FolderUpIcon, ImageUp, LogOutIcon, PencilIcon, Upload, XIcon } from "lu
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaTelegram, FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const ProfilePage = () => {
+const ProfilePage = () => {
     const dispatch = useDispatch();
     const { user } = useUserData();
     const [review, setReview] = useState("");
@@ -300,3 +299,6 @@ export const ProfilePage = () => {
 
     );
 };
+
+
+export default ProfilePage

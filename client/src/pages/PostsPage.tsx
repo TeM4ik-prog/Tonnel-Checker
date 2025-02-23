@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const PostsPage = () => {
+const PostsPage = () => {
     const [posts, setPosts] = useState([])
     const navigate = useNavigate()
 
@@ -74,3 +74,5 @@ export const PostsPage = () => {
 
     )
 }
+
+export default PostsPage

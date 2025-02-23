@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import { Input } from "@/components/ui/Input";
 import { Block } from "@/components/layout/Block";
 import { PencilIcon, SaveIcon, Trash2Icon, XIcon } from "lucide-react";
+import Textarea from "@/components/ui/Textarea";
 
 
 export interface PostProps {
@@ -160,14 +161,13 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId, canEdit =
                                     dateFormat="yyyy/MM/dd"
                                 />
 
-                                <textarea
+                                <Textarea
+
                                     name="content"
                                     placeholder="Текст"
                                     value={formData.content}
                                     onChange={handleChange}
-                                    rows={14}
-
-                                    className="w-full min-h-max p-3 mt-1 text-gray-100 rounded-md bg-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                    rows={12}
                                 />
 
                                 <div className="flex flex-row flex-wrap gap-3">

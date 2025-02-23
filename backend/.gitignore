@@ -4,5 +4,3 @@ dist
 # !/uploads/.keep
 # Keep environment variables out of version control
 
-
-.vercel

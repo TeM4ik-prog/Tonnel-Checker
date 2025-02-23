@@ -2,7 +2,7 @@ import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { FaViber, FaTelegram, FaSkype, FaVk, FaFacebook, FaOdnoklassniki, FaYoutube } from "react-icons/fa";
 
-export const ContactPage = () => {
+const ContactPage = () => {
     return (
         <PageContainer title="Связь с нами">
             <Block className="p-4">
@@ -57,3 +57,6 @@ export const ContactPage = () => {
         </PageContainer>
     );
 };
+
+
+export default ContactPage

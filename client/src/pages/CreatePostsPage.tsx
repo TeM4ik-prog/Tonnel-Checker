@@ -18,7 +18,7 @@ import { CloudUpload, ImageUp } from "lucide-react";
 import { FileUploader } from "@/components/ui/FileUploader";
 import { returnObjectFromForm } from "@/utils";
 
-export const CreatePostsPage = () => {
+const CreatePostsPage = () => {
     const { categories, categoriesNames } = useCategories();
 
     const [formPostSubmitted, setFormPostSubmitted] = useState(false);
@@ -167,3 +167,5 @@ export const CreatePostsPage = () => {
         </PageContainer>
     );
 };
+
+export default CreatePostsPage

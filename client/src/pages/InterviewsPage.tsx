@@ -15,7 +15,7 @@ import { useUserData } from "@/store/hooks";
 
 
 
-export const InterviewsPage: React.FC = () => {
+const InterviewsPage: React.FC = () => {
     const [reviews, setReviews] = useState<IReview[]>([])
     const [canEdit, setCanEdit] = useState<boolean>(false)
 
@@ -67,3 +67,6 @@ export const InterviewsPage: React.FC = () => {
         </PageContainer >
     );
 };
+
+
+export default InterviewsPage

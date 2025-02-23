@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const EntryPage = () => {
+const EntryPage = () => {
     const [isRegisterMode, setIsRegisterMode] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -263,3 +263,5 @@ export const EntryPage = () => {
         </Section >
     )
 }
+
+export default EntryPage

@@ -7,7 +7,7 @@ import ContentBlock from "@/components/ui/ContentBlock";
 import { RoutesConfig } from "@/types/pagesConfig";
 import { Loader } from "@/components/ui/Loader";
 
-export const MainPage: React.FC = () => {
+const MainPage: React.FC = () => {
     return (
         <>
             <ContentBlock>
@@ -129,3 +129,6 @@ export const MainPage: React.FC = () => {
         </>
     );
 };
+
+
+export default MainPage
