@@ -56,7 +56,6 @@ const ProfilePage = () => {
 
     const handleMyReviews = (async () => {
         const data = await onRequest(CommentService.getMyComments());
-        console.log(data);
         if (data) {
             setMyReviews(data);
         }
@@ -66,14 +65,11 @@ const ProfilePage = () => {
         e.preventDefault();
         const formObject = returnObjectFromForm(e);
         const data = await onRequest(CommentService.updateComment(id, formObject));
-        console.log("Ответ от сервера:", data);
         toast.success(`Пост обновлен!`);
-        console.log(data);
         handleMyReviews()
     }, []);
 
     const handleCommentDelete = useCallback(async (id: string) => {
-        console.log(id);
         await onRequest(CommentService.deleteMyComment(id));
         toast.success(`Комментарий удален`);
         handleMyReviews()
@@ -132,7 +128,6 @@ const ProfilePage = () => {
         toast.success(`Информация сохранена`)
         dispatch(updateData())
 
-        console.log(data);
     };
 
 

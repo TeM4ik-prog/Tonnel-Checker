@@ -17,9 +17,7 @@ const LoveGymnPage: React.FC = () => {
     const { user } = useUserData()
 
     const getAllComments = async () => {
-        console.log(user?.id)
         const data: IReview[] = await onRequest(CommentService.getComments())
-        console.log(data)
         if (data) {
             setComments(data)
         }

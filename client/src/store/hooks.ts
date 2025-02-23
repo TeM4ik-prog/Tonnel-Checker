@@ -55,14 +55,12 @@ export const useCategories = (): { categories: Route[], categoriesNames: string[
             }
         }
 
-        console.log(categoriesResult)
 
 
 
         const categoriesIds = categories.map((category) => category.id) || []
         return { categories: categoriesResult, categoriesNames: categoriesNamesRu, categoriesIds }
     } catch (err) {
-        console.log(err)
         return { categories: [], categoriesNames: [], categoriesIds: [] }
 
     }

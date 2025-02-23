@@ -57,13 +57,11 @@ export class CommentController {
   @Delete('me/:id')
   @UseGuards(JwtAuthGuard)
   deleteMyComment(@Param('id') id: string, @UserId() userId: string) {
-    console.log(id, userId)
     return this.commentService.removeUserComment(id, userId)
   }
   @Patch('me/:id')
   @UseGuards(JwtAuthGuard)
   updateMyComment(@Param('id') id: string, @Body() updateReviewDto: UpdateCommentDto, @UserId() userId: string) {
-    console.log('patch', id, userId)
     return this.commentService.updateUserComment(id, updateReviewDto, userId)
 
   }
@@ -76,14 +74,7 @@ export class CommentController {
     @UploadedFile() sourceFile,
     @UserId() userId: string
   ) {
-
-    console.log(body)
-    console.log(sourceFile)
-    console.log((sourceFile.destination).slice(1))
-    console.log(userId)
-
     return this.commentService.create(body.text, `${(sourceFile.destination).slice(1)}/${sourceFile.filename}`, userId)
-
   }
 
 

@@ -48,7 +48,6 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId, canEdit =
     };
 
     const handleDelete = async () => {
-        console.log("delete", id)
         const data = await onRequest(PostService.deletePost(id))
         if (data) {
             toast.success(`Post deleted successfully`)
@@ -65,22 +64,12 @@ export const Post = ({ id, title, date, content, imageUrl, categoryId, canEdit =
         e.preventDefault();
 
         const formDataUpdate = new FormData(e.target as HTMLFormElement)
-
-        const formObject = Object.fromEntries(formDataUpdate.entries()); // Преобразуем в объект для удобства работы
-
-        console.log(formObject);
-
-        console.log(formDataUpdate)
-
-        const data = await onRequest(PostService.updatePost(id, formObject));
-
-        // console.log(data)
-        // if (data) {
+        const formObject = Object.fromEntries(formDataUpdate.entries());
+        const data = await onRequest(PostService.updatePost(id, formObject))
         toast.success(`Post updated successfully`)
         window.location.reload()
         // }
 
-        console.log(data);
     };
 
 

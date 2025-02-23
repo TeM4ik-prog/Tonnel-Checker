@@ -22,17 +22,11 @@ export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Pr
 
     for (let i = 0; i < POSTS_PATHS.length; i++) {
         if(routeKey == POSTS_PATHS[i]){
-
             path = RoutesConfig.POSTS.path + path
         }
     }
 
-
     if(!label) return
-
-
-
-
 
     return (
         <Disclosure as="div" className="w-full">

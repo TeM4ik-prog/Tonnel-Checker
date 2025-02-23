@@ -11,7 +11,6 @@ const NewspaperPage = () => {
 
     const getNewspapers = async () => {
         const data = await onRequest(ReviewService.getNewspapers())
-        console.log(data)
         setFiles(data)
     }
 

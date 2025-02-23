@@ -65,13 +65,7 @@ export class EmailAuthController
 		@Body() body: EntryAdminDto,
 		@Request() req,
 	) {
-		console.log(body);
-		console.log(req.user);
-		const admin =
-			await this.usersService.findUserById(
-				req.user.userBaseId,
-			);
-		console.log(admin);
+		const admin =await this.usersService.findUserById(req.user.userBaseId);
 		return await this.authService.login(admin);
 	}
 
@@ -90,7 +84,6 @@ export class EmailAuthController
 				body.email,
 			);
 
-		console.log(user);
 
 		if (
 			user &&
@@ -142,7 +135,6 @@ export class EmailAuthController
 			code: string;
 		},
 	) {
-		console.log(body);
 		const result = await this.emailService.verifyCode(
 			body.userId,
 			body.code,
@@ -150,7 +142,6 @@ export class EmailAuthController
 		if (!result) throw new BadRequestException('Invalid or expired verification code');
 		const validUser = await this.usersService.findEmailUserByIdAndReturnBase(body.userId)
 
-		console.log(validUser)
 
 		return await this.authService.login(validUser);
 	}
@@ -187,20 +178,16 @@ export class TelegramAuthController extends AuthController {
 export class GoogleAuthController extends AuthController {
 	@Post('/login')
 	async login(@Body() googleData: IGoogleJwtDto) {
-		console.log("start decode")
-
 		const decodedData: IGoogleAuthDto =
 			this.jwtService.decode(
 				googleData.credential,
 			);
-		console.log(decodedData);
 
 		const user =
 			await this.googleAuthService.findOrCreate(
 				decodedData,
 			);
 
-		console.log(user);
 		return await this.authService.login(user);
 	}
 }

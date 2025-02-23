@@ -12,8 +12,6 @@ import * as pdfParse from 'pdf-parse'
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) { }
 
-  // 
-
   // http://localhost:3000/api/review/newspapers/
   @Get("newspapers/:filename")
   getFile(@Param("filename") filename: string, @Res() res: Response) {
@@ -32,36 +30,61 @@ export class ReviewController {
   async getFiles(@Res() res: Response) {
     const directoryPath = path.resolve('', 'uploads/newspapers')
 
-    fs.readdir(directoryPath, async (err, files) => {
-      if (err) {
-        return res.status(500).send('Не удалось прочитать папку')
-      }
+    // fs.readdir(directoryPath, async (err, files) => {
+    //   if (err) {
+    //     return res.status(500).send('Не удалось прочитать папку')
+    //   }
 
-      const pdfFiles = files.filter(file => file.endsWith('.pdf'))
-      const filesInfo = []
+    //   const pdfFiles = files.filter(file => file.endsWith('.pdf'))
+    //   const filesInfo = []
 
-      for (const file of pdfFiles) {
-        const filePath = path.join(directoryPath, file)
-        const pdfBuffer = fs.readFileSync(filePath)
+    //   for (const file of pdfFiles) {
+    //     const filePath = path.join(directoryPath, file)
+    //     const pdfBuffer = fs.readFileSync(filePath)
 
-        try {
-          const data = await pdfParse(pdfBuffer)
-          const title = data.info.Title || file
+    //     try {
+    //       const data = await pdfParse(pdfBuffer)
+    //       const title = data.info.Title || file
 
-          filesInfo.push({
-            title,
-            filePath: `${file}`,
-          })
-        } catch (error) {
-          filesInfo.push({
-            title: file, 
-            filePath: `${file}`,
-          })
+    //       filesInfo.push({
+    //         title,
+    //         filePath: `${file}`,
+    //       })
+    //     } catch (error) {
+    //       filesInfo.push({
+    //         title: file, 
+    //         filePath: `${file}`,
+    //       })
+    //     }
+    //   }
+
+    //   return res.json(filesInfo)
+    // })
+
+    res.json(
+      [
+        {
+            "title": "Sunset",
+            "filePath": "1.pdf"
+        },
+        {
+            "title": "БЭМС",
+            "filePath": "2.pdf"
+        },
+        {
+            "title": "11.11.2024",
+            "filePath": "3.pdf"
+        },
+        {
+            "title": "Гимназический вестник",
+            "filePath": "4.pdf"
+        },
+        {
+            "title": "Гимназический вестник . №5",
+            "filePath": "5.pdf"
         }
-      }
-
-      return res.json(filesInfo)
-    })
+    ]
+    )
   }
 
   // 

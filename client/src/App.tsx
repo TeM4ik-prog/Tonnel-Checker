@@ -12,7 +12,6 @@ import { CategoryService } from './services/category.service';
 import { setCategories } from './store/categories/categories.slice';
 import { ProtectedRoute } from './components/layout/protectedRoute';
 import { Loader } from './components/ui/Loader';
-
 const MainPage = lazy(() => import('@/pages/MainPage'));
 const EntryPage = lazy(() => import('@/pages/EntryPage'));
 const PostsPage = lazy(() => import('@/pages/PostsPage'));
@@ -23,6 +22,8 @@ const InterviewsPage = lazy(() => import('@/pages/InterviewsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const LoveGymnPage = lazy(() => import('@/pages/LoveGymnPage'));
 const NewspaperPage = lazy(() => import('@/pages/NewspaperPage'));
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 function App() {
   const dispatch = useDispatch()

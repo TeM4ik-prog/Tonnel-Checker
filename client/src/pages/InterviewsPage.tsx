@@ -23,7 +23,6 @@ const InterviewsPage: React.FC = () => {
 
     const getAllReviews = async () => {
         const data = await onRequest(ReviewService.getReviews())
-        console.log(data)
         if (data) {
             setReviews(data)
         }
