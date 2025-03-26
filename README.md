@@ -1,6 +1,6 @@
 https://webky.ru/
 
-# 🎓 Gymnasium Site  
+# 🎓 Site for Веб  
 
 ## 🛠 Технологии  
 - ⚛ **React + TypeScript** – интерфейс  
