@@ -168,7 +168,11 @@ const MainPage: React.FC = () => {
                         className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-12 sm:mb-16 md:mb-20 text-yellow-400"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                        viewport={{ once: false }}
+                        transition={{ 
+                            duration: 1,
+                            ease: "easeOut"
+                        }}
                     >
                         Почему мы особенные
                     </motion.h2>
@@ -179,29 +183,41 @@ const MainPage: React.FC = () => {
                                 icon: <FaGift className="text-4xl sm:text-5xl text-yellow-400" />,
                                 title: "Крупные призы",
                                 description: "Розыгрыши на звёзды и деньги для активных участников",
-                                color: "from-yellow-400/20 to-yellow-600/20"
+                                color: "from-yellow-400/20 to-yellow-600/20",
+                                initialX: -50
                             },
                             {
                                 icon: <FaUsers className="text-4xl sm:text-5xl text-yellow-400" />,
                                 title: "Закрытое сообщество",
                                 description: "Эксклюзивные розыгрыши только для подписчиков",
-                                color: "from-yellow-400/20 to-yellow-600/20"
+                                color: "from-yellow-400/20 to-yellow-600/20",
+                                initialX: 50
                             }
                         ].map((feature, index) => (
                             <motion.div
                                 key={index}
                                 className="relative group"
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                initial={{ opacity: 0, x: feature.initialX }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                whileHover={{ scale: 1.02 }}
+                                transition={{ 
+                                    duration: 0.5,
+                                    ease: "easeOut",
+                                    hover: {
+                                        duration: 0.2,
+                                        ease: "easeInOut"
+                                    }
+                                }}
                             >
                                 <motion.div
-                                    className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-1000"
+                                    className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500"
                                     animate={{
-                                        scale: [1, 1.1, 1],
-                                        opacity: [0.5, 0.8, 0.5],
+                                        scale: [1, 1.05, 1],
+                                        opacity: [0.3, 0.5, 0.3],
                                     }}
                                     transition={{
-                                        duration: 3,
+                                        duration: 4,
                                         repeat: Infinity,
                                         ease: "easeInOut"
                                     }}
