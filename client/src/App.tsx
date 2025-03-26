@@ -79,11 +79,11 @@ function App() {
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
               <Route path={`${RoutesConfig.POSTS.path}/:category`} element={<PostsPage />} />
-              <Route path={RoutesConfig.INTERVIEWS.path} element={<InterviewsPage />} />
+              
               <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
-              <Route path={RoutesConfig.LOVE_GYMN.path} element={<LoveGymnPage />} />
+              
               <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} />
-              <Route path={RoutesConfig.CENTRE.path} element={<NewspaperPage />} />
+              
 
               <Route path={RoutesConfig.CREATE_POSTS.path} element={
                 <ProtectedRoute allowedRoles={[UserRole.Admin]}>

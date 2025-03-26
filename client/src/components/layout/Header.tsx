@@ -77,7 +77,7 @@ export const Header: React.FC = () => {
 
                 <div className="flex items-center z-10 h-full">
                     <Link to={RoutesConfig.HOME.path}>
-                        <img className="w-32" src="/logo_green.svg" alt="Logo" />
+                        <img className="w-32" src="/web.png" alt="Logo" />
                     </Link>
                 </div>
 

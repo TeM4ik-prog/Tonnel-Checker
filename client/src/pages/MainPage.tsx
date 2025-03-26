@@ -10,7 +10,7 @@ import { Loader } from "@/components/ui/Loader";
 const MainPage: React.FC = () => {
     return (
         <>
-            <ContentBlock>
+            {/* <ContentBlock>
                 <Section>
                     <motion.section
                         className="relative max-h-full w-full h-screen gap-4 bg-cover bg-center flex flex-col items-center justify-center text-center rounded overflow-hidden before:absolute before:inset-0 before:bg-black/50 before:backdrop-blur-sm"
@@ -41,9 +41,9 @@ const MainPage: React.FC = () => {
 
                 </Section>
 
-            </ContentBlock>
+            </ContentBlock> */}
 
-            <ContentBlock>
+            {/* <ContentBlock>
                 <motion.section
                     className="container mx-auto py-16 text-center"
                     initial={{ opacity: 0 }}
@@ -125,7 +125,7 @@ const MainPage: React.FC = () => {
                         <Button text="Перейти в Telegram" href="https://t.me/gymn1minsk" />
                     </motion.div>
                 </motion.section>
-            </ContentBlock>
+            </ContentBlock> */}
         </>
     );
 };

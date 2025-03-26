@@ -21,118 +21,9 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     // __________
 
-    VICTORY_DAY: {
-        path: '/victory-day',
-        label: '80 лет Великой Победы',
-        shortLabel: 'Победа',
-        showInHeader: true,
-        icon: BookIcon
-    },
-
-    LITERARY_IDEAL: {
-        path: '/literary-ideal',
-        label: 'Литературно-исторический диалог',
-        shortLabel: 'Диалог',
-        showInHeader: true,
-        icon: PenIcon
-    },
-
-    PATRIOTISM: {
-        path: '/patriotism',
-        label: 'Дискуссионный клуб',
-        shortLabel: 'Дискуссии',
-        showInHeader: true,
-        icon: GroupIcon
-    },
-
-    INTERNATIONAL_COOPERATION: {
-        path: '/international-cooperation',
-        label: 'Ассоциация школ РФ и РБ',
-        shortLabel: 'Сотрудничество',
-        showInHeader: true,
-        icon: GlobeIcon
-    },
-
-    CENTRE: {
-        path: '/centre',
-        label: 'Медиацентр',
-        shortLabel: 'Медиа',
-        showInHeader: true,
-        icon: BuildingIcon
-    },
-
-    SPORTS_CLUB: {
-        path: '/sports-club',
-        label: 'Спортивный клуб',
-        shortLabel: 'Спорт',
-        showInHeader: true,
-        icon: RocketIcon
-    },
-
-    FLAGSHIP: {
-        path: '/flagship',
-        label: 'Знамённая группа',
-        shortLabel: 'Знамёнка',
-        showInHeader: true,
-        icon: FlagIcon
-    },
-
-    THEATRE: {
-        path: '/theatre',
-        label: 'Театр',
-        shortLabel: 'Театр',
-        showInHeader: true,
-        icon: DramaIcon,
-        // subRoutes: {
-        //     POST_1: {
-        //         path: '/post-1',
-        //         label: 'Пост ��1',
-        //         shortLabel: 'Пост ��1',
-        //         showInHeader: true,
-        //         icon: PodcastIcon,
-        //     }
-        // }
-    },
-
-    POST_1: {
-        path: '/post-1',
-        label: 'Пост №1',
-        shortLabel: 'Пост №1',
-        showInHeader: true,
-        icon: PodcastIcon
-    },
-
-    MUSEUM: {
-        path: '/museum',
-        label: 'Музей "Нашчадкi Ф.Скорины"',
-        shortLabel: 'музей',
-        showInHeader: true,
-        icon: LandmarkIcon
-    },
-
-    GYMN_IMPROVING: {
-        path: '/gymn-improving',
-        label: 'Благоустраиваем гимназию',
-        shortLabel: 'Благоустройство',
-        showInHeader: true,
-        icon: SproutIcon
-
-    },
-
 
     ENTRY: { path: '/entry', label: '', showInHeader: false },
     POSTS: { path: '/posts', label: '', showInHeader: false },
-
-    INTERVIEWS: { path: '/interviews', label: 'Интервью учащихся', icon: StarIcon, showInHeader: false },
-
-    LOVE_GYMN: {
-        path: '/love-gymn',
-        label: 'Люблю свою Гимназию',
-        shortLabel: 'Люблю свою Гимназию',
-        showInHeader: false,
-        icon: HeartIcon,
-
-    },
 
     CONTACTS: {
         path: '/contacts',
@@ -168,17 +59,14 @@ function updateRoutesWithParentPath(routes: Record<string, any>, parentPath = ''
 export const RoutesConfig: { [key: string]: Route } = updateRoutesWithParentPath(RoutesConfigMain);
 
 export const POSTS_PATHS = [
-    'VICTORY_DAY',
-    'LITERARY_IDEAL',
-    'PATRIOTISM',
-    'INTERNATIONAL_COOPERATION',
-    // 'CENTRE',
-    'SPORTS_CLUB',
-    'FLAGSHIP',
-    'THEATRE',
-    'POST_1',
-    'MUSEUM',
-    'GYMN_IMPROVING',
+    
+    // // 'CENTRE',
+    // 'SPORTS_CLUB',
+    // 'FLAGSHIP',
+    // 'THEATRE',
+    // 'POST_1',
+    // 'MUSEUM',
+    // 'GYMN_IMPROVING',
 
 
 ] as const
