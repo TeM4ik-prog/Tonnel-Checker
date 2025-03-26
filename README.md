@@ -1,4 +1,4 @@
-https://mygymnasium1-by.ru/
+https://webky.ru/
 
 # 🎓 Gymnasium Site  
 
