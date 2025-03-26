@@ -48,7 +48,7 @@ const MainPage: React.FC = () => {
             {/* Hero Section */}
             <Section className="relative overflow-hidden">
                 {/* Animated Background Pattern */}
-                <motion.div
+                {/* <motion.div
                     className="absolute inset-0 bg-[url('/luxury-pattern.png')] opacity-10"
                     animate={{
                         scale: [1, 1.1, 1],
@@ -59,7 +59,7 @@ const MainPage: React.FC = () => {
                         repeat: Infinity,
                         ease: "linear"
                     }}
-                />
+                /> */}
 
                 {/* Main Content */}
                 <motion.div
