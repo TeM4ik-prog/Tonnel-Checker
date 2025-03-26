@@ -1,14 +1,15 @@
-import { useUserData } from "@/store/hooks";
-import { updateData } from "@/store/user/user.slice";
-import { RoutesConfig } from "@/types/pagesConfig";
-import { isPostRoute } from "@/utils";
-import { removeTokenFromLocalStorage } from "@/utils/localstorage";
-import { LogInIcon, UserCog2 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
+import { LogInIcon, LogOut, MenuIcon, UserCog2 } from "lucide-react";
 import { Button } from "../ui/Button";
+import { useUserData } from "@/store/hooks";
 import { Sidebar } from "../ui/Sidebar";
+import { Link, NavLink } from "react-router-dom";
+import { POSTS_PATHS, RoutesConfig } from "@/types/pagesConfig";
+import { useState, useMemo } from "react";
+import { removeTokenFromLocalStorage } from "@/utils/localstorage";
+import { updateData } from "@/store/user/user.slice";
+import { useDispatch } from "react-redux";
+import { observe } from "react-intersection-observer";
+import { isPostRoute } from "@/utils";
 
 export const Header: React.FC = () => {
     const { user } = useUserData();
@@ -35,23 +36,23 @@ export const Header: React.FC = () => {
                         <NavLink
                             key={key}
                             to={link}
-                            className="relative flex flex-col w-auto group"
+                            className="relative flex flex-col w-auto"
                             onMouseEnter={() => handleMouseEnter(key)}
                             onMouseLeave={handleMouseLeave}>
-                            <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0 transition-all duration-300 group-hover:text-cyan-300">
+
+                            <span className="hover:cursor-pointer hover:z-40 text-cyan-400 font-bold text-ellipsis text-lg lg:text-xl relative bottom-0">
                                 {label}
                             </span>
-                            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-300 transition-all duration-300 group-hover:w-full"></div>
 
                             {hasSubRoutes && (
                                 <div
-                                    className="absolute top-8 left-0 border border-gray-700 bg-gray-800/95 backdrop-blur-sm rounded-lg p-2 z-40 overflow-visible transition-all duration-300 shadow-lg min-w-[200px]"
+                                    className="absolute top-7 left-0 border bg-gray-600 rounded p-1 z-40 overflow-visible transition-all duration-200"
                                 >
                                     {Object.entries(subRoutes).map(([subKey, { path: subPath, label: subLabel }]) => (
                                         <NavLink onClick={handleMouseLeave}
                                             key={subKey}
                                             to={RoutesConfig.POSTS.path + subPath}
-                                            className="block text-sm text-gray-300 hover:text-cyan-300 p-2 rounded-md transition-colors duration-200 hover:bg-gray-700/50"
+                                            className="block text-sm hover:text-gray-300 p-2"
                                         >
                                             {subLabel}
                                         </NavLink>
@@ -59,38 +60,42 @@ export const Header: React.FC = () => {
                                 </div>
                             )}
                         </NavLink>
-                    )}
+                    )
+                    }
                 </>
             )
         })
     ), [hoveredKey]);
 
     return (
-        <header className="fixed top-0 left-0 right-0 flex w-full px-4 py-3 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 shadow-lg z-40">
+        <header className="flex w-full px-2 py-2 pb-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 shadow-lg z-40">
             {hoveredKey && RoutesConfig[hoveredKey].subRoutes && (
-                <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 transition-opacity duration-300"></div>
+                <div className="fixed inset-0 bg-black z-30 opacity-50 transition-opacity duration-300"></div>
             )}
 
-            <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
-                <div className="flex items-center z-40">
-                    <Link to={RoutesConfig.HOME.path} className="group">
-                        <img className="w-32 transition-transform duration-300 group-hover:scale-105" src="/web.png" alt="Logo" />
+            <div className="flex justify-center items-center w-full h-full">
+
+                <div className="flex items-center z-10 h-full">
+                    <Link to={RoutesConfig.HOME.path}>
+                        <img className="w-32" src="/web.png" alt="Logo" />
                     </Link>
                 </div>
 
-                <div className="flex items-center gap-6">
-                    <nav className="hidden md:flex items-center gap-6">
+                <div className="flex flex-row items-center h-auto gap-2 justify-end relative w-screen">
+                    <div className="sm:flex flex-row flex-wrap relative justify-center gap-x-6 mx-3 box-border scrollbar-hide hidden">
                         {navLinks}
-                    </nav>
+                    </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-2 ml-auto justify-between self-center items-end h-full">
                         {!user ? (
                             <Button text="Войти" icon={<LogInIcon />} routeKey="ENTRY" />
                         ) : (
                             <Button text="Профиль" icon={<UserCog2 />} routeKey="PROFILE" />
                         )}
+
                         <Sidebar />
                     </div>
+
                 </div>
             </div>
         </header>
