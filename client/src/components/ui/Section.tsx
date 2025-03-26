@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode, Children } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 interface SectionProps {
   children: ReactNode;
@@ -11,7 +11,8 @@ export const Section = ({ children, className, hightCheck = true }: SectionProps
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
   useEffect(() => {
-    if(!hightCheck) return
+    if(!hightCheck) return;
+    
     const updateHeaderHeight = () => {
       const header = document.querySelector("header");
       if (header) {
@@ -23,17 +24,26 @@ export const Section = ({ children, className, hightCheck = true }: SectionProps
       setWindowHeight(window.innerHeight);
     };
 
-    updateHeaderHeight();
-    updateWindowHeight();
-
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       updateHeaderHeight();
       updateWindowHeight();
+    };
+
+    // Инициализация
+    handleResize();
+
+    // Добавляем слушатель с debounce для оптимизации
+    let timeoutId: NodeJS.Timeout;
+    window.addEventListener("resize", () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 100);
     });
 
-    return () => window.removeEventListener("resize", updateWindowHeight);
-  }, []);
-
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, [hightCheck]);
 
   // if (Children.count(children) === 1) {
   //   return <div className="flex flex-col w-full justify-center items-center">{children}</div>;
@@ -41,8 +51,11 @@ export const Section = ({ children, className, hightCheck = true }: SectionProps
 
   return (
     <section
-      className={`flex flex-col h-full w-full justify-center items-center ${className}`}
-      style={{ height: hightCheck ? `calc(${windowHeight}px - ${headerHeight + 16}px)` : '100%' }}
+      className={`flex flex-col w-full justify-center items-center transition-all duration-300 ${className}`}
+      style={{ 
+        height: hightCheck ? `calc(${windowHeight}px - ${headerHeight}px)` : '100%',
+        marginTop: hightCheck ? `${headerHeight}px` : '0'
+      }}
     >
       {children}
     </section>

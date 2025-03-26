@@ -1,5 +1,5 @@
+import { motion } from "framer-motion";
 import { ReactNode } from "react";
-import { motion } from "framer-motion"
 
 interface Props {
     title?: string;
@@ -8,26 +8,24 @@ interface Props {
 }
 
 export const PageContainer = ({ title, children, className }: Props) => {
-
     return (
-        // <div className="flex flex-col gap-5 justify-center items-center">
-
         <motion.section
             key={title}
-            className={`${className} flex flex-col min-h-screen w-full gap-5 justify-start items-center`}
-
+            className={`${className} flex flex-col min-h-screen w-full pt-40 pb-12`}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.3 }}
         >
-            <h1 className="text-4xl font-bold text-center text-green-400 my-3">{title || ''}</h1>
-            {children}
-
+            <div className="flex-1 w-full max-w-7xl mx-auto px-4 flex flex-col items-center">
+                {title && (
+                    <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-12">
+                        {title}
+                    </h1>
+                )}
+                <div className="w-full flex justify-center">
+                    {children}
+                </div>
+            </div>
         </motion.section>
-
-        // </div>
     )
-
-
-
 }

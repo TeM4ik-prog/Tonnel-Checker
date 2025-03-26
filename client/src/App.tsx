@@ -74,7 +74,7 @@ function App() {
       <Router>
         <Header />
         <Suspense fallback={loaderBlock()}>
-          <main className='p-2 h-full'>
+          <main className='h-full'>
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
@@ -82,7 +82,7 @@ function App() {
               
               <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
               
-              <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} />
+              {/* <Route path={RoutesConfig.CONTACTS.path} element={<ContactPage />} /> */}
               
 
               <Route path={RoutesConfig.CREATE_POSTS.path} element={

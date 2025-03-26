@@ -1,44 +1,27 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { IReview } from "@/components/shared/review/review";
-import { ReviewList } from "@/components/shared/review/reviewList";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Dialog";
-import { FileUploader } from "@/components/ui/FileUploader";
 import { Input } from "@/components/ui/Input";
-import { Loader } from "@/components/ui/Loader";
 import { Section } from "@/components/ui/Section";
-import Textarea from "@/components/ui/Textarea";
-import { CommentService } from "@/services/comment.service";
 import { UserService } from "@/services/user.service";
 import { useGetUserRole, useUserData } from "@/store/hooks";
 import { updateData } from "@/store/user/user.slice";
-import { IUser, onRequest, UserRole } from "@/types";
+import { UserRole } from "@/types";
 import { RoutesConfig } from "@/types/pagesConfig";
 import { returnObjectFromForm } from "@/utils";
 import { removeTokenFromLocalStorage } from "@/utils/localstorage";
-import { FolderUpIcon, ImageUp, LogOutIcon, PencilIcon, Upload, XIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { FaTelegram, FaGoogle, FaEnvelope } from "react-icons/fa";
+import { FolderUpIcon, LogOutIcon, PencilIcon } from "lucide-react";
+import { useState } from "react";
+import { FaEnvelope, FaGoogle, FaTelegram } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
     const { user } = useUserData();
-    const [review, setReview] = useState("");
-    const [myReviews, setMyReviews] = useState<IReview[]>([]);
-
-    const [formSubmitted, setFormSubmitted] = useState(false);
-    const toggleFormSubmit = () => setFormSubmitted((prev) => !prev)
-
-    const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false)
-    const handleUpdateDataOpen = () => setUpdateDataOpen((prev) => !prev);
-
-    const [isSourceLoading, setIsSourceLoading] = useState<boolean>(false)
-
-    const userRole = useGetUserRole()
-
+    const [updateDataOpen, setUpdateDataOpen] = useState<boolean>(false);
+    const userRole = useGetUserRole();
     const [formData, setFormData] = useState({
         newName: '',
     });
@@ -50,34 +33,18 @@ const ProfilePage = () => {
 
     const handleLogout = () => {
         removeTokenFromLocalStorage();
-        dispatch(updateData())
-        window.location.reload()
-    }
+        dispatch(updateData());
+        window.location.reload();
+    };
 
-    const handleMyReviews = (async () => {
-        const data = await onRequest(CommentService.getMyComments());
-        if (data) {
-            setMyReviews(data);
-        }
-    });
-
-    const handleUserCommentUpdate = useCallback(async (id: string, e: React.FormEvent) => {
+    const handleChangeInfo = async (e: React.FormEvent) => {
         e.preventDefault();
-        const formObject = returnObjectFromForm(e);
-        const data = await onRequest(CommentService.updateComment(id, formObject));
-        toast.success(`Пост обновлен!`);
-        handleMyReviews()
-    }, []);
-
-    const handleCommentDelete = useCallback(async (id: string) => {
-        await onRequest(CommentService.deleteMyComment(id));
-        toast.success(`Комментарий удален`);
-        handleMyReviews()
-    }, []);
-
-    useEffect(() => {
-        handleMyReviews()
-    }, [handleCommentDelete, handleUserCommentUpdate])
+        const formDataUpdate = returnObjectFromForm(e);
+        const data = await UserService.updateInfo(formDataUpdate);
+        toast.success(`Информация сохранена`);
+        dispatch(updateData());
+        setUpdateDataOpen(false);
+    };
 
     if (!user) {
         return (
@@ -87,113 +54,80 @@ const ProfilePage = () => {
                     <Button text="Войти или зарегистрироваться" openNewPage={false} href={RoutesConfig.ENTRY.path} />
                 </div>
             </Section>
-        )
+        );
     }
 
-    const { TelegramUser, GoogleUser, EmailUser, role, name } = user
-
-    const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setReview(e.target.value)
-    }
-
-    const handleUserReviewSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-
-        setIsSourceLoading(true)
-
-        const formData = new FormData(e.target as HTMLFormElement);
-
-        const data = await onRequest(CommentService.postComment(formData))
-
-        if (data) {
-            toast.success("Отзыв отправлен")
-            setReview('')
-
-            toggleFormSubmit()
-
-            handleMyReviews()
-        }
-
-        setIsSourceLoading(false)
-    }
-
-
-    const handleChangeInfo = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const formDataUpdate = returnObjectFromForm(e)
-
-        const data = await onRequest(UserService.updateInfo(formDataUpdate));
-
-        toast.success(`Информация сохранена`)
-        dispatch(updateData())
-
-    };
-
-
-
+    const { TelegramUser, GoogleUser, EmailUser, role, name } = user;
 
     return (
         <PageContainer title="Профиль">
-            <div className="flex w-full flex-col gap-3 mx-auto lg:w-1/2 bg-gray-900 text-white rounded-3xl shadow-xl p-5">
-
-                <div className="flex flex-row justify-between">
-                    <h3 className="text-xl font-semibold text-gray-200">Информация об аккаунте</h3>
-
-
-                    <div className="flex flex-col items-end gap-3">
-                        <Modal title="Выход из аккаунта!"
-                            content="Вы действительно хотите выйти?"
-                            buttonColor="red"
-                            buttonCloseText="Выйти"
-                            buttonOpenText="Выйти"
-                            buttonFC={handleLogout}
-
-                            icon={<LogOutIcon />}
-                        />
-
-                        <Button text="" FC={handleUpdateDataOpen} icon={<PencilIcon />} />
-                    </div>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-2xl shadow-2xl min-w-max w-10/12 lg:w-2/5 backdrop-blur-sm border border-gray-700 mx-auto">
+                <div className="w-full flex flex-col items-center mb-8">
+                    <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                        Профиль пользователя
+                    </h2>
                 </div>
 
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-xl font-semibold text-gray-200">Информация об аккаунте</h3>
+                        <div className="flex gap-3">
+                            <Modal 
+                                title="Выход из аккаунта!"
+                                content="Вы действительно хотите выйти?"
+                                buttonColor="red"
+                                buttonCloseText="Выйти"
+                                buttonOpenText="Выйти"
+                                buttonFC={handleLogout}
+                                icon={<LogOutIcon />}
+                            />
+                            <Button 
+                                text="" 
+                                FC={() => setUpdateDataOpen(!updateDataOpen)} 
+                                icon={<PencilIcon />}
+                                className="hover:bg-gray-700/50 transition-colors duration-200"
+                            />
+                        </div>
+                    </div>
 
-                {userRole == UserRole.Admin && (
-                    <Block className="flex flex-row flex-wrap justify-start p-4">
-                        <Button text="Создать пост или интервью" icon={<FolderUpIcon />} href={RoutesConfig.CREATE_POSTS.path} />
+                    {userRole === UserRole.Admin && (
+                        <Block className="flex flex-row flex-wrap justify-start p-4 bg-gray-800/50 rounded-xl">
+                            <Button 
+                                text="Создать пост или интервью" 
+                                icon={<FolderUpIcon />} 
+                                href={RoutesConfig.CREATE_POSTS.path}
+                                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+                            />
+                        </Block>
+                    )}
 
-                    </Block>
-                )}
-
-
-                <div className="flex items-center space-x-6">
-                    <div className="flex flex-col">
+                    <div className="space-y-4">
                         {TelegramUser && (
-                            <div className="bg-gray-800 p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <div className="bg-gray-800/50 p-4 rounded-xl shadow-md flex items-center space-x-4 hover:bg-gray-800/70 transition-colors duration-200">
                                 <img
                                     src={TelegramUser.photoUrl}
-                                    alt="Google Profile"
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
+                                    alt="Telegram Profile"
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-700"
                                 />
                                 <div>
-                                    <p className="text-gray-300">{TelegramUser.username}</p>
+                                    <p className="text-gray-200 font-medium">{TelegramUser.username}</p>
                                     <p className="text-gray-400 text-sm flex items-center">
-                                        <FaTelegram className="mr-2 text-red-400" />
+                                        <FaTelegram className="mr-2 text-blue-400" />
                                         {TelegramUser.telegramId}
                                     </p>
                                 </div>
-
-
                             </div>
                         )}
+
                         {GoogleUser && (
-                            <div className="bg-gray-800 p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <div className="bg-gray-800/50 p-4 rounded-xl shadow-md flex items-center space-x-4 hover:bg-gray-800/70 transition-colors duration-200">
                                 <img
                                     src={GoogleUser.photoUrl}
                                     alt="Google Profile"
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-700"
                                 />
                                 <div>
-                                    <p className="text-gray-300">{GoogleUser.name}</p>
+                                    <p className="text-gray-200 font-medium">{GoogleUser.name}</p>
                                     <p className="text-gray-400 text-sm flex items-center">
                                         <FaGoogle className="mr-2 text-red-400" />
                                         {GoogleUser.email}
@@ -203,97 +137,55 @@ const ProfilePage = () => {
                         )}
 
                         {EmailUser && (
-                            <div className="bg-gray-800 p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <div className="bg-gray-800/50 p-4 rounded-xl shadow-md flex items-center space-x-4 hover:bg-gray-800/70 transition-colors duration-200">
+                                <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+                                    <FaEnvelope className="w-6 h-6 text-gray-400" />
+                                </div>
                                 <div>
+                                    <p className="text-gray-200 font-medium">Email аккаунт</p>
                                     <p className="text-gray-400 text-sm flex items-center">
-                                        <FaEnvelope className="mr-2 text-red-400" />
+                                        <FaEnvelope className="mr-2 text-blue-400" />
                                         {EmailUser.email}
                                     </p>
                                 </div>
                             </div>
                         )}
                     </div>
-                </div>
 
-                <div className="space-y-4">
+                    <div className="bg-gray-800/50 p-4 rounded-xl space-y-3">
+                        <p className="text-gray-300">
+                            <span className="text-gray-400">Участник сайта:</span> {new Date().toLocaleDateString()}
+                        </p>
+                        <p className="text-gray-300">
+                            <span className="text-gray-400">Статус:</span> {role === "admin" ? "Admin" : "User"}
+                        </p>
+                        <p className="text-gray-300">
+                            <span className="text-gray-400">Имя:</span> {name}
+                        </p>
+                    </div>
 
-                    <ul className="space-y-2 text-gray-400">
-                        <li>
-                            <strong>Участник сайта:</strong> {new Date().toLocaleDateString()}
-                        </li>
-                        <li>
-                            <strong>Статус:</strong> {role === "admin" ? "Admin" : "User"}
-                        </li>
-                        <li>
-                            <strong>Имя: </strong>{name}
-                        </li>
-
-                        {updateDataOpen && (
-                            <div>
-                                <Block className="p-2">
-                                    <form className="flex flex-col gap-3" onSubmit={handleChangeInfo}>
-                                        <Input name="newName" placeholder="новое имя" onChange={handleChangeForm} value={formData.newName} />
-
-                                        <Button formSubmit={true} text="Отправить" />
-                                    </form>
-                                </Block>
-
-
-                            </div>
-                        )}
-
-
-
-                    </ul>
-                </div>
-
-
-
-
-                <div className="mt-6">
-                    <h3 className="text-xl font-semibold mb-3 text-gray-200">Оставьте отзыв</h3>
-                    <form onSubmit={handleUserReviewSubmit} className="flex flex-col gap-3 bg-gray-800 p-3 rounded-lg shadow-md">
-                        <Textarea
-                            name="text"
-                            placeholder="Введите ваш отзыв..."
-                            value={review}
-                            onChange={handleReviewChange}
-                            rows={4}
-                            required={true}
-                        />
-
-                        <FileUploader
-                            formSubmitted={formSubmitted}
-                            buttonText="Загрузить фото или видео"
-                            icon={<ImageUp />}
-                            imageAccept={true}
-                            videoAccept={true}
-                        />
-
-                        {isSourceLoading && <Loader />}
-
-
-                        <div className="flex justify-end">
-                            <Button disabled={isSourceLoading} formSubmit={true} icon={<Upload />} text="Отправить" />
+                    {updateDataOpen && (
+                        <div className="bg-gray-800/50 p-4 rounded-xl">
+                            <form className="flex flex-col gap-3" onSubmit={handleChangeInfo}>
+                                <Input 
+                                    name="newName" 
+                                    placeholder="Новое имя" 
+                                    onChange={handleChangeForm} 
+                                    value={formData.newName}
+                                    className="bg-gray-700 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 text-white placeholder-gray-400"
+                                />
+                                <Button 
+                                    formSubmit={true} 
+                                    text="Сохранить"
+                                    className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
+                                />
+                            </form>
                         </div>
-                    </form>
+                    )}
                 </div>
             </div>
-
-
-
-            {myReviews.length > 0 && (
-                <>
-                    <h2 className="text-3xl font-semibold text-gray-200">Мои отзывы</h2>
-                    <ReviewList canEditReviews={true} profileElem={true} reviews={myReviews} handleUpdate={handleUserCommentUpdate} handleDelete={handleCommentDelete} />
-
-                </>
-            )}
-
         </PageContainer>
-
     );
 };
 
-
-export default ProfilePage
+export default ProfilePage;
