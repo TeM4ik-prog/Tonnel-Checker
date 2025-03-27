@@ -51,7 +51,7 @@ export const Section = ({ children, className, hightCheck = true }: SectionProps
 
   return (
     <section
-      className={`flex flex-col w-full justify-center items-center transition-all duration-300 ${className}`}
+      className={`flex flex-col z-[0] w-full justify-center items-center transition-all duration-300 ${className}`}
       style={{ 
         height: hightCheck ? `calc(${windowHeight}px - ${headerHeight}px)` : '100%',
         // marginTop: hightCheck ? `${headerHeight}px` : '0'

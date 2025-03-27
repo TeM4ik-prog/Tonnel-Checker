@@ -12,18 +12,16 @@ import { CategoryService } from './services/category.service';
 import { setCategories } from './store/categories/categories.slice';
 import { ProtectedRoute } from './components/layout/protectedRoute';
 import { Loader } from './components/ui/Loader';
-const MainPage = lazy(() => import('@/pages/MainPage'));
+
 const EntryPage = lazy(() => import('@/pages/EntryPage'));
-const PostsPage = lazy(() => import('@/pages/PostsPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const CreatePostsPage = lazy(() => import('@/pages/CreatePostsPage'));
-const InterviewsPage = lazy(() => import('@/pages/InterviewsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
-const LoveGymnPage = lazy(() => import('@/pages/LoveGymnPage'));
-const NewspaperPage = lazy(() => import('@/pages/NewspaperPage'));
+
 
 import 'react-datepicker/dist/react-datepicker.css';
+import MainPage from './pages/MainPage';
 
 function App() {
   const dispatch = useDispatch()
@@ -74,11 +72,11 @@ function App() {
       <Router>
         <Header />
         <Suspense fallback={loaderBlock()}>
-          <main className='h-full'>
+          <main className='h-full z-[0]'>
             <Routes>
               <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
               <Route path={RoutesConfig.ENTRY.path} element={<EntryPage />} />
-              <Route path={`${RoutesConfig.POSTS.path}/:category`} element={<PostsPage />} />
+              {/* <Route path={`${RoutesConfig.POSTS.path}/:category`} element={<PostsPage />} /> */}
               
               <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
               

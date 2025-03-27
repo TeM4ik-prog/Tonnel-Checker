@@ -28,9 +28,9 @@ export const Sidebar = () => {
                     leaveFrom="translate-x-0"
                     leaveTo="-translate-x-full"
                 >
-                    <Dialog as="div" className="fixed inset-0 z-50 outline-none" onClose={closeSidebar}>
+                    <Dialog as="div" className="fixed inset-0 z-40 outline-none" onClose={closeSidebar}>
                         <div className="fixed inset-0 flex items-start justify-start">
-                            <DialogPanel className="bg-gray-800 w-full overflow-y-auto h-full p-5 text-white md:w-80">
+                            <DialogPanel className="bg-gray-900 w-full overflow-y-auto h-full p-5 text-white md:w-80">
                                 <div className="sticky justify-between items-center mb-5">
                                     <SidebarClose className='ml-auto' onClick={closeSidebar} size={28} />
                                 </div>
@@ -46,7 +46,7 @@ export const Sidebar = () => {
                 </Transition>
             </div>
 
-            {/* Оверлей для затемнения контента */}
+            
             <Transition
                 show={isOpen}
                 as={Fragment}
@@ -57,7 +57,7 @@ export const Sidebar = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" />
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000]" />
             </Transition>
         </>
     );
