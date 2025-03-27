@@ -26,7 +26,7 @@ const MainPage: React.FC = () => {
                     <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
                     
                     {/* Grid Pattern */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
                 </div>
 
                 {/* Floating Elements */}
@@ -73,7 +73,7 @@ const MainPage: React.FC = () => {
                         transition={{ duration: 0.2 }}
                     >
                         <motion.h1
-                            className="p-5 text-5xl sm:text-7xl md:text-9xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 text-transparent bg-clip-text relative"
+                             className="p-5 text-8xl sm:text-9xl md:text-[10rem] lg:text-[12rem] font-bold bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400 text-transparent bg-clip-text relative"
                             animate={{
                                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                             }}
@@ -106,7 +106,7 @@ const MainPage: React.FC = () => {
                             href="https://t.me/perehodweba"
                             openNewPage={true}
                             icon={<FaTelegram className="text-xl sm:text-2xl transition-transform group-hover:scale-110" />}
-                            className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 text-black px-8 sm:px-16 py-5 sm:py-7 rounded-full text-lg sm:text-xl font-bold hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all duration-300 hover:scale-105 group"
+                            className="w-full sm:w-auto bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 text-white px-8 sm:px-16 py-5 sm:py-7 rounded-full text-lg sm:text-xl font-bold hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] transition-all duration-300 hover:scale-105 group"
                         />
                     </motion.div>
                 </motion.div>
