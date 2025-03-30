@@ -5,30 +5,14 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-
-
-  const PORT = 3000;
+  const PORT = 8080;
 
   app.use(express.json());
-
   app.setGlobalPrefix('api');
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-  app.use(
-    '/uploads',
-    express.static(join(__dirname, '..', 'uploads')),
-  );
-  app.use(
-    '/videos',
-    express.static(join(__dirname, '..', 'uploads/videos')),
-  );
-  app.use(
-    '/newspapers',
-    express.static(join(__dirname, '..', 'uploads/newspapers')),
-  );
   app.use(
     '/public',
     express.static(join(__dirname, '..', 'public')),

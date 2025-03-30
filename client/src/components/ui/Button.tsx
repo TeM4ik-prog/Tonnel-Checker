@@ -49,22 +49,15 @@ export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, class
         )
     }
 
-    console.log(href, openNewPage)
-
     return (
         <>
             {!formSubmit ? (
                 <NavLink to={path || href || ''} target={openNewPage ? "_blank" : ''} className="flex justify-center z-10">
                     {renderButton()}
                 </NavLink>
-
             ) : (
                 renderButton()
             )}
         </>
-
     )
-
-
-
 }
