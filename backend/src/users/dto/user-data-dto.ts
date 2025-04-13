@@ -1,6 +1,10 @@
 
-export class createUserDto {
-    email?: string
+export class CreateUserDto {
+   id: number
+   first_name: string
+   last_name: string
+   is_premium: boolean
+   username: string
 }
 
 

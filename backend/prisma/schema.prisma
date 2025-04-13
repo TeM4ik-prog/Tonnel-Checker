@@ -8,12 +8,16 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  telegramId String   @unique
-  lastName   String
-  firstName  String
-  photoUrl   String
-  authDate   DateTime
+  id         String  @id @default(uuid())
+  telegramId Int     @unique
+  username   String
+  lastName   String?
+  firstName  String?
+
+  // photoUrl   String
+  // authDate   DateTime
+
+  minProfit Float @default(0.5)
 }
 
 model Gift {
@@ -51,7 +55,23 @@ model PackGiftsDataUpdate {
   updatedAt       DateTime          @default(now())
 }
 
-model minProfit {
-  id    String @id @default("singleton") @map("id")
-  value Float  @default(0.5)
+
+model ActiveChat {
+  id             Int      @id @default(autoincrement())
+  chatId         Int
+  userTelegramId Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([chatId, userTelegramId])
+}
+
+model GoodPriceMessage {
+  id        Int      @id @default(autoincrement())
+  chatId    Int
+  messageId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chatId, messageId])
 }

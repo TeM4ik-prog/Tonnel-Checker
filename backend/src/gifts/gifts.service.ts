@@ -88,8 +88,11 @@ export class GiftsService implements OnModuleInit {
 
         resultDataUpdate.push(createdGiftsDataUpdate);
 
-        if (profit > await this.getMinProfit()) {
-          await this.telegramService.deleteAllGoodPriceMessages();
+
+        // await this.telegramService.checkUsersProfitToSendGoodPriceMessages()
+
+        // if (profit > await this.getMinProfit()) {
+          // await this.telegramService.deleteAllGoodPriceMessages();
 
           await this.telegramService.sendMessageGoodPriceGiftToAll(
             items[0],
@@ -97,7 +100,7 @@ export class GiftsService implements OnModuleInit {
             profit,
             sellPrice
           );
-        }
+        // }
 
       } catch (error) {
         console.error(error);
@@ -123,50 +126,14 @@ export class GiftsService implements OnModuleInit {
     }
   }
 
-  @Cron('*/60 * * * * *')
+  @Cron('*/20 * * * * *')
   async handleCron() {
     await this.fetchGiftsDataFromTonnel();
   }
 
 
 
-  async getMinProfit() {
-    return (await this.database.minProfit.findFirst()).value
-  }
-
-
-  async setMinProfit(value: number): Promise<number> {
-    const minProfit = await this.database.minProfit.update({
-      where: { id: 'singleton' },
-      data: {
-        value: (value)
-      },
-
-    })
-    return minProfit.value
-  }
-
-
-  async createMinProfitIfExists() {
-    const existing = await this.database.minProfit.findUnique({
-      where: { id: 'singleton' }
-    });
-
-    if (existing) {
-      return this.database.minProfit.update({
-        where: { id: 'singleton' },
-        data: {},
-      });
-    } else {
-      return this.database.minProfit.create({
-        data: { id: 'singleton' },
-      });
-    }
-  }
-
-
   async onModuleInit() {
-    await this.createMinProfitIfExists()
     // await this.fetchGiftsDataFromTonnel();
   }
 }

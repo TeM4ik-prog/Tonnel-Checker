@@ -10,4 +10,9 @@ export interface ITelegramCommand {
   description?: string;
 }
 
+export enum BotScenes {
+  MIN_PROFIT = 'MINPROFIT'
+
+}
+
 
