@@ -10,7 +10,6 @@ export interface Route {
     subRoutes?: { [key: string]: Route };
 }
 
-
 export interface Routes {
     [key: string]: Route;
 }
@@ -73,45 +72,17 @@ export const POSTS_PATHS = [
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ApiConfig {
     auth = {
         baseInstance: createAxiosInstance('auth/'),
-        emailInstance: createAxiosInstance('auth/email/'),
         telegramInstance: createAxiosInstance('auth/telegram/'),
-        googleInstance: createAxiosInstance('auth/google/'),
 
         profile: "profile",
-
-        email: {
-            register: "register",
-            login: "login",
-            loginAdmin: "login/admin",
-            verifyCode: "verify",
-            sendCode: "sendCode",
-            recovery: "recovery",
-            changePassword: "changePassword",
-        },
 
         telegram: {
             login: "login",
         },
 
-        google: {
-            login: 'login'
-        }
     }
 
     admin = {
@@ -123,30 +94,15 @@ class ApiConfig {
         }
     }
 
-    post = {
-        baseInstance: createAxiosInstance('post/'),
-    }
-
-    category = {
-        baseInstance: createAxiosInstance('category/'),
-    }
-
-    review = {
-        baseInstance: createAxiosInstance('review/'),
-
-        newspapers: 'getNewspapers'
-    }
-
-    comment = {
-        baseInstance: createAxiosInstance('comment/'),
-
-        myComments: 'me'
-    }
 
     users = {
         baseInstance: createAxiosInstance('users/'),
+    }
 
+    gifts = {
+        baseInstance: createAxiosInstance('gifts/'),
 
+        lastUpdate: "last-update"
     }
 
 }

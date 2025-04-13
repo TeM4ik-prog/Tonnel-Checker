@@ -1,100 +1,135 @@
+import { Block } from "@/components/layout/Block";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/Button";
-import { Section } from "@/components/ui/Section";
-import { motion } from "framer-motion";
-import { FaExchangeAlt } from "react-icons/fa";
+import { GiftService } from "@/services/gift.service";
+import { onRequest } from "@/types";
+import { IPackGiftsDataUpdate } from "@/types/gift";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
+interface PriceData {
+    default: any;
+    black: any;
+    onyx: any;
+}
+
+interface GiftPrice {
+    name: string;
+    firstBlackPrice: number;
+    secondBlackPrice: number;
+    profit: number;
+    profitRub: number;
+}
+
+const gifts: string[] =
+    ["Jack-in-the-Box", "Cookie Heart", "Evil Eye", "Ginger Cookie", "Tama Gadget", "Trapped Heart", "Jelly Bunny", "Homemade Cake"]
+
+// ["B-Day Candle","Bunny Muffin","Jack-in-the-Box","Astral Shard", "Berry Box", "Candy Cane", "Cookie Heart", "Crystal Ball", "Desk Calendar", "Diamond Ring", "Durov's Cap", "Electric Skull", "Eternal Candle", "Eternal Rose", "Evil Eye", "Flying Broom", "Genie Lamp", "Ginger Cookie", "Hanging Star", "Hex Pot", "Homemade Cake", "Hypno Lollipop", "Ion Gem", "Jelly Bunny", "Jester Hat", "Jingle Bells", "Kissed Frog", "Lol Pop", "Loot Bag", "Love Candle", "Love Potion", "Lunar Snake", "Mad Pumpkin", "Magic Potion", "Mini Oscar", "Neko Helmet", "Party Sparkler", "Perfume Bottle", "Plush Pepe", "Precious Peach", "Record Player", "Sakura Flower", "Santa Hat", "Scared Cat", "Sharp Tongue", "Signet Ring", "Skull Flower", "Sleigh Bell", "Snow Globe", "Snow Mittens", "Spiced Wine", "Spy Agaric", "Star Notepad", "Swiss Watch", "Tama Gadget", "Top Hat", "Toy Bear", "Trapped Heart", "Vintage Cigar", "Voodoo Doll", "Winter Wreath", "Witch Hat"];
 
 const MainPage: React.FC = () => {
-    return (
-        <div className="min-h-screen bg-[#0a0a0a] gap-4 text-white overflow-hidden">
-            <Section className="relative overflow-hidden gap-5">
-                <div className="absolute inset-0">
-                    <div className="absolute inset-0">
-                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent animate-[slideRight_3s_ease-in-out_infinite]" />
-                        <div className="absolute top-1/4 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent animate-[slideLeft_4s_ease-in-out_infinite]" />
-                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent animate-[slideRight_5s_ease-in-out_infinite]" />
-                        <div className="absolute top-3/4 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent animate-[slideLeft_6s_ease-in-out_infinite]" />
-                    </div>
+    const [lastUpdate, setLastUpdate] = useState<IPackGiftsDataUpdate | null>(null)
+    const [loading, setLoading] = useState(true);
 
-                    <div className="absolute inset-0">
-                        {[...Array(10)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                className="absolute w-1 h-1 bg-white/10 rounded-full"
-                                initial={{
-                                    x: Math.random() * window.innerWidth,
-                                    y: Math.random() * window.innerHeight,
-                                    scale: 0,
-                                }}
-                                animate={{
-                                    x: Math.random() * window.innerWidth,
-                                    y: Math.random() * window.innerHeight,
-                                    scale: [0, 4, 0],
-                                }}
-                                transition={{
-                                    duration: 5 + Math.random() * 5,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                    delay: Math.random() * 2,
-                                }}
-                            />
-                        ))}
-                    </div>
+    const location = useLocation();
+
+    const updateData = async () => {
+        setLoading(true);
+        const data = await onRequest(GiftService.getLastUpdate())
+        if (data) {
+            setLastUpdate(data)
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        updateData();
+
+    }, []);
+
+    const getProfitColor = (profit: number) => {
+        if (profit > 0) return 'text-green-500';
+        if (profit < 0) return 'text-red-500';
+        return 'text-gray-500';
+    };
+
+    const formatPrice = (price: number) => {
+        return price.toFixed(2);
+    };
+
+    return (
+        <PageContainer className="pt-0">
+            <div className="w-full max-w-6xl mx-auto p-2">
+                <div className="mb-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Последнее обновление: {lastUpdate?.updatedAt ? new Date(lastUpdate.updatedAt).toLocaleString() : 'Нет данных'}
+                        <span className="ml-2 text-gray-500">(обновление раз в минуту)</span>
+                    </p>
                 </div>
 
-                <motion.div
-                    className="relative z-10 text-center px-4 w-full max-w-6xl mx-auto"
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.8 }}
-                >
-
-                    <motion.div
-                        className="relative"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 blur-2xl rounded-full" />
-                        <motion.h1
-                            className="relative p-5 text-8xl sm:text-9xl md:text-[10rem] lg:text-[12rem] font-bold text-white"
-                            animate={{
-                                textShadow: [
-                                    "0 0 20px rgba(147,51,234,0.5)",
-                                    "0 0 40px rgba(59,130,246,0.5)",
-                                    "0 0 20px rgba(147,51,234,0.5)",
-                                ],
-                            }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                            }}
-                        >
-                            Dark Project
-                        </motion.h1>
-                    </motion.div>
+                {/* <Button
+                    text="close"
+                    FC={() => window.Telegram?.WebApp.close()}
+                />                
+ */}
 
 
-                    <motion.p
-                        className="text-xl sm:text-2xl md:text-3xl text-gray-400 mb-8 sm:mb-12 font-light px-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5, duration: 0.6 }}
-                    >
-                        Откройте для себя мир криптообмена, где каждое действие приближает вас к успеху
-                    </motion.p>
+                {/* <Button
+                    text="redirect"
+                    href="https://tonnel-gift.vercel.app"
+
+                /> */}
+
+                {/* <a href="https://tonnel-gift.vercel.app/verify">open</a> */}
 
 
-                    <Button
-                        text="Страница агента"
-                        href="https://obmencrypto445.ru/login.php"
-                        openNewPage={true}
-                        icon={<FaExchangeAlt className="text-xl sm:text-2xl transition-transform group-hover:scale-110" />}
-                        className="relative hover:scale-5 w-full sm:w-auto bg-[#0a0a0a] text-white px-8 sm:px-16 py-5 sm:py-7 rounded-full text-lg sm:text-xl font-bold transition-all duration-300 hover:scale-105 group"
-                    />
-                </motion.div>
-            </Section>
-        </div>
+                {/* <iframe className="w-max h-96" id="child" src="https://market.tonnel.network/verify" sandbox="allow-scripts allow-same-origin"></iframe> */}
+
+                {lastUpdate && (
+                    <div className="space-y-3">
+                        {lastUpdate.GiftsDataUpdate.map((update) => (
+                            <Block key={update.id} className="p-3">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                    <div className="flex-1">
+                                        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                                            {update.Gifts[0]?.name || 'Загрузка...'}
+                                        </h2>
+                                        <div className="flex items-center gap-3">
+                                            <span className={`text-2xl font-bold ${getProfitColor(update.profit)}`}>
+                                                {update.profit} TON
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">Цена продажи: </span>
+                                        <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                            {update.sellPrice} TON
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3">
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {update.Gifts.map((gift, index) => (
+                                            <div
+                                                key={gift.id}
+                                                className="bg-gray-50 dark:bg-gray-800/50 rounded p-2 flex justify-between items-center text-sm"
+                                            >
+                                                <span className="text-gray-700 dark:text-gray-300">
+                                                    Товар {index + 1}
+                                                </span>
+                                                <span className="font-medium text-gray-800 dark:text-white">
+                                                    {formatPrice(gift.price * 1.1)} TON
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </Block>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </PageContainer>
     );
 };
 

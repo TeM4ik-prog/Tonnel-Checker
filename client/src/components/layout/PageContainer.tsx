@@ -11,7 +11,7 @@ export const PageContainer = ({ title, children, className }: Props) => {
     return (
         <motion.section
             key={title}
-            className={`${className} flex flex-col min-h-screen w-full pt-40 pb-12 relative z-0`}
+            className={`flex flex-col min-h-screen w-full pt-3 pb-12 relative z-0 ${className}`}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.3 }}

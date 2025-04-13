@@ -2,7 +2,7 @@ import { handleError } from "@/utils/handleError";
 import { AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
-export const TelegramBot: string = "TgVerifyApp_bot"
+export const TelegramBot: string = "tonnel_ckecker_bot"
 
 export interface IUser {
     id: string;
@@ -10,11 +10,7 @@ export interface IUser {
     banned?: boolean;
     name: string;
 
-    EmailUser: {
-        id: string;
-        email: string;
-    } | null
-
+    
     TelegramUser: {
         authDate: string;
         firstName: string;
@@ -22,17 +18,9 @@ export interface IUser {
         telegramId: string;
         username: string;
     } | null
-
-    GoogleUser?: {
-        id: string;
-        email: string;
-        name: string;
-        givenName: string;
-        photoUrl: string;
-        userBaseId: string;
-
-    }
 }
+
+
 
 
 export type userIdParam = number | string
@@ -62,22 +50,6 @@ export interface ApiRoute {
     instance: AxiosInstance,
     baseUrl: Object
 }
-
-export interface Category {
-    id: string;
-    name: string;
-}
-
-
-
-export interface IReviewUpdate {
-    content: string
-
-}
-
-
-
-
 
 
 export async function onRequest<T>(request: Promise<T>): Promise<T | null> {

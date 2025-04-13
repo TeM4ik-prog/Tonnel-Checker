@@ -7,112 +7,51 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model VerificationCode {
-  id        String    @id @default(uuid())
-  code      String
-  expiresAt DateTime
-  userId    String
-  user      EmailUser @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
+model User {
+  id         String   @id @default(uuid())
+  telegramId String   @unique
+  lastName   String
+  firstName  String
+  photoUrl   String
+  authDate   DateTime
 }
 
-model UserBase {
-  id     String  @id @default(uuid())
-  banned Boolean @default(false)
-  role   String  @default("user")
+model Gift {
+  id       String @id @default(uuid())
+  giftId   Int
+  giftNum  Int
+  name     String
+  price    Float
+  model    String
+  symbol   String
+  backdrop String
 
-  name   String  @default("User")
-  avatar String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Comments Comment[]
-
-  EmailUser    EmailUser?
-  TelegramUser TelegramUser?
-  GoogleUser   GoogleUser?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  GiftsDataUpdate   GiftsDataUpdate? @relation(fields: [giftsDataUpdateId], references: [id], onUpdate: Cascade)
+  giftsDataUpdateId String?
 }
 
-model EmailUser {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  password String?
-
-  userBaseId String   @unique
-  userBase   UserBase @relation(fields: [userBaseId], references: [id])
-
-  VerificationCode VerificationCode[]
-}
-
-model TelegramUser {
-  id         String @id @default(uuid())
-  telegramId String @unique
-
-  firstName String
-  username  String
-  photoUrl  String
-  authDate  DateTime
-
-  userBaseId String   @unique
-  userBase   UserBase @relation(fields: [userBaseId], references: [id])
-}
-
-model GoogleUser {
+model GiftsDataUpdate {
   id    String @id @default(uuid())
-  email String @unique
+  Gifts Gift[]
 
-  name      String
-  givenName String
+  profit    Float
+  sellPrice Float
 
-  photoUrl String
-
-  userBaseId String   @unique
-  userBase   UserBase @relation(fields: [userBaseId], references: [id])
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @default(now())
+  PackGiftsDataUpdate   PackGiftsDataUpdate? @relation(fields: [packGiftsDataUpdateId], references: [id], onUpdate: Cascade)
+  packGiftsDataUpdateId String?
 }
 
-// ________
-
-model Post {
-  id          String   @id @default(uuid())
-  title       String
-  content     String
-  imageUrl    String
-  date        String
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  Category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId String?
+model PackGiftsDataUpdate {
+  id              String            @id @default(uuid())
+  GiftsDataUpdate GiftsDataUpdate[]
+  updatedAt       DateTime          @default(now())
 }
 
-model Category {
-  id    String @id @default(uuid())
-  name  String @unique
-  posts Post[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Review {
-  id        String @id @default(uuid())
-  content   String
-  sourceUrl String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Comment {
-  id        String @id @default(uuid())
-  content   String
-  sourceUrl String
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  UserBase   UserBase? @relation(fields: [userBaseId], references: [id])
-  userBaseId String?
+model minProfit {
+  id    String @id @default("singleton") @map("id")
+  value Float  @default(0.5)
 }
