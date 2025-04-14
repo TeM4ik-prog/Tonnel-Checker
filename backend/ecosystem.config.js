@@ -15,7 +15,7 @@ module.exports = {
 
             env_production: {
                 NODE_ENV: 'production',
-                APP_URL: 'http://94.231.205.125:8080/',
+                APP_URL: 'https://webky.ru/',
             },
         },
     ],
