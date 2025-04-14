@@ -13,7 +13,10 @@ import { TelegramModule } from './telegram/telegram.module';
     DatabaseModule,
     AuthModule,
     TelegramModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
+    }),
     GiftsModule,
   ],
   controllers: [AppController],
