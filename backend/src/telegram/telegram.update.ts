@@ -31,7 +31,7 @@ export class TelegramUpdate {
       reply_markup: {
         inline_keyboard: [
           [{
-            text: 'Запустить приложение',
+            text: 'Запустить приложение' + this.configService.get('APP_URL'),
             web_app: { url: this.configService.get('APP_URL') },
           }],
         ],
