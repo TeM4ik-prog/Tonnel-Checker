@@ -1,18 +1,19 @@
 import { DatabaseModule } from '@/database/database.module';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersController } from './users.controller';
 import {
   UsersService,
 } from './users.service';
+import { TelegramModule } from '@/telegram/telegram.module';
 
 @Module({
   imports: [
     DatabaseModule,
     HttpModule,
-    ConfigModule,
+    // forwardRef(() => TelegramModule),
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -27,7 +28,7 @@ import {
   providers: [UsersService],
   exports: [
     UsersService,
-    
+
   ],
 })
-export class UsersModule {}
+export class UsersModule { }

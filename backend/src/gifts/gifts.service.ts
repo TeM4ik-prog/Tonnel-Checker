@@ -118,7 +118,7 @@ export class GiftsService implements OnModuleInit {
           GiftsDataUpdate: true
         }
       })
-      console.log('created');
+      // console.log('created');
 
     }
     else {

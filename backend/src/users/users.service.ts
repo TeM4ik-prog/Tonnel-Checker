@@ -1,11 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/database/database.service';
-import { CreateUserDto } from './dto/user-data-dto';
+import { AuthTonnelData, CreateUserDto, UserTonnelData } from './dto/user-data-dto';
 import { User } from 'telegraf/typings/core/types/typegram';
+import { TelegramService } from '@/telegram/telegram.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private database: DatabaseService) { }
+  constructor(private database: DatabaseService,
+    // @Inject(forwardRef(() => TelegramService))
+    // private readonly telegramService: TelegramService,
+  ) { }
 
 
   async getAllUsersMinProfit() {
@@ -90,6 +94,40 @@ export class UsersService {
     })
   }
 
+  async updateUserAuthTonnelData(telegramId: number, authTonnelData: string) {
+
+    return await this.database.user.update({
+      where: {
+        telegramId
+      },
+      data: {
+        authTonnelData: authTonnelData
+      }
+    })
+  }
+
+
+  decodeInitData(encoded: string): AuthTonnelData {
+    try {
+      const params = new URLSearchParams(encoded);
+
+      const userRaw = params.get('user');
+      if (!userRaw) throw new Error('user field is missing');
+
+      const user: UserTonnelData = JSON.parse(decodeURIComponent(userRaw));
+
+      return {
+        user,
+        chat_instance: params.get('chat_instance') || '',
+        chat_type: params.get('chat_type') || '',
+        auth_date: Number(params.get('auth_date') || 0),
+        signature: params.get('signature') || '',
+        hash: params.get('hash') || '',
+      };
+    } catch (e) {
+      throw new Error('Invalid initData format or decoding error');
+    }
+  }
 
 
 

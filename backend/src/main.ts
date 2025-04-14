@@ -7,8 +7,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const PORT = 8080;
 
+  app.enableCors({
+    origin: '*',
+  })
+
   app.use(express.json());
   app.setGlobalPrefix('api');
+
+
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));

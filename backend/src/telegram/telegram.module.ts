@@ -12,8 +12,11 @@ import { DatabaseModule } from '@/database/database.module';
 @Module({
   imports: [
     ConfigModule,
-    UsersModule,
-    DatabaseModule,
+    forwardRef(() => DatabaseModule),
+
+    forwardRef(() => UsersModule),
+
+
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -33,7 +36,7 @@ import { DatabaseModule } from '@/database/database.module';
     TelegramUpdate,
     TelegramService,
 
-    MinProfitScene
+    MinProfitScene,
   ],
   exports: [TelegramService]
 })

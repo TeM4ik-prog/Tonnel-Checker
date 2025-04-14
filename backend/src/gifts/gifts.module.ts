@@ -10,7 +10,7 @@ import { GiftsService } from './gifts.service';
   imports: [
     DatabaseModule,
     HttpModule,
-    TelegramModule,
+   TelegramModule,
     ScheduleModule.forRoot()
   ],
   controllers: [GiftsController],

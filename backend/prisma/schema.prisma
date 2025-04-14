@@ -14,6 +14,8 @@ model User {
   lastName   String?
   firstName  String?
 
+  authTonnelData String?
+
   // photoUrl   String
   // authDate   DateTime
 
