@@ -24,10 +24,16 @@ interface GiftPrice {
 const gifts: string[] =
     ["Jack-in-the-Box", "Cookie Heart", "Evil Eye", "Ginger Cookie", "Tama Gadget", "Trapped Heart", "Jelly Bunny", "Homemade Cake"]
 
-// ["B-Day Candle","Bunny Muffin","Jack-in-the-Box","Astral Shard", "Berry Box", "Candy Cane", "Cookie Heart", "Crystal Ball", "Desk Calendar", "Diamond Ring", "Durov's Cap", "Electric Skull", "Eternal Candle", "Eternal Rose", "Evil Eye", "Flying Broom", "Genie Lamp", "Ginger Cookie", "Hanging Star", "Hex Pot", "Homemade Cake", "Hypno Lollipop", "Ion Gem", "Jelly Bunny", "Jester Hat", "Jingle Bells", "Kissed Frog", "Lol Pop", "Loot Bag", "Love Candle", "Love Potion", "Lunar Snake", "Mad Pumpkin", "Magic Potion", "Mini Oscar", "Neko Helmet", "Party Sparkler", "Perfume Bottle", "Plush Pepe", "Precious Peach", "Record Player", "Sakura Flower", "Santa Hat", "Scared Cat", "Sharp Tongue", "Signet Ring", "Skull Flower", "Sleigh Bell", "Snow Globe", "Snow Mittens", "Spiced Wine", "Spy Agaric", "Star Notepad", "Swiss Watch", "Tama Gadget", "Top Hat", "Toy Bear", "Trapped Heart", "Vintage Cigar", "Voodoo Doll", "Winter Wreath", "Witch Hat"];
+interface GroupedUpdates {
+    [name: string]: {
+        items: IPackGiftsDataUpdate[];
+        isExpanded: boolean;
+    };
+}
 
 const MainPage: React.FC = () => {
     const [lastUpdate, setLastUpdate] = useState<IPackGiftsDataUpdate | null>(null)
+    const [groupedUpdates, setGroupedUpdates] = useState<GroupedUpdates>({});
     const [loading, setLoading] = useState(true);
 
     const location = useLocation();
@@ -35,15 +41,45 @@ const MainPage: React.FC = () => {
     const updateData = async () => {
         setLoading(true);
         const data = await onRequest(GiftService.getLastUpdate())
+        console.log(data.GiftsDataUpdate)
         if (data) {
-            setLastUpdate(data)
+            setLastUpdate(data);
+            groupUpdates(data.GiftsDataUpdate);
         }
         setLoading(false);
     };
 
+    const groupUpdates = (updates: IPackGiftsDataUpdate[]) => {
+        const grouped: GroupedUpdates = {};
+        
+        updates.forEach(update => {
+            const name = update.Gifts[0]?.name || 'Unknown';
+            
+            if (!grouped[name]) {
+                grouped[name] = {
+                    items: [],
+                    isExpanded: false
+                };
+            }
+            
+            grouped[name].items.push(update);
+        });
+        
+        setGroupedUpdates(grouped);
+    };
+
+    const toggleGroup = (name: string) => {
+        setGroupedUpdates(prev => ({
+            ...prev,
+            [name]: {
+                ...prev[name],
+                isExpanded: !prev[name].isExpanded
+            }
+        }));
+    };
+
     useEffect(() => {
         updateData();
-
     }, []);
 
     const getProfitColor = (profit: number) => {
@@ -66,64 +102,86 @@ const MainPage: React.FC = () => {
                     </p>
                 </div>
 
-                {/* <Button
-                    text="close"
-                    FC={() => window.Telegram?.WebApp.close()}
-                />                
- */}
-
-
-                {/* <Button
-                    text="redirect"
-                    href="https://tonnel-gift.vercel.app"
-
-                /> */}
-
-                {/* <a href="https://tonnel-gift.vercel.app/verify">open</a> */}
-
-
-                {/* <iframe className="w-max h-96" id="child" src="https://market.tonnel.network/verify" sandbox="allow-scripts allow-same-origin"></iframe> */}
-
-                {lastUpdate && (
+                {Object.keys(groupedUpdates).length > 0 && (
                     <div className="space-y-3">
-                        {lastUpdate.GiftsDataUpdate.map((update) => (
-                            <Block key={update.id} className="p-3">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                    <div className="flex-1">
-                                        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-                                            {update.Gifts[0]?.name || 'Загрузка...'}
-                                        </h2>
-                                        <div className="flex items-center gap-3">
-                                            <span className={`text-2xl font-bold ${getProfitColor(update.profit)}`}>
-                                                {update.profit} TON
-                                            </span>
+                        {Object.entries(groupedUpdates).map(([name, group]) => (
+                            <Block key={name} className="p-3">
+                                <div 
+                                    className="cursor-pointer"
+                                    onClick={() => toggleGroup(name)}
+                                >
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                        <div className="flex-1">
+                                            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                                                {name}
+                                                <span className="ml-2 text-sm text-gray-500">
+                                                    ({group.items.length} {group.items.length === 1 ? 'элемент' : group.items.length < 5 ? 'элемента' : 'элементов'})
+                                                </span>
+                                            </h2>
                                         </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">Цена продажи: </span>
-                                        <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                                            {update.sellPrice} TON
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                {group.isExpanded ? 'Скрыть' : 'Показать'}
+                                            </span>
+                                            <svg 
+                                                className={`w-4 h-4 transition-transform ${group.isExpanded ? 'rotate-180' : ''}`} 
+                                                fill="none" 
+                                                stroke="currentColor" 
+                                                viewBox="0 0 24 24" 
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-3">
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {update.Gifts.map((gift, index) => (
-                                            <div
-                                                key={gift.id}
-                                                className="bg-gray-50 dark:bg-gray-800/50 rounded p-2 flex justify-between items-center text-sm"
-                                            >
-                                                <span className="text-gray-700 dark:text-gray-300">
-                                                    Товар {index + 1}
-                                                </span>
-                                                <span className="font-medium text-gray-800 dark:text-white">
-                                                    {formatPrice(gift.price * 1.1)} TON
-                                                </span>
+                                {group.isExpanded && (
+                                    <div className="mt-3 space-y-3">
+                                        {group.items.map((update) => (
+                                            <div key={update.id} className="bg-gray-100 dark:bg-gray-800 rounded p-3">
+                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={`text-lg font-bold ${getProfitColor(update.profit)}`}>
+                                                                {update.profit} TON
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-sm text-gray-600 dark:text-gray-400">Цена продажи: </span>
+                                                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                                                            {update.sellPrice} TON
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-3">
+                                                    <div className="grid grid-cols-1 gap-2">
+                                                        {update.Gifts.map((gift, index) => (
+                                                            <div
+                                                                key={gift.id}
+                                                                className="bg-gray-50 dark:bg-gray-700 rounded p-2 flex justify-between items-center text-sm"
+                                                            >
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-gray-700 dark:text-gray-300">
+                                                                        Товар {index + 1}
+                                                                    </span>
+                                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        {gift.model}, {gift.symbol}, {gift.backdrop}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="font-medium text-gray-800 dark:text-white">
+                                                                    {formatPrice(gift.price * 1.1)} TON
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                )}
                             </Block>
                         ))}
                     </div>

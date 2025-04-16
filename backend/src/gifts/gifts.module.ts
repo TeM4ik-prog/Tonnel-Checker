@@ -5,11 +5,14 @@ import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GiftsController } from './gifts.controller';
 import { GiftsService } from './gifts.service';
+import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [
     DatabaseModule,
     HttpModule,
+    UsersModule,
+    UsersModule,
    TelegramModule,
     ScheduleModule.forRoot()
   ],

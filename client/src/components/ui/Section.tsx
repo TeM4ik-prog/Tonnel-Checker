@@ -49,6 +49,8 @@ export const Section = ({ children, className, hightCheck = true }: SectionProps
   //   return <div className="flex flex-col w-full justify-center items-center">{children}</div>;
   // }
 
+  
+
   return (
     <section
       className={`flex flex-col z-[0] w-full justify-center items-center transition-all duration-300 ${className}`}

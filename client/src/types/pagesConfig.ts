@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon, FilterIcon } from "lucide-react";
 
 export interface Route {
     path: string;
@@ -21,22 +21,23 @@ export let RoutesConfigMain: { [key: string]: Route } = {
     // __________
 
 
-    ENTRY: { path: '/entry', label: '', showInHeader: false },
-    POSTS: { path: '/posts', label: '', showInHeader: false },
-
-    CONTACTS: {
-        path: '/contacts',
-        label: 'Контакты',
-        shortLabel: 'Контакты',
+    FILTERS:{
+        path: '/filters',
+        label: 'Фильтры',
+        shortLabel: 'Фильтры',
         showInHeader: false,
-        icon: Contact2Icon,
-
+        icon: FilterIcon,
     },
 
-    
-    // создание постов и интерью
-    CREATE_POSTS: { path: '/posts-reviews/create', icon: UserCircle2, label: '', showInHeader: false },
 
+    // CONTACTS: {
+    //     path: '/contacts',
+    //     label: 'Контакты',
+    //     shortLabel: 'Контакты',
+    //     showInHeader: false,
+    //     icon: Contact2Icon,
+
+    // },
 
 }
 
@@ -102,7 +103,10 @@ class ApiConfig {
     gifts = {
         baseInstance: createAxiosInstance('gifts/'),
 
-        lastUpdate: "last-update"
+        lastUpdate: "last-update",
+        giftModels: 'gift-models',
+        applyFilters: 'apply-filters',
+        userFilters: "user-filters"
     }
 
 }

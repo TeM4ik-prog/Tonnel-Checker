@@ -16,3 +16,10 @@ export enum BotScenes {
 }
 
 
+export interface IUserFilters {
+  nft: string;
+  models: string[];
+  backgrounds: string[];
+}
+
+

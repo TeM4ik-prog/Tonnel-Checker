@@ -10,7 +10,7 @@ module.exports = {
 
             env_development: {
                 NODE_ENV: 'development',
-                APP_URL: 'https://rnxsk3jf-8080.euw.devtunnels.ms/',
+                APP_URL: 'https://rnxsk3jf-3000.euw.devtunnels.ms/',
             },
 
             env_production: {

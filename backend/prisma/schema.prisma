@@ -16,10 +16,23 @@ model User {
 
   authTonnelData String?
 
-  // photoUrl   String
-  // authDate   DateTime
+  minProfit   Float         @default(0.5)
+  UserFilters UserFilters[]
+}
 
-  minProfit Float @default(0.5)
+model UserFilters {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  
+  nft         String
+  models      Json
+  backgrounds Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, nft])
 }
 
 model Gift {
@@ -57,7 +70,6 @@ model PackGiftsDataUpdate {
   updatedAt       DateTime          @default(now())
 }
 
-
 model ActiveChat {
   id             Int      @id @default(autoincrement())
   chatId         Int
@@ -76,4 +88,25 @@ model GoodPriceMessage {
   updatedAt DateTime @updatedAt
 
   @@unique([chatId, messageId])
+}
+
+model GiftModel {
+  id String @id @default(uuid())
+
+  name        String @unique
+  models      Json
+  backgrounds Json
+  symbols     Json
+}
+
+model GiftBackground {
+  id       String @id @default(uuid())
+  backdrop String
+
+  centerColor  Int
+  edgeColor    Int
+  patternColor Int
+  textColor    Int
+  name         String
+  permille     Int
 }

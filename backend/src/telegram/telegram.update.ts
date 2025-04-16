@@ -1,12 +1,11 @@
-import { Update, Start, Help, Command, Ctx, Message, On, Action } from 'nestjs-telegraf';
-import { Context, Input, Markup, Scenes } from 'telegraf';
-import { TelegramService } from './telegram.service';
-import { ConfigService } from '@nestjs/config';
-import * as fs from 'fs';
 import { GiftsService } from '@/gifts/gifts.service';
-import { UsersService } from '@/users/users.service';
 import { BotScenes } from '@/types/types';
+import { UsersService } from '@/users/users.service';
 import { formatMessage } from '@/utils/formatMessage';
+import { ConfigService } from '@nestjs/config';
+import { Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
+import { Context, Markup, Scenes } from 'telegraf';
+import { TelegramService } from './telegram.service';
 
 
 
@@ -53,6 +52,23 @@ export class TelegramUpdate {
     const info = this.telegramService.getInfo(ctx.from?.id);
     await ctx.reply(`Информация: ${info}`);
   }
+
+  @Command('filters')
+  async onFilters(@Ctx() ctx: Context) {
+    console.log(this.configService.get('APP_URL') + 'filters')
+    await ctx.reply('Ваши фильтры:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: '⚙️ Перейти к фильтрам',
+            web_app: { url: this.configService.get('APP_URL') + 'filters' }
+          }]
+        ]
+      }
+    });
+  }
+
+
 
   @Command('ping')
   async onPing(@Ctx() ctx: Context) {

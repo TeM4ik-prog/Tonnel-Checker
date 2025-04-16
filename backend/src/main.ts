@@ -5,7 +5,7 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const PORT = 8080;
+  const PORT = 3000;
 
   app.enableCors({
     origin: '*',

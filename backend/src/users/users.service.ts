@@ -31,6 +31,15 @@ export class UsersService {
     return await this.database.user.findUnique({
       where: {
         telegramId: telegramId
+      },
+      include:{
+        UserFilters: {
+          select: {
+            nft: true,
+            models: true,
+            backgrounds: true
+          }
+        }
       }
     })
 

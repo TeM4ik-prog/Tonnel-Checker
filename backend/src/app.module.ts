@@ -23,6 +23,7 @@ import { TelegramModule } from './telegram/telegram.module';
   providers: [AppService],
   exports: [],
 })
+
 export class AppModule implements OnModuleInit {
   constructor(
     private readonly databaseService: DatabaseService,

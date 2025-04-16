@@ -5,6 +5,7 @@ import { ITelegramAuth } from "@/types/auth";
 import { toast } from "react-toastify";
 import { handleError } from "@/utils/handleError";
 import { AuthService } from "@/services/auth.service";
+import { Sidebar } from "../ui/Sidebar";
 
 export const Header: React.FC = () => {
 
@@ -23,15 +24,15 @@ export const Header: React.FC = () => {
             is_premium: true,  // В данном примере премиум-аккаунт
             allows_write_to_pm: true,  // Включаем возможность писать в личку
             photo_url: user.photo_url
-          });
-          
-          // Кодируем строку для URL
-          const encodedUserStr = encodeURIComponent(userStr);
-          
-          // Создаем конечный authData
-          const authData = `user=${encodedUserStr}&chat_instance=4045762488177193934&chat_type=sender&auth_date=${user.auth_date}&signature=XnBBBeuLGESyyxyvp8TxykWBy6PUEWnv-yhEiQiQHIwkQqiOql2B6bm_LvRKKSs2fRL7qSiCYkcxrat0XF8mBg&hash=${user.hash}`;
-          
-          console.log(authData);
+        });
+
+        // Кодируем строку для URL
+        const encodedUserStr = encodeURIComponent(userStr);
+
+        // Создаем конечный authData
+        const authData = `user=${encodedUserStr}&chat_instance=4045762488177193934&chat_type=sender&auth_date=${user.auth_date}&signature=XnBBBeuLGESyyxyvp8TxykWBy6PUEWnv-yhEiQiQHIwkQqiOql2B6bm_LvRKKSs2fRL7qSiCYkcxrat0XF8mBg&hash=${user.hash}`;
+
+        console.log(authData);
 
 
 
@@ -56,6 +57,7 @@ export const Header: React.FC = () => {
 
 
 
+                <Sidebar />
 
                 {/* <TelegramLoginButton
                     botName={TelegramBot}

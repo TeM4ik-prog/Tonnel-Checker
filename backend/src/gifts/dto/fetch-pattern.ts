@@ -1,4 +1,4 @@
-export const fetchPattern = async (name: string, backdrop: string | null) => {
+export const fetchPattern = async (name: string, backdrop: string | null, model: string | null = null) => {
     try {
         const filter: {
             price: { $exists: boolean };
@@ -7,7 +7,8 @@ export const fetchPattern = async (name: string, backdrop: string | null) => {
             export_at: { $exists: boolean };
             asset: string;
             gift_name: { $in: string[] };
-            backdrop?: { $regex: string };
+            backdrop?: { $in: string[] };
+            model?: { $in: string[] };
         } = {
             price: { $exists: true },
             refunded: { $ne: true },
@@ -18,7 +19,11 @@ export const fetchPattern = async (name: string, backdrop: string | null) => {
         };
 
         if (backdrop) {
-            filter.backdrop = { $regex: backdrop };
+            filter.backdrop = { $in: [backdrop] };
+        }
+
+        if (model) {
+            filter.model = { $in: [model] };
         }
 
         const response = await fetch('https://gifts2.tonnel.network/api/pageGifts', {
