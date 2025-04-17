@@ -11,9 +11,15 @@ export class GiftsController {
     private readonly usersService: UsersService
   ) { }
 
-  @Get('last-update')
-  findLastUpdate() {
-    return this.giftsService.findLastUpdate();
+  @Get('last-update/:telegramId')
+  async findLastUpdate(@Param('telegramId') telegramId: string) {
+    const user = await this.usersService.findUserByTelegramId(parseInt(telegramId))
+    if (!user) throw new BadRequestException('user not found')
+    console.log(user)
+
+    const lastUpdate = await this.giftsService.findLastUpdate()
+
+    return { lastUpdate: lastUpdate?.GiftsDataUpdate || [], userFilters: user.UserFilters }
   }
 
 
@@ -24,7 +30,7 @@ export class GiftsController {
     console.log(user)
 
     const models = await this.giftsService.getGiftModels()
-    return {models, userFilters: user.UserFilters}
+    return { models, userFilters: user.UserFilters }
   }
 
 

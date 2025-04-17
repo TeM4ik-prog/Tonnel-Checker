@@ -1,70 +1,76 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { Button } from "@/components/ui/Button";
 import { GiftService } from "@/services/gift.service";
 import { onRequest } from "@/types";
-import { IPackGiftsDataUpdate } from "@/types/gift";
+import { IGift, IGiftDataUpdate, IPackGiftsDataUpdate, IUserFilters } from "@/types/gift";
+import { filterProps } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-
-interface PriceData {
-    default: any;
-    black: any;
-    onyx: any;
-}
-
-interface GiftPrice {
-    name: string;
-    firstBlackPrice: number;
-    secondBlackPrice: number;
-    profit: number;
-    profitRub: number;
-}
-
-const gifts: string[] =
-    ["Jack-in-the-Box", "Cookie Heart", "Evil Eye", "Ginger Cookie", "Tama Gadget", "Trapped Heart", "Jelly Bunny", "Homemade Cake"]
 
 interface GroupedUpdates {
     [name: string]: {
-        items: IPackGiftsDataUpdate[];
+        items: IGiftDataUpdate[];
+        itemFilters: IUserFilters
         isExpanded: boolean;
     };
 }
 
 const MainPage: React.FC = () => {
-    const [lastUpdate, setLastUpdate] = useState<IPackGiftsDataUpdate | null>(null)
+    const [lastUpdate, setLastUpdate] = useState<IGiftDataUpdate | null>(null)
     const [groupedUpdates, setGroupedUpdates] = useState<GroupedUpdates>({});
+    const [filters, setFilters] = useState<IUserFilters[]>([])
     const [loading, setLoading] = useState(true);
 
-    const location = useLocation();
+    const fetchUserFilters = async () => {
+        const data = await onRequest(GiftService.getUserFilters());
+        console.log("Исходные данные с сервера:", data);
+
+        if (data) {
+            console.log("filters:", data)
+        }
+    };
+
 
     const updateData = async () => {
         setLoading(true);
-        const data = await onRequest(GiftService.getLastUpdate())
-        console.log(data.GiftsDataUpdate)
+        const data: { lastUpdate: any, userFilters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate())
+        console.log(data)
+
+
         if (data) {
-            setLastUpdate(data);
-            groupUpdates(data.GiftsDataUpdate);
+            setLastUpdate(data.lastUpdate);
+
+            setFilters(data.userFilters)
+
+            groupUpdates(data.lastUpdate, data.userFilters);
+
         }
         setLoading(false);
     };
 
-    const groupUpdates = (updates: IPackGiftsDataUpdate[]) => {
+    const groupUpdates = (updates: IGiftDataUpdate[], userFilters: IUserFilters[]) => {
         const grouped: GroupedUpdates = {};
-        
-        updates.forEach(update => {
+
+        updates.forEach((update: IGiftDataUpdate) => {
             const name = update.Gifts[0]?.name || 'Unknown';
-            
+
+
+            const filterItem = (userFilters.find((filter) => (name === filter.nft)))!
+
+            console.log(filterItem)
+
             if (!grouped[name]) {
                 grouped[name] = {
                     items: [],
+                    itemFilters: filterItem!,
                     isExpanded: false
                 };
             }
-            
+
             grouped[name].items.push(update);
         });
-        
+
+        console.log(grouped)
+
         setGroupedUpdates(grouped);
     };
 
@@ -88,13 +94,41 @@ const MainPage: React.FC = () => {
         return 'text-gray-500';
     };
 
+
+    const displayGiftInfo = (itemFilters: IUserFilters, gift: IGift,) => {
+        console.log(gift)
+
+        const modelsExists = itemFilters.models.find(model => model == gift.model)
+        const backgroundExists = itemFilters.backgrounds.find(back => back == gift.backdrop)
+        const symbolExists = itemFilters.symbols.find(symb => symb == gift.symbol)
+
+        console.log(modelsExists, backgroundExists)
+
+
+        const displayExistingParam = (param: keyof IGift, existingParamName: string | undefined) => {
+
+            return (
+                <p className={`${existingParamName ? 'bg-yellow-400 rounded text-black' : ''} p-1`}>{String(gift[param])}</p>
+            )
+        }
+
+        return (
+            <span className="flex gap-2 flex-row text-xs text-gray-500 dark:text-gray-400">
+                {displayExistingParam("model", modelsExists)}
+                {displayExistingParam("backdrop", backgroundExists)}
+                {displayExistingParam("symbol", symbolExists)}
+            </span>
+        )
+
+    }
+
     const formatPrice = (price: number) => {
         return price.toFixed(2);
     };
 
     return (
-        <PageContainer className="pt-0">
-            <div className="w-full max-w-6xl mx-auto p-2">
+        <PageContainer className="px-0">
+            <div className="w-full max-w-6xl mx-auto p-1">
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         Последнее обновление: {lastUpdate?.updatedAt ? new Date(lastUpdate.updatedAt).toLocaleString() : 'Нет данных'}
@@ -105,8 +139,8 @@ const MainPage: React.FC = () => {
                 {Object.keys(groupedUpdates).length > 0 && (
                     <div className="space-y-3">
                         {Object.entries(groupedUpdates).map(([name, group]) => (
-                            <Block key={name} className="p-3">
-                                <div 
+                            <Block key={name} className="p-1">
+                                <div
                                     className="cursor-pointer"
                                     onClick={() => toggleGroup(name)}
                                 >
@@ -118,16 +152,52 @@ const MainPage: React.FC = () => {
                                                     ({group.items.length} {group.items.length === 1 ? 'элемент' : group.items.length < 5 ? 'элемента' : 'элементов'})
                                                 </span>
                                             </h2>
+
+                                            <div className="space-y-2">
+
+
+                                                {group.itemFilters && (
+                                                    <div className="space-y-1">
+                                                        {group.itemFilters.models?.length > 0 && (
+                                                            <div className="flex items-start gap-1">
+                                                                <p className="text-xs text-gray-500">Модели:</p>
+                                                                <p className="text-xs font-medium line-clamp-1">
+                                                                    {group.itemFilters.models.join(', ')}
+                                                                </p>
+                                                            </div>
+                                                        )}
+
+                                                        {group.itemFilters.backgrounds?.length > 0 && (
+                                                            <div className="flex items-start gap-1">
+                                                                <p className="text-xs text-gray-500">Фоны:</p>
+                                                                <p className="text-xs font-medium line-clamp-1">
+                                                                    {group.itemFilters.backgrounds.join(', ')}
+                                                                </p>
+                                                            </div>
+                                                        )}
+
+                                                        {group.itemFilters.symbols?.length > 0 && (
+                                                            <div className="flex items-start gap-1">
+                                                                <p className="text-xs text-gray-500">Символы:</p>
+                                                                <p className="text-xs font-medium line-clamp-1">
+                                                                    {group.itemFilters.symbols.join(', ')}
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
+
                                         <div className="flex items-center gap-2">
                                             <span className="text-sm text-gray-600 dark:text-gray-400">
                                                 {group.isExpanded ? 'Скрыть' : 'Показать'}
                                             </span>
-                                            <svg 
-                                                className={`w-4 h-4 transition-transform ${group.isExpanded ? 'rotate-180' : ''}`} 
-                                                fill="none" 
-                                                stroke="currentColor" 
-                                                viewBox="0 0 24 24" 
+                                            <svg
+                                                className={`w-4 h-4 transition-transform ${group.isExpanded ? 'rotate-180' : ''}`}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
                                                 xmlns="http://www.w3.org/2000/svg"
                                             >
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -139,7 +209,7 @@ const MainPage: React.FC = () => {
                                 {group.isExpanded && (
                                     <div className="mt-3 space-y-3">
                                         {group.items.map((update) => (
-                                            <div key={update.id} className="bg-gray-100 dark:bg-gray-800 rounded p-3">
+                                            <div key={update.id} className="bg-gray-100 dark:bg-gray-800 rounded p-1">
                                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-3">
@@ -167,9 +237,8 @@ const MainPage: React.FC = () => {
                                                                     <span className="text-gray-700 dark:text-gray-300">
                                                                         Товар {index + 1}
                                                                     </span>
-                                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                                        {gift.model}, {gift.symbol}, {gift.backdrop}
-                                                                    </span>
+
+                                                                    {displayGiftInfo(group.itemFilters, gift)}
                                                                 </div>
                                                                 <span className="font-medium text-gray-800 dark:text-white">
                                                                     {formatPrice(gift.price * 1.1)} TON

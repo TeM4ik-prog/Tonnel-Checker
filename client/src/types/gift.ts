@@ -25,8 +25,16 @@ export interface IGiftDataUpdate {
 }
 
 
-export interface IPackGiftsDataUpdate{
+export interface IPackGiftsDataUpdate {
     id: string;
-    GiftsDataUpdate: IGiftDataUpdate[];
+    Gifts: IGiftDataUpdate[];
     updatedAt: Date;
+}
+
+
+export interface IUserFilters {
+    nft: string;
+    models: string[];
+    backgrounds: string[];
+    symbols: string[]
 }

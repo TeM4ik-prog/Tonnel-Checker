@@ -6,8 +6,8 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CreateGiftDto } from './dto/create-gift.dto';
 import { fetchPattern } from './dto/fetch-pattern';
-import { BackgroundItem } from './entities/backgrounds';
-import { ModelItem } from './entities/output';
+import { BackgroundItem, BACKGROUNDS } from './entities/backgrounds';
+import { ModelItem, MODELS_GIFTS } from './entities/output';
 
 @Injectable()
 export class GiftsService implements OnModuleInit {
@@ -117,8 +117,15 @@ export class GiftsService implements OnModuleInit {
       combinations.push({ [gift]: giftComb })
     }
 
-    console.log(combinations)
-    console.log(JSON.stringify(combinations))
+    console.log(combinations[0])
+    // console.log(JSON.stringify(combinations))
+
+
+
+
+    
+
+
 
 
 
@@ -202,163 +209,16 @@ export class GiftsService implements OnModuleInit {
           GiftsDataUpdate: true
         }
       })
-      console.log(data)
+      // console.log(data)
       console.log('created');
     }
     else {
       console.error('no data')
     }
-
-
-
-
-
-
-
-
-    
-
-
-
-    // for (const gift of uniqueGifts) {
-    //   try {
-    //     const giftFilters = userFilters.find(filter => filter.nft === gift)
-    //     if (!giftFilters) continue;
-
-    //     const models = (giftFilters.models as string[]) || []
-    //     const backgrounds = (giftFilters.backgrounds as string[]) || []
-
-    //     // ______________
-
-
-    //     console.log(models, backgrounds)
-
-
-
-
-
-
-
-
-
-    //     // Если нет моделей или фонов, делаем один запрос без фильтров
-    //     // if (models.length === 0 || backgrounds.length === 0) {
-    //     //   // console.log(`Проверяем ${gift} без фильтров`)
-    //     //   // const items: CreateGiftDto[] = await fetchPattern(gift, null, null);
-
-    //     //   // if (items.length >= 2) {
-    //     //   //   const { profit, sellPrice } = this.calculateProfit(items[0]?.price, items[1]?.price);
-
-    //     //   //   const createdGiftsDataUpdate = await this.database.giftsDataUpdate.create({
-    //     //   //     data: {
-    //     //   //       profit,
-    //     //   //       sellPrice,
-    //     //   //       Gifts: {
-    //     //   //         create: items.map(item => ({
-    //     //   //           giftId: item.gift_id,
-    //     //   //           giftNum: item.gift_num,
-    //     //   //           name: item.name,
-    //     //   //           price: item.price,
-    //     //   //           model: item.model,
-    //     //   //           symbol: item.symbol,
-    //     //   //           backdrop: item.backdrop
-    //     //   //         }))
-    //     //   //       },
-    //     //   //     },
-    //     //   //     include: {
-    //     //   //       Gifts: true
-    //     //   //     }
-    //     //   //   });
-
-    //     //   //   resultDataUpdate.push(createdGiftsDataUpdate);
-
-    //     //   //   if (profit > userDev.minProfit) {
-    //     //   //     await this.telegramService.sendMessageGoodPriceGiftToAll(
-    //     //   //       items[0],
-    //     //   //       items[1],
-    //     //   //       profit,
-    //     //   //       sellPrice
-    //     //   //     );
-    //     //   //   }
-    //     //   // }
-    //     //   continue;
-    //     // }
-
-    //     // Проверяем каждую комбинацию отдельно
-    //     // for (const model of models) {
-    //     //   for (const backdrop of backgrounds) {
-    //     //     console.log(`Проверяем комбинацию: ${gift} - ${model} - ${backdrop}`)
-
-    //     //     const items: CreateGiftDto[] = await fetchPattern(gift, backdrop, model);
-
-    //     //     if (items.length < 2) {
-    //     //       console.log(`Недостаточно предметов для комбинации: ${gift} - ${model} - ${backdrop}`)
-    //     //       continue
-    //     //     }
-
-    //     //     const { profit, sellPrice } = this.calculateProfit(items[0]?.price, items[1]?.price);
-
-    //     //     const createdGiftsDataUpdate = await this.database.giftsDataUpdate.create({
-    //     //       data: {
-    //     //         profit,
-    //     //         sellPrice,
-    //     //         Gifts: {
-    //     //           create: items.map(item => ({
-    //     //             giftId: item.gift_id,
-    //     //             giftNum: item.gift_num,
-    //     //             name: item.name,
-    //     //             price: item.price,
-    //     //             model: item.model,
-    //     //             symbol: item.symbol,
-    //     //             backdrop: item.backdrop
-    //     //           }))
-    //     //         },
-    //     //       },
-    //     //       include: {
-    //     //         Gifts: true
-    //     //       }
-    //     //     });
-
-    //     //     resultDataUpdate.push(createdGiftsDataUpdate);
-
-    //     //     if (profit > userDev.minProfit) {
-    //     //       await this.telegramService.sendMessageGoodPriceGiftToAll(
-    //     //         items[0],
-    //     //         items[1],
-    //     //         profit,
-    //     //         sellPrice
-    //     //       );
-    //     //     }
-    //     //   }
-    //     // }
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // }
-
-    // if (resultDataUpdate.length > 0) {
-    //   const data = await this.database.packGiftsDataUpdate.create({
-    //     data: {
-    //       GiftsDataUpdate: {
-    //         connect: resultDataUpdate.map(update => ({ id: update.id }))
-    //       }
-    //     },
-    //     include: {
-    //       GiftsDataUpdate: true
-    //     }
-    //   })
-    //   console.log(data)
-    //   console.log('created');
-    // }
-    // else {
-    //   console.error('no data')
-    // }
   }
 
-  @Cron('*/60 * * * * *')
-  async handleCron() {
-    await this.fetchGiftsDataFromTonnel();
-  }
+
+
 
   // _________________
 
@@ -408,7 +268,10 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-
+  @Cron('*/60 * * * * *')
+  async handleCron() {
+    await this.fetchGiftsDataFromTonnel();
+  }
 
 
   async onModuleInit() {
@@ -416,5 +279,6 @@ export class GiftsService implements OnModuleInit {
 
     // await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)
+
   }
 }

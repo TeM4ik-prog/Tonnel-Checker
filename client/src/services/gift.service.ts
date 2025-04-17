@@ -11,7 +11,12 @@ export class giftService implements ApiRoute {
     }
 
     async getLastUpdate() {
-        const { data } = await this.instance.get(this.baseUrl.lastUpdate)
+        const userData = localStorage.getItem('userData')
+        if(!userData) return null
+        const telegramId = JSON.parse(userData).id
+
+
+        const { data } = await this.instance.get(`${this.baseUrl.lastUpdate}/${telegramId}`)
         return data
     }
 

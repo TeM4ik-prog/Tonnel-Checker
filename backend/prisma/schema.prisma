@@ -17,22 +17,23 @@ model User {
   authTonnelData String?
 
   minProfit   Float         @default(0.5)
-  UserFilters UserFilters[]
+  // UserFilters UserFilters[]
 }
 
-model UserFilters {
+model Filters {
   id     String @id @default(uuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  
+  // userId String
+  // user   User   @relation(fields: [userId], references: [id])
+
   nft         String
   models      Json
   backgrounds Json
-  
+  symbols     Json
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, nft])
+  // @@unique([userId, nft])
 }
 
 model Gift {

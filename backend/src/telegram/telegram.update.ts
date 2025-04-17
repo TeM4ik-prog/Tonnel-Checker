@@ -24,9 +24,10 @@ export class TelegramUpdate {
 
   @Start()
   async onStart(@Ctx() ctx: Context) {
-    this.telegramService.addToActiveChats(ctx.message)
 
     await this.userService.findOrCreateUser(ctx.from)
+    this.telegramService.addToActiveChats(ctx.message)
+    
 
     const stream = this.telegramService.getPhotoStream("./public/images/sticker.png")
     await ctx.telegram.sendPhoto(ctx.chat.id, stream, {

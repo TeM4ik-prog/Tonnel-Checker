@@ -37,7 +37,8 @@ export class UsersService {
           select: {
             nft: true,
             models: true,
-            backgrounds: true
+            backgrounds: true,
+            symbols: true
           }
         }
       }
@@ -55,6 +56,8 @@ export class UsersService {
       }
     })
 
+    console.log('existingUser',existingUser)
+
     if (existingUser) return existingUser
 
 
@@ -66,8 +69,6 @@ export class UsersService {
         username: username
       }
     })
-
-
 
   }
 

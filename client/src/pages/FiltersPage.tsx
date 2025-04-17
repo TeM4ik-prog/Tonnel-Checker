@@ -2,6 +2,7 @@ import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { GiftService } from "@/services/gift.service";
 import { onRequest } from "@/types";
+import { IUserFilters } from "@/types/gift";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -18,11 +19,9 @@ interface FilterOption {
     value: any;
 }
 
-interface SelectedParameters {
-    nft: string;
-    models: string[];
-    backgrounds: string[];
-}
+type acceptableTypes = 'models' | 'backgrounds' | 'symbols'
+
+
 
 
 interface MultiSelectModalProps {
@@ -166,17 +165,17 @@ const FiltersPage: React.FC = () => {
     const [giftModels, setGiftModels] = useState<GiftModel[]>([]);
     const [filteredNfts, setFilteredNfts] = useState<GiftModel[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedParameters, setSelectedParameters] = useState<SelectedParameters[]>([]);
+    const [selectedParameters, setSelectedParameters] = useState<IUserFilters[]>([]);
     const [applying, setApplying] = useState(false);
     const [activeModal, setActiveModal] = useState<{
-        type: 'models' | 'backgrounds' | 'nfts';
+        type: acceptableTypes | 'nfts'
         nftName?: string;
     } | null>(null);
 
     const fetchGiftModels = async () => {
         setLoading(true);
         try {
-            const data: { models: any, userFilters: any } = await onRequest(GiftService.getGiftModels());
+            const data: { models: any, userFilters: IUserFilters[] } = await onRequest(GiftService.getGiftModels());
 
             console.log(data)
             if (data) {
@@ -198,52 +197,11 @@ const FiltersPage: React.FC = () => {
         setLoading(false);
     };
 
-    const fetchUserFilters = async () => {
-        const data: SelectedParameters[] = await onRequest(GiftService.getUserFilters());
-        console.log("Исходные данные с сервера:", data);
-
-        if (data && data.length > 0) {
-            const replacedData = data.map(elem => ({
-                nft: elem.nft,
-                models: elem.models.map(name =>
-                    convertNameToId(elem.nft, 'models', name)
-                ),
-                backgrounds: elem.backgrounds.map(name =>
-                    convertNameToId(elem.nft, 'backgrounds', name)
-                )
-            }));
-
-            console.log("Данные после преобразования (только ID):", replacedData);
-            setSelectedParameters(replacedData);
-        }
-    };
-
-    const convertNameToId = (nftName: string, type: 'models' | 'backgrounds', name: string): string => {
-        const nftItem = giftModels.find(item => item.name === nftName);
-        if (!nftItem) return name; // Если NFT не найден, возвращаем как есть
-
-        const items = type === 'models' ? nftItem.models : nftItem.backgrounds;
-
-        // Ищем полное совпадение (например, "Dark Soul (0.8%)" содержит "Dark Soul")
-        const fullItem = items.find(item => item.includes(name));
-
-        // Если нашли, извлекаем ID (первое слово или число)
-        if (fullItem) {
-            return fullItem; // или более сложная логика для ID
-        }
-
-        return name; // Если не нашли, оставляем исходное значение
-    };
 
 
     useEffect(() => {
         fetchGiftModels();
     }, []);
-
-    // setInterval(() => {
-    //     fetchUserFilters()
-
-    // }, 5000);
 
     const handleNftToggle = (nftName: string) => {
         setSelectedParameters(prev => {
@@ -251,12 +209,12 @@ const FiltersPage: React.FC = () => {
             if (isSelected) {
                 return prev.filter(p => p.nft !== nftName);
             } else {
-                return [...prev, { nft: nftName, models: [], backgrounds: [] }];
+                return [...prev, { nft: nftName, models: [], backgrounds: [], symbols: [] }];
             }
         });
     };
 
-    const handleParameterChange = (nftName: string, type: 'models' | 'backgrounds', values: string[]) => {
+    const handleParameterChange = (nftName: string, type: acceptableTypes, values: string[]) => {
         setSelectedParameters(prev =>
             prev.map(p =>
                 p.nft === nftName
@@ -290,7 +248,7 @@ const FiltersPage: React.FC = () => {
             });
     };
 
-    const getOptionsForNft = (nftName: string, type: 'models' | 'backgrounds') => {
+    const getOptionsForNft = (nftName: string, type: acceptableTypes) => {
         const gift = giftModels.find(g => g.name === nftName);
         if (!gift) return [];
 
@@ -303,7 +261,7 @@ const FiltersPage: React.FC = () => {
         );
     };
 
-    const getValueName = (nftName: string, type: 'models' | 'backgrounds', key: string) => {
+    const getValueName = (nftName: string, type: acceptableTypes, key: string) => {
         const gift = giftModels.find(g => g.name === nftName);
         if (!gift) return key;
         return gift[type][key] || key;
@@ -348,7 +306,7 @@ const FiltersPage: React.FC = () => {
                 const modelOptions = getOptionsForNft(params.nft, 'models');
                 const backgroundOptions = getOptionsForNft(params.nft, 'backgrounds');
 
-                const renderParameterTags = (items: string[], type: 'models' | 'backgrounds') => {
+                const renderParameterTags = (items: string[], type: acceptableTypes) => {
                     if (items.length === 0) return null;
 
                     const visibleItems = items.slice(0, 2);
@@ -408,12 +366,26 @@ const FiltersPage: React.FC = () => {
                                 </div>
                                 {renderParameterTags(params.backgrounds, 'backgrounds')}
                             </div>
+
+                            {/* <div className="bg-gray-800/50 rounded-lg p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-gray-400 text-sm">Символы</label>
+                                    <button
+                                        onClick={() => setActiveModal({ type: 'symbols', nftName: params.nft })}
+                                        className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                                    >
+                                        Выбрать ({params.symbols.length})
+                                    </button>
+                                </div>
+                                {renderParameterTags(params.symbols, 'symbols')}
+                            </div> */}
                         </div>
                     </Block>
                 );
             })}
         </div>
     );
+    
 
     const handleApplyFilters = async () => {
         setApplying(true);
@@ -421,7 +393,8 @@ const FiltersPage: React.FC = () => {
             const parametersWithNames = selectedParameters.map(params => ({
                 nft: params.nft,
                 models: params.models.map(key => getValueName(params.nft, 'models', key)),
-                backgrounds: params.backgrounds.map(key => getValueName(params.nft, 'backgrounds', key))
+                backgrounds: params.backgrounds.map(key => getValueName(params.nft, 'backgrounds', key)),
+                symbols: params.symbols.map(key => getValueName(params.nft, 'symbols', key))
             }));
 
             console.log('Применяем фильтры:', parametersWithNames);
@@ -462,42 +435,46 @@ const FiltersPage: React.FC = () => {
                             <MultiSelectModal
                                 isOpen={true}
                                 onClose={() => setActiveModal(null)}
-                                title={activeModal.type === 'nfts'
-                                    ? 'Выберите NFT'
-                                    : activeModal.type === 'models'
-                                        ? 'Выберите модели'
-                                        : 'Выберите фоны'}
-                                options={activeModal.type === 'nfts'
-                                    ? sortOptions(giftModels.map(model => ({
-                                        key: model.name,
-                                        value: model.name
-                                    })))
-                                    : getOptionsForNft(activeModal.nftName!, activeModal.type)}
-                                selectedValues={activeModal.type === 'nfts'
-                                    ? selectedParameters.map(p => p.nft)
-                                    : selectedParameters.find(p => p.nft === activeModal.nftName)?.[activeModal.type] || []}
+                                title={
+                                    activeModal.type === 'nfts' ? 'Выберите NFT' :
+                                        activeModal.type === 'models' ? 'Выберите модели' :
+                                            activeModal.type === 'backgrounds' ? 'Выберите фоны' :
+                                                'Выберите символы'
+                                }
+                                options={
+                                    activeModal.type === 'nfts'
+                                        ? sortOptions(giftModels.map(model => ({
+                                            key: model.name,
+                                            value: model.name
+                                        })))
+                                        : getOptionsForNft(activeModal.nftName!, activeModal.type as 'models' | 'backgrounds' | 'symbols')
+                                }
+                                selectedValues={
+                                    activeModal.type === 'nfts'
+                                        ? selectedParameters.map(p => p.nft)
+                                        : selectedParameters.find(p => p.nft === activeModal.nftName)?.[activeModal.type] || []
+                                }
                                 onChange={(values) => {
                                     if (activeModal.type === 'nfts') {
                                         const currentNfts = selectedParameters.map(p => p.nft);
                                         const toAdd = values.filter(v => !currentNfts.includes(v));
                                         const toRemove = currentNfts.filter(v => !values.includes(v));
 
-                                        toAdd.forEach(nft => {
-                                            handleNftToggle(nft);
-                                        });
-
-                                        toRemove.forEach(nft => {
-                                            handleNftToggle(nft);
-                                        });
+                                        toAdd.forEach(nft => handleNftToggle(nft));
+                                        toRemove.forEach(nft => handleNftToggle(nft));
                                     } else {
-                                        handleParameterChange(activeModal.nftName!, activeModal.type, values);
+                                        handleParameterChange(
+                                            activeModal.nftName!,
+                                            activeModal.type as 'models' | 'backgrounds' | 'symbols',
+                                            values
+                                        );
                                     }
                                     setActiveModal(null);
                                 }}
                             />
                         )}
 
-                        {/* {selectedParameters.length > 0 && ( */}
+
                         <div className="mt-6 flex justify-center">
                             <button
                                 onClick={handleApplyFilters}
@@ -510,7 +487,7 @@ const FiltersPage: React.FC = () => {
                                 {applying ? 'Применение...' : 'Применить фильтры'}
                             </button>
                         </div>
-                        {/* )} */}
+
                     </>
                 )}
             </div>
