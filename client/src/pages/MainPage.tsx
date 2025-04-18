@@ -127,7 +127,7 @@ const MainPage: React.FC = () => {
     };
 
     return (
-        <PageContainer className="px-0">
+        <PageContainer className="!px-0">
             <div className="w-full max-w-6xl mx-auto p-1">
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
