@@ -12,24 +12,10 @@ import { ModelItem, MODELS_GIFTS } from './entities/output';
 @Injectable()
 export class GiftsService implements OnModuleInit {
   constructor(
-    private readonly database: DatabaseService,
+    private database: DatabaseService,
     private readonly telegramService: TelegramService,
     private readonly usersService: UsersService
   ) { }
-
-  // private gifts: string[] = [
-  //   "Jack-in-the-Box",
-  //   "Cookie Heart",
-  //   "Evil Eye",
-  //   "Ginger Cookie",
-  //   "Tama Gadget",
-  //   "Trapped Heart",
-  //   "Jelly Bunny",
-  //   "Homemade Cake",
-  //   "Witch Hat",
-  //   "Spiced Wine"
-  // ]
-
 
   calculateProfit(firstPrice: number, secondPrice: number) {
     const buyPrice = parseFloat((firstPrice * 1.1).toFixed(3)); // 8.8

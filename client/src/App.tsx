@@ -86,8 +86,6 @@ function App() {
 
 
 
-
-
     } catch (error) {
       console.error("Ошибка при получении профиля:", error)
       // dispatch(logout())

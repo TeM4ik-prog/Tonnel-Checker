@@ -44,7 +44,7 @@ export class GiftsController {
   async applyFilters(@Body() body: { filters: IFilters[] }, res: Response) {
     console.log(body)
 
-    await this.giftsService.fetchGiftsDataFromTonnel()
+    // await this.giftsService.fetchGiftsDataFromTonnel()
 
     return await this.giftsService.applyFilters(body.filters)
   }
