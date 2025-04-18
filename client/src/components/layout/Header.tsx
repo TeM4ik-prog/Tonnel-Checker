@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
     }
 
     return (
-        <header className="flex w-full p-2 pb-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 shadow-lg z-40">
+        <header className="flex w-full p-2 pb-0 bg-gray-700/95 backdrop-blur-sm border-b border-gray-800 shadow-lg z-40">
             <div className="flex justify-center items-center w-full h-full">
 
                 <Logo className="p-6" />
