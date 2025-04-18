@@ -3,12 +3,17 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
+import { validTelegramIds } from '@/types/types';
+import { AuthService } from '../auth.service';
+
+
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,8 +23,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    console.log('payload: ', payload)
     const user = await this.usersService.findUserById(payload.id);
     if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    
+    if (!this.authService.hasUserRight(user.telegramId)) throw new UnauthorizedException('You have no rights!');
+
+
     return user;
   }
 }

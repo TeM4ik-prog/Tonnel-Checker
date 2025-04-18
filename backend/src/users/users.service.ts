@@ -32,16 +32,17 @@ export class UsersService {
       where: {
         telegramId: telegramId
       },
-      include:{
-        UserFilters: {
-          select: {
-            nft: true,
-            models: true,
-            backgrounds: true,
-            symbols: true
-          }
-        }
-      }
+      // include:{
+
+      //   Filters: {
+      //     select: {
+      //       nft: true,
+      //       models: true,
+      //       backgrounds: true,
+      //       symbols: true
+      //     }
+      //   }
+      // }
     })
 
   }
@@ -56,7 +57,7 @@ export class UsersService {
       }
     })
 
-    console.log('existingUser',existingUser)
+    // console.log('existingUser',existingUser)
 
     if (existingUser) return existingUser
 

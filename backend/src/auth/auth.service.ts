@@ -7,15 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '@/users/users.service';
 import { DatabaseService } from '@/database/database.service';
-import { IBasicUser } from '@/types/types';
+import { IBasicUser, validTelegramIds } from '@/types/types';
+import { User } from 'telegraf/typings/core/types/typegram';
+import { Prisma } from '@prisma/client';
 
 
 @Injectable()
 export class AuthService {
   private readonly encryptionKey: Buffer;
-
-
-
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -28,15 +27,25 @@ export class AuthService {
     );
   }
 
-  
 
-  async login(user: IBasicUser) {
-    const { id, role } = user;
-    // const { email } = user.EmailUser
+  async login(user: Prisma.UserCreateInput) {
+    const { id, telegramId, firstName, username } = user;
+
     return {
-      user,
-      token: this.jwtService.sign({ id, role }),
+      user: {
+        ...user,
+        hasRights: this.hasUserRight(user.telegramId)
+
+      },
+      token: this.jwtService.sign({ id, telegramId, firstName, username }),
     };
+  }
+
+
+  hasUserRight(telegramId: number): boolean {
+
+    return validTelegramIds.includes(telegramId)
+
   }
 
   async handleExistingUser(user, organization) {

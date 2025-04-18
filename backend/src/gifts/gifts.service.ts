@@ -1,6 +1,6 @@
 import { DatabaseService } from '@/database/database.service';
 import { TelegramService } from '@/telegram/telegram.service';
-import { IUserFilters } from '@/types/types';
+import { IFilters } from '@/types/types';
 import { UsersService } from '@/users/users.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
@@ -60,36 +60,23 @@ export class GiftsService implements OnModuleInit {
   }
 
   async fetchGiftsDataFromTonnel() {
-    const userDev = await this.usersService.findUserByTelegramId(2027571609)
-    const userFilters = userDev.UserFilters
+    const resultDataUpdate = []
+    const combinations = []
+    const filters = await this.getFilters()
 
     // console.log(userFilters)
 
-    if (!userFilters || userFilters.length === 0) {
+    if (!filters || filters.length === 0) {
       console.log('Нет фильтров для проверки');
       return;
     }
-    const resultDataUpdate = []
-
-    const uniqueGifts = [...new Set(userFilters.map(filter => filter.nft))];
 
 
-    interface Combination {
-      gift: string;
-      model: string;
-      background: string;
-    }
+    const uniqueGifts = [...new Set(filters.map(filter => filter.nft))];
 
-    interface GiftCombinations {
-      [giftName: string]: Combination[];
-    }
-
-
-
-    const combinations = []
 
     for (const gift of uniqueGifts) {
-      const giftFilters = userFilters.find(filter => filter.nft === gift)
+      const giftFilters = filters.find(filter => filter.nft === gift)
 
       const models = (giftFilters?.models as string[]) || []
       const backgrounds = (giftFilters?.backgrounds as string[]) || []
@@ -120,47 +107,27 @@ export class GiftsService implements OnModuleInit {
     // console.log(combinations[0])
     // console.log(JSON.stringify(combinations))
 
-
-
-
-    
-
-
-
-
-
     for (let i = 0; i < combinations.length; i++) {
       const combination = combinations[i];
-
-      // console.log(combination)
       const giftName = Object.keys(combination)[0];
 
-
       const data = []
-
       for (let i = 0; i < combination[giftName].length; i++) {
         const element = combination[giftName][i];
-
         const items: CreateGiftDto[] = await fetchPattern(element.gift, element.background, element.model);
 
         console.log(items)
 
         if (items.length !== 2) {
-          console.log(`Skipping ${giftName} - items.length is 2`);
+          console.log(`Skipping ${giftName} - items.length is not 2`);
           continue;
         }
 
         data.push(items)
 
-
-
-
         // __________
 
-
         const { profit, sellPrice } = this.calculateProfit(items[0]?.price, items[1]?.price);
-
-
 
         const createdGiftsDataUpdate = await this.database.giftsDataUpdate.create({
           data: {
@@ -185,17 +152,13 @@ export class GiftsService implements OnModuleInit {
 
         resultDataUpdate.push(createdGiftsDataUpdate);
 
-        if (profit > userDev.minProfit) {
-          await this.telegramService.sendMessageGoodPriceGiftToAll(
-            items[0],
-            items[1],
-            profit,
-            sellPrice
-          );
-        }
+        await this.telegramService.sendMessageGoodPriceGiftToAll(
+          items[0],
+          items[1],
+          profit,
+          sellPrice
+        );
       }
-
-
     }
 
     if (resultDataUpdate.length > 0) {
@@ -217,21 +180,17 @@ export class GiftsService implements OnModuleInit {
     }
   }
 
+  // ___________-
 
-
-
-  // _________________
-
-
-
-
+  async getFilters() {
+    return await this.database.filters.findMany()
+  }
 
 
   async createGiftModels(data: ModelItem[]): Promise<void> {
-
     const existingGiftsModel = await this.database.giftModel.findFirst()
-    console.log(existingGiftsModel)
-    if(existingGiftsModel) return
+    // console.log(existingGiftsModel)
+    if (existingGiftsModel) return
 
 
     const resultData = data.map((elem) => ({ name: elem._id, models: elem.models, backgrounds: elem.backgrounds, symbols: elem.symbols }))
@@ -254,23 +213,13 @@ export class GiftsService implements OnModuleInit {
     return await this.database.giftModel.findMany()
   }
 
-  async applyFilters(filters: IUserFilters[], userId: string) {
-    await this.database.userFilters.deleteMany({
-      where: {
-        userId
-      }
-    });
+  async applyFilters(filters: IFilters[]) {
+    await this.database.filters.deleteMany()
 
-    return await this.database.userFilters.createMany({
+    return await this.database.filters.createMany({
       data: filters.map(filter => ({
-        ...filter,
-        userId
-      })
-
-      ),
-
-
-
+        ...filter
+      })),
     });
   }
 

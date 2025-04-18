@@ -1,4 +1,4 @@
-import { IUser } from ".";
+import { IUser } from "./auth";
 
 export interface UserState {
     user: IUser | null;

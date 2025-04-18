@@ -1,4 +1,5 @@
 import { ApiRoute } from "@/types";
+import { IUserFilters } from "@/types/gift";
 import { apiConfig } from "@/types/pagesConfig";
 
 export class giftService implements ApiRoute {
@@ -11,22 +12,13 @@ export class giftService implements ApiRoute {
     }
 
     async getLastUpdate() {
-        const userData = localStorage.getItem('userData')
-        if(!userData) return null
-        const telegramId = JSON.parse(userData).id
-
-
-        const { data } = await this.instance.get(`${this.baseUrl.lastUpdate}/${telegramId}`)
+        const { data } = await this.instance.get(`${this.baseUrl.lastUpdate}`)
         return data
     }
 
 
     async getGiftModels() {
-        const userData = localStorage.getItem('userData')
-        if(!userData) return null
-        const telegramId = JSON.parse(userData).id
-
-        const { data } = await this.instance.get(`${this.baseUrl.giftModels}/${telegramId}`)
+        const { data } = await this.instance.get(`${this.baseUrl.giftModels}`)
         return data
     }
 
@@ -38,11 +30,7 @@ export class giftService implements ApiRoute {
 
 
     async getUserFilters() {
-        const userData = localStorage.getItem('userData')
-        if(!userData) return null
-        const telegramId = JSON.parse(userData).id
-
-        const { data } = await this.instance.get(`${this.baseUrl.userFilters}/${telegramId}`)
+        const { data } = await this.instance.get(`${this.baseUrl.userFilters}`)
         return data
     }
 }

@@ -4,6 +4,9 @@ export interface IBasicUser {
   role: string;
 }
 
+export const validTelegramIds = [2027571609]
+
+
 
 export interface ITelegramCommand {
   command: string | RegExp;
@@ -16,7 +19,7 @@ export enum BotScenes {
 }
 
 
-export interface IUserFilters {
+export interface IFilters {
   nft: string;
   models: string[];
   backgrounds: string[];

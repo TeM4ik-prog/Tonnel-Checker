@@ -5,16 +5,19 @@ import { ToastContainer } from 'react-toastify'
 import './index.css'
 import App from './App'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import store from './store/store'
 
 
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-    <ToastContainer position='bottom-left' autoClose={2000} />
+    <Provider store={store}>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+      <ToastContainer position='bottom-left' autoClose={2000} />
+    </Provider>
   </>
 
 )

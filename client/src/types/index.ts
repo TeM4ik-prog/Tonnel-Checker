@@ -4,25 +4,6 @@ import { toast } from "react-toastify";
 
 export const TelegramBot: string = "tonnel_ckecker_bot"
 
-export interface IUser {
-    id: string;
-    role?: UserRole;
-    banned?: boolean;
-    name: string;
-
-    
-    TelegramUser: {
-        authDate: string;
-        firstName: string;
-        photoUrl: string;
-        telegramId: string;
-        username: string;
-    } | null
-}
-
-
-
-
 export type userIdParam = number | string
 
 
@@ -55,10 +36,11 @@ export interface ApiRoute {
 export async function onRequest<T>(request: Promise<T>): Promise<T | null> {
     try {
         return await request;
-    } catch (err) {
-        handleError(err);
-        const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка';
-        toast.error(errorMessage);
+    } catch (err: any) {
+        console.log(err)
+        // handleError(err);
+        // const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка';
+        toast.error(err.response.data.message);
         return null
     }
 }

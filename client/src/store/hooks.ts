@@ -23,12 +23,6 @@ export const useUpdateUserTrigger = () => {
     return userTrigger
 }
 
-export const useGetUserRole = () => {
-    const role = useSelector((state: RootState) => state.user.user?.role)
-    return role
-};
-
-// __________
 
 
 

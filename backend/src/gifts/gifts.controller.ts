@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, BadRequestException, UseGuards } from '@nestjs/common';
 import { GiftsService } from './gifts.service';
-import { IUserFilters } from '@/types/types';
+import { IFilters } from '@/types/types';
 import { UsersService } from '@/users/users.service';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @Controller('gifts')
 export class GiftsController {
@@ -11,58 +13,40 @@ export class GiftsController {
     private readonly usersService: UsersService
   ) { }
 
-  @Get('last-update/:telegramId')
-  async findLastUpdate(@Param('telegramId') telegramId: string) {
-    const user = await this.usersService.findUserByTelegramId(parseInt(telegramId))
-    if (!user) throw new BadRequestException('user not found')
-    console.log(user)
-
+  @Get('last-update')
+  // @UseGuards(JwtAuthGuard)
+  async findLastUpdate(@Req() req) {
+    // console.log("user last-update", req.user)
+    const filters = await this.giftsService.getFilters()
     const lastUpdate = await this.giftsService.findLastUpdate()
 
-    return { lastUpdate: lastUpdate?.GiftsDataUpdate || [], userFilters: user.UserFilters }
+    return { lastUpdate: lastUpdate?.GiftsDataUpdate || [], filters }
   }
 
 
-  @Get('/gift-models/:telegramId')
-  async getGiftModels(@Param('telegramId') telegramId: string) {
-    const user = await this.usersService.findUserByTelegramId(parseInt(telegramId))
-    if (!user) throw new BadRequestException('user not found')
-    console.log(user)
+  @Get('/gift-models')
+  async getGiftModels() {
+    const filters = await this.giftsService.getFilters()
 
     const models = await this.giftsService.getGiftModels()
-    return { models, userFilters: user.UserFilters }
+    return { models, filters }
   }
 
 
-  @Get('user-filters/:telegramId')
-  async getUserFilters(@Param('telegramId') telegramId: string) {
-
-    const user = await this.usersService.findUserByTelegramId(parseInt(telegramId))
-    if (!user) throw new BadRequestException('user not found')
-    console.log(user)
-
-    return user.UserFilters
-
+  @Get('filters')
+  async getUserFilters() {
+    return await this.giftsService.getFilters()
   }
 
 
   @Post('apply-filters')
-  async applyFilters(@Body() body: { filters: IUserFilters[], userData: string }, res: Response) {
-    console.log(body.filters)
-    const parsedUserData = JSON.parse(body.userData)
+  @UseGuards(JwtAuthGuard)
+  async applyFilters(@Body() body: { filters: IFilters[] }, res: Response) {
+    console.log(body)
 
-    // console.log(parsedUserData.id)
-    if (!parsedUserData.id) throw new BadRequestException('Invalid data')
+    await this.giftsService.fetchGiftsDataFromTonnel()
 
-
-    const user = await this.usersService.findUserByTelegramId(parsedUserData.id)
-    if (!user) throw new BadRequestException('user not found')
-
-    // console.log(user)
-    return await this.giftsService.applyFilters(body.filters, user.id)
-
-
-
+    return await this.giftsService.applyFilters(body.filters)
   }
 
 

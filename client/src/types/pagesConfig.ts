@@ -21,7 +21,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
     // __________
 
 
-    FILTERS:{
+    FILTERS: {
         path: '/filters',
         label: 'Фильтры',
         shortLabel: 'Фильтры',
@@ -59,7 +59,7 @@ function updateRoutesWithParentPath(routes: Record<string, any>, parentPath = ''
 export const RoutesConfig: { [key: string]: Route } = updateRoutesWithParentPath(RoutesConfigMain);
 
 export const POSTS_PATHS = [
-    
+
     // // 'CENTRE',
     // 'SPORTS_CLUB',
     // 'FLAGSHIP',
@@ -80,9 +80,9 @@ class ApiConfig {
 
         profile: "profile",
 
-        telegram: {
-            login: "login",
-        },
+
+        login: "login",
+
 
     }
 

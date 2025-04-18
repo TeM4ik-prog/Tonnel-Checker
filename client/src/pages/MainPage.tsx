@@ -1,9 +1,11 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { GiftService } from "@/services/gift.service";
+import { useUserData } from "@/store/hooks";
 import { onRequest } from "@/types";
 import { IGift, IGiftDataUpdate, IPackGiftsDataUpdate, IUserFilters } from "@/types/gift";
 import { filterProps } from "framer-motion";
+import { BanIcon, CheckCircle, KeyIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface GroupedUpdates {
@@ -17,34 +19,17 @@ interface GroupedUpdates {
 const MainPage: React.FC = () => {
     const [lastUpdate, setLastUpdate] = useState<IGiftDataUpdate | null>(null)
     const [groupedUpdates, setGroupedUpdates] = useState<GroupedUpdates>({});
-    const [filters, setFilters] = useState<IUserFilters[]>([])
-    const [loading, setLoading] = useState(true);
-
-    const fetchUserFilters = async () => {
-        const data = await onRequest(GiftService.getUserFilters());
-        console.log("Исходные данные с сервера:", data);
-
-        if (data) {
-            console.log("filters:", data)
-        }
-    };
-
+    const { user } = useUserData()
 
     const updateData = async () => {
-        setLoading(true);
-        const data: { lastUpdate: any, userFilters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate())
+        const data: { lastUpdate: any, filters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate())
         console.log(data)
 
 
         if (data) {
             setLastUpdate(data.lastUpdate);
-
-            setFilters(data.userFilters)
-
-            groupUpdates(data.lastUpdate, data.userFilters);
-
+            groupUpdates(data.lastUpdate, data.filters);
         }
-        setLoading(false);
     };
 
     const groupUpdates = (updates: IGiftDataUpdate[], userFilters: IUserFilters[]) => {
@@ -108,12 +93,12 @@ const MainPage: React.FC = () => {
         const displayExistingParam = (param: keyof IGift, existingParamName: string | undefined) => {
 
             return (
-                <p className={`${existingParamName ? 'bg-yellow-400 rounded text-black' : ''} p-1`}>{String(gift[param])}</p>
+                <p className={`${existingParamName ? 'bg-yellow-400 rounded text-xs text-black' : ''} p-1`}>{String(gift[param])}</p>
             )
         }
 
         return (
-            <span className="flex gap-2 flex-row text-xs text-gray-500 dark:text-gray-400">
+            <span className="flex gap-1 flex-row text-xs text-gray-500 dark:text-gray-400">
                 {displayExistingParam("model", modelsExists)}
                 {displayExistingParam("backdrop", backgroundExists)}
                 {displayExistingParam("symbol", symbolExists)}
@@ -129,6 +114,46 @@ const MainPage: React.FC = () => {
     return (
         <PageContainer className="!px-0">
             <div className="w-full max-w-6xl mx-auto p-1">
+
+                {user?.hasRights ? (
+                    <div className="m-2 p-4 bg-green-900/20 border-l-4 border-green-500 rounded-lg backdrop-blur-sm">
+                        <div className="flex items-center">
+                            <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
+                            <p className="text-green-100 font-medium">
+                                У вас есть права администратора
+                            </p>
+                        </div>
+                        <p className="mt-2 text-sm text-green-300/90">
+                            Полный доступ к управлению системными фильтрами
+                        </p>
+                    </div>
+                ) : (
+                    <div className="m-2 p-4 bg-red-900/20 border-l-4 border-red-500 rounded-lg backdrop-blur-sm">
+                        <div className="flex items-center">
+                            <BanIcon className="h-5 w-5 text-red-400 mr-2" />
+                            <p className="text-red-100 font-medium">
+                                Доступ ограничен
+                            </p>
+                        </div>
+                        <p className="mt-2 text-sm text-red-300/90">
+                            Требуются административные привилегии
+                        </p>
+                        {/* <button
+                            className="mt-3 px-4 py-2 bg-red-800/40 text-red-100 rounded-md hover:bg-red-700/60 transition-all duration-200 text-sm border border-red-700/50 hover:border-red-600" */}
+                        {/* // onClick={() => requestRights()} */}
+                        {/* > */}
+                            {/* <span className="flex items-center justify-center">
+                                <KeyIcon className="w-4 h-4 mr-2" />
+                                Запросить доступ
+                            </span> */}
+                        {/* </button> */}
+                    </div>
+                )}
+
+
+
+
+
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         Последнее обновление: {lastUpdate?.updatedAt ? new Date(lastUpdate.updatedAt).toLocaleString() : 'Нет данных'}
@@ -231,7 +256,7 @@ const MainPage: React.FC = () => {
                                                         {update.Gifts.map((gift, index) => (
                                                             <div
                                                                 key={gift.id}
-                                                                className="bg-gray-50 dark:bg-gray-700 rounded p-2 flex justify-between items-center text-sm"
+                                                                className="bg-gray-50 dark:bg-gray-700 rounded p-1 flex justify-between items-center text-sm"
                                                             >
                                                                 <div className="flex flex-col">
                                                                     <span className="text-gray-700 dark:text-gray-300">
@@ -240,7 +265,7 @@ const MainPage: React.FC = () => {
 
                                                                     {displayGiftInfo(group.itemFilters, gift)}
                                                                 </div>
-                                                                <span className="font-medium text-gray-800 dark:text-white">
+                                                                <span className="font-medium text-gray-800 w-min dark:text-white end-0">
                                                                     {formatPrice(gift.price * 1.1)} TON
                                                                 </span>
                                                             </div>

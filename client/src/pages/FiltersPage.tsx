@@ -175,7 +175,7 @@ const FiltersPage: React.FC = () => {
     const fetchGiftModels = async () => {
         setLoading(true);
         try {
-            const data: { models: any, userFilters: IUserFilters[] } = await onRequest(GiftService.getGiftModels());
+            const data: { models: any, filters: IUserFilters[] } = await onRequest(GiftService.getGiftModels());
 
             console.log(data)
             if (data) {
@@ -186,8 +186,8 @@ const FiltersPage: React.FC = () => {
                 // _______
 
 
-                setSelectedParameters(data.userFilters);
-                console.log(data.userFilters)
+                setSelectedParameters(data.filters);
+                console.log(data.filters)
 
 
             }
@@ -385,7 +385,7 @@ const FiltersPage: React.FC = () => {
             })}
         </div>
     );
-    
+
 
     const handleApplyFilters = async () => {
         setApplying(true);
@@ -398,7 +398,7 @@ const FiltersPage: React.FC = () => {
             }));
 
             console.log('Применяем фильтры:', parametersWithNames);
-            const data: { count: number } = await onRequest(GiftService.applyFilters({ filters: parametersWithNames, userData: localStorage.getItem('userData') }));
+            const data: { count: number } = await onRequest(GiftService.applyFilters({ filters: parametersWithNames }));
 
 
             if (data) {

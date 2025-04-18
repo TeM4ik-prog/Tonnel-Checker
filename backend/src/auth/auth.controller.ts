@@ -13,6 +13,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import {
 	UsersService,
 } from 'src/users/users.service';
+import { ITelegramAuthDto } from './dto/entry-dto';
+import { User } from 'telegraf/typings/core/types/typegram';
 
 
 
@@ -29,23 +31,18 @@ export class AuthController {
 	async getProfile(@Request() req) {
 		return req.user;
 	}
+
+	@Post('/login')
+	async login(
+		@Body() telegramData: User,
+	) {
+		console.log(telegramData);
+		const user = await this.usersService.findOrCreateUser(telegramData);
+
+		return await this.authService.login(user);
+	}
 }
 
 
-
-// @Controller('/auth/telegram')
-// export class TelegramAuthController extends AuthController {
-// 	@Post('/login')
-// 	async login(
-// 		@Body() telegramData: ITelegramAuthDto,
-// 	) {
-// 		console.log(telegramData);
-// 		const user =
-// 			await this.telegramUsersService.findOrCreate(
-// 				telegramData,
-// 			);
-// 		return await this.authService.login(user);
-// 	}
-// }
 
 
