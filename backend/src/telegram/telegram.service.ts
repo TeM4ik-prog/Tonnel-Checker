@@ -118,7 +118,7 @@ export class TelegramService {
           chatId,
           messageId: message.message_id,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
   
         if (error.code === 400 && error.response?.body?.error_code === 400) {
