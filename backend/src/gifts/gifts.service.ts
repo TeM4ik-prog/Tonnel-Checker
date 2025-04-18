@@ -228,6 +228,11 @@ export class GiftsService implements OnModuleInit {
 
 
   async createGiftModels(data: ModelItem[]): Promise<void> {
+
+    const existingGiftsModel = await this.database.giftModel.findFirst()
+    if(existingGiftsModel) return
+
+
     const resultData = data.map((elem) => ({ name: elem._id, models: elem.models, backgrounds: elem.backgrounds, symbols: elem.symbols }))
     await this.database.giftModel.createMany({
       data: resultData,
@@ -277,7 +282,7 @@ export class GiftsService implements OnModuleInit {
   async onModuleInit() {
     await this.fetchGiftsDataFromTonnel();
 
-    // await this.createGiftModels(MODELS_GIFTS)
+    await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)
 
   }
