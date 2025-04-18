@@ -117,7 +117,7 @@ export class GiftsService implements OnModuleInit {
       combinations.push({ [gift]: giftComb })
     }
 
-    console.log(combinations[0])
+    // console.log(combinations[0])
     // console.log(JSON.stringify(combinations))
 
 
@@ -230,6 +230,7 @@ export class GiftsService implements OnModuleInit {
   async createGiftModels(data: ModelItem[]): Promise<void> {
 
     const existingGiftsModel = await this.database.giftModel.findFirst()
+    console.log(existingGiftsModel)
     if(existingGiftsModel) return
 
 

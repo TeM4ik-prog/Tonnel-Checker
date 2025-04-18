@@ -37,6 +37,7 @@ export class AppModule implements OnModuleInit {
 
   async cleanDatabase() {
     await this.databaseService.packGiftsDataUpdate.deleteMany()
+    await this.databaseService.giftModel.deleteMany()
 
 
 
