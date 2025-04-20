@@ -333,7 +333,7 @@ const FiltersPage: React.FC = () => {
         }
     }
 
-    const renderParameterSelectors = async () => (
+    const renderParameterSelectors = () => (
 
 
         <div className="space-y-4">
