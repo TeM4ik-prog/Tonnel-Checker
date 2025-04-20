@@ -20,8 +20,6 @@ export class TelegramService {
     private readonly database: DatabaseService
   ) { }
 
-
-  
   getInfo(userId: number | undefined): string {
     return `ID пользователя: ${userId}`;
   }
@@ -29,15 +27,6 @@ export class TelegramService {
   getPhotoStream(filePath: string): InputFile {
     return Input.fromLocalFile(filePath)
   }
-
-  // addToActiveChats(msg: Message) {
-  //   if (msg.chat) {
-  //     const key = `${msg.chat.id}:${msg.from.id}`;
-  //     this.activeChats.set(key, { chatId: msg.chat.id, userTelegramId: msg.from.id });
-  //     console.log(this.activeChats)
-  //   }
-  // }
-
 
   async deleteAllGoodPriceMessages() {
     for (const [_, messageInfo] of this.goodPriceMessages) {
@@ -67,16 +56,16 @@ export class TelegramService {
     });
   }
 
-  // async saveGoodPriceMessage(chatId: number, messageId: number) {
-  //   await this.database.goodPriceMessage.upsert({
-  //     where: { chatId_messageId: { chatId, messageId } },
-  //     update: {},
-  //     create: {
-  //       chatId,
-  //       messageId,
-  //     },
-  //   });
-  // }
+  async saveGoodPriceMessage(chatId: number, messageId: number) {
+    await this.database.goodPriceMessage.upsert({
+      where: { chatId_messageId: { chatId, messageId } },
+      update: {},
+      create: {
+        chatId,
+        messageId,
+      },
+    });
+  }
 
 
   async sendMessageGoodPriceGiftToAll(

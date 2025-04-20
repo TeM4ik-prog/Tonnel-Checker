@@ -3,9 +3,8 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { GiftService } from "@/services/gift.service";
 import { useUserData } from "@/store/hooks";
 import { onRequest } from "@/types";
-import { IGift, IGiftDataUpdate, IPackGiftsDataUpdate, IUserFilters } from "@/types/gift";
-import { filterProps } from "framer-motion";
-import { BanIcon, CheckCircle, KeyIcon } from "lucide-react";
+import { IGift, IGiftDataUpdate, IUserFilters } from "@/types/gift";
+import { BanIcon, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface GroupedUpdates {

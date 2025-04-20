@@ -3,7 +3,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { GiftService } from "@/services/gift.service";
 import { onRequest } from "@/types";
 import { IUserFilters } from "@/types/gift";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface GiftModel {
@@ -261,11 +261,17 @@ const FiltersPage: React.FC = () => {
         );
     };
 
+    const randInt = (min: number, max: number) => {
+        return Math.floor(min + Math.random() * (max - min))
+    }
+
     const getValueName = (nftName: string, type: acceptableTypes, key: string) => {
         const gift = giftModels.find(g => g.name === nftName);
         if (!gift) return key;
         return gift[type][key] || key;
     };
+
+   
 
     const renderNftSelector = () => (
         <div className="bg-gray-800 rounded-lg p-0 mb-6">
@@ -300,11 +306,49 @@ const FiltersPage: React.FC = () => {
         </div>
     );
 
-    const renderParameterSelectors = () => (
+    async function previewLottieAnimation(name: string, id: string): Promise<void> {
+        try {
+            const formattedName = name
+                .replace(" ", "")
+                .replace("-", "")
+                .replace("'", "")
+                .toLowerCase();
+            
+            const url = `https://nft.fragment.com/gift/${formattedName}-${id}.lottie.json`;
+            
+            console.log('URL запроса:', url);
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.error(`Ошибка HTTP: ${response.status}`);
+                return;
+            }
+            
+            const animationData = await response.json();
+            console.log('Данные анимации:', animationData);
+            
+        } catch (error) {
+            console.error('Ошибка при получении анимации:', error);
+        }
+    }
+
+    const renderParameterSelectors = async () => (
+
+
         <div className="space-y-4">
             {selectedParameters.map(params => {
                 const modelOptions = getOptionsForNft(params.nft, 'models');
-                const backgroundOptions = getOptionsForNft(params.nft, 'backgrounds');
+                // const backgroundOptions = getOptionsForNft(params.nft, 'backgrounds');
+
+                // console.log(params, modelOptions[randInt(0, modelOptions.length - 1)])
+
+                // console.log(previewLottieAnimation(params.nft, String(randInt(0, 10))))
+
+                // useEffect(() => {
+
+
+                // }, [])
 
                 const renderParameterTags = (items: string[], type: acceptableTypes) => {
                     if (items.length === 0) return null;
@@ -384,6 +428,7 @@ const FiltersPage: React.FC = () => {
                 );
             })}
         </div>
+
     );
 
 
