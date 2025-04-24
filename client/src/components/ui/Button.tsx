@@ -8,7 +8,7 @@ interface Props {
     text: string;
     FC?: () => void;
     routeKey?: string;
-    color?: "red" | "blue";
+    color?: "red" | "blue" | "green";
     widthMin?: boolean;
     openNewPage?: boolean;
 
@@ -27,7 +27,9 @@ interface Props {
 export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, className, openNewPage = false, disabled = false, formSubmit = false, color = "blue" }: Props) => {
     const buttonColor = color === "red"
         ? "bg-red-500 active:bg-red-600 md:hover:bg-red-600"
-        : "bg-blue-500 active:bg-blue-600 md:hover:bg-blue-600";
+            : color === "green"
+            ? "bg-green-500 active:bg-green-600 md:hover:bg-green-600"
+            : "bg-blue-500 active:bg-blue-600 md:hover:bg-blue-600";
     const buttonWidth = widthMin ? "w-full" : "w-min"
 
 

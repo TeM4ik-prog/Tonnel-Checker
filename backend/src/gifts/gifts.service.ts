@@ -170,6 +170,8 @@ export class GiftsService implements OnModuleInit {
     } else {
       console.error('no data');
     }
+
+  }
     
 
   // ___________-
@@ -222,7 +224,7 @@ export class GiftsService implements OnModuleInit {
 
 
   async onModuleInit() {
-    await this.fetchGiftsDataFromTonnel();
+    // await this.fetchGiftsDataFromTonnel();
 
     await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)

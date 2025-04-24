@@ -32,11 +32,12 @@ export class AppModule implements OnModuleInit {
 
   async onModuleInit() {
     // полная очистка базы данных
-    // await this.cleanDatabase();
+    await this.cleanDatabase();
   }
 
   async cleanDatabase() {
-    // await this.databaseService.packGiftsDataUpdate.deleteMany()
+    await this.databaseService.packGiftsDataUpdate.deleteMany()
+    await this.databaseService.giftsDataUpdate.deleteMany()
     // await this.databaseService.giftModel.deleteMany()
     await this.databaseService.goodPriceMessage.deleteMany()
 

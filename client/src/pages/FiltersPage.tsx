@@ -1,5 +1,7 @@
+import { FilterActions } from "@/components/filter/FilterActions";
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { Button } from "@/components/ui/Button";
 import { GiftService } from "@/services/gift.service";
 import { onRequest } from "@/types";
 import { IUserFilters } from "@/types/gift";
@@ -464,6 +466,40 @@ const FiltersPage: React.FC = () => {
         }
     };
 
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const jsonData = JSON.parse(e.target?.result as string);
+                if (Array.isArray(jsonData)) {
+                    setSelectedParameters(jsonData);
+                    toast.success('Фильтры успешно загружены!');
+                } else {
+                    toast.error('Неверный формат файла. Ожидается массив фильтров.');
+                }
+            } catch (error) {
+                toast.error('Ошибка при чтении файла. Проверьте формат JSON.');
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    const handleExportFilters = () => {
+        const jsonString = JSON.stringify(selectedParameters, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'filters.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <PageContainer className="pt-0">
             <div className="w-full max-w-6xl mx-auto">
@@ -473,6 +509,12 @@ const FiltersPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
+                        <FilterActions
+                            selectedParameters={selectedParameters}
+                            onFiltersChange={setSelectedParameters}
+                        />
+
+                        
                         {renderNftSelector()}
                         {selectedParameters.length > 0 && renderParameterSelectors()}
 
