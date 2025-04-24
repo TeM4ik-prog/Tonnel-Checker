@@ -148,6 +148,13 @@ export class GiftsService implements OnModuleInit {
     }
 
     if (resultDataUpdate.length > 0) {
+      const existingCount = await this.database.packGiftsDataUpdate.count();
+    
+      if (existingCount > 100) {
+        await this.database.packGiftsDataUpdate.deleteMany();
+        console.log('Deleted all records because count > 100');
+      }
+    
       const data = await this.database.packGiftsDataUpdate.create({
         data: {
           GiftsDataUpdate: {
@@ -157,14 +164,13 @@ export class GiftsService implements OnModuleInit {
         include: {
           GiftsDataUpdate: true
         }
-      })
-      // console.log(data)
+      });
+    
       console.log('created');
+    } else {
+      console.error('no data');
     }
-    else {
-      console.error('no data')
-    }
-  }
+    
 
   // ___________-
 
