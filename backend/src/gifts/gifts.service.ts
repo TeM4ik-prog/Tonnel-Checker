@@ -102,7 +102,7 @@ export class GiftsService implements OnModuleInit {
         const element = combination[giftName][i];
         const items: CreateGiftDto[] = await fetchPattern(element.gift, element.background, element.model);
 
-        console.log(items)
+        // console.log(items)
 
         if (items.length !== 2) {
           console.log(`Skipping ${giftName} - items.length is not 2`);
@@ -209,7 +209,7 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-  @Cron('*/60 * * * * *')
+  @Cron('*/20 * * * * *')
   async handleCron() {
     await this.fetchGiftsDataFromTonnel();
   }

@@ -16,12 +16,12 @@ model User {
 
   authTonnelData String?
 
-  minProfit   Float         @default(0.5)
+  minProfit Float @default(0.5)
   // UserFilters UserFilters[]
 }
 
 model Filters {
-  id     String @id @default(uuid())
+  id String @id @default(uuid())
 
   nft         String
   models      Json
@@ -78,9 +78,12 @@ model ActiveChat {
 }
 
 model GoodPriceMessage {
-  id        Int      @id @default(autoincrement())
+  id        String @id @default(uuid())
   chatId    Int
   messageId Int
+
+  giftId Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

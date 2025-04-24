@@ -10,8 +10,7 @@ import { InputFile, Message } from 'telegraf/typings/core/types/typegram';
 @Injectable()
 export class TelegramService {
   // private activeChats: Map<string, { chatId: number, userTelegramId: number }> = new Map();
-  private goodPriceMessages: Map<string, { chatId: number, messageId: number }> = new Map();
-
+  // private goodPriceMessages: Map<string, { chatId: number, messageId: number }> = new Map();
 
   constructor(
     @InjectBot() private readonly bot: Telegraf,
@@ -28,15 +27,36 @@ export class TelegramService {
     return Input.fromLocalFile(filePath)
   }
 
-  async deleteAllGoodPriceMessages() {
-    for (const [_, messageInfo] of this.goodPriceMessages) {
+  async deleteGoodPriceMessage(id: string) {
+    return await this.database.goodPriceMessage.delete({
+      where: {
+        id
+      }
+    })
+  }
+
+  async deleteArUserGoodPriceMessages(messages: { chatId: number, giftId: number, messageId: number }[]) {
+    for (const message of messages) {
       try {
-        await this.bot.telegram.deleteMessage(messageInfo.chatId, messageInfo.messageId);
+        await this.bot.telegram.deleteMessage(message.chatId, message.messageId)
+        await this.database.goodPriceMessage.deleteMany({
+          where: {
+              chatId: message.chatId,
+              giftId: message.giftId            
+          }
+        })
+        
       } catch (error) {
+        console.log('cant delete')
         console.log(error)
       }
     }
-    this.goodPriceMessages.clear();
+  }
+
+  async findGoodPriceMessages(id: string) {
+    return await this.database.goodPriceMessage.findUnique({
+      where: { id: id }
+    })
   }
 
 
@@ -56,13 +76,14 @@ export class TelegramService {
     });
   }
 
-  async saveGoodPriceMessage(chatId: number, messageId: number) {
+  async saveGoodPriceMessage(chatId: number, messageId: number, giftId: number) {
     await this.database.goodPriceMessage.upsert({
       where: { chatId_messageId: { chatId, messageId } },
       update: {},
       create: {
         chatId,
         messageId,
+        giftId
       },
     });
   }
@@ -74,17 +95,28 @@ export class TelegramService {
     profit: number,
     sellPrice: number,
   ) {
-    // Загружаем всех активных пользователей из БД
     const activeChats = await this.database.activeChat.findMany();
-  
-    // Загружаем пользователей и их минимальный профит
+
     const users: { telegramId: number; minProfit: number }[] = await this.usersService.getAllUsersMinProfit();
     const userProfitMap = new Map(users.map(user => [user.telegramId, user.minProfit]));
-  
+
     for (const { chatId, userTelegramId } of activeChats) {
       const minProfit = userProfitMap.get(userTelegramId);
       if (minProfit === undefined || profit < minProfit) continue;
-  
+
+
+      const goodUserPriceMessages = await this.database.goodPriceMessage.findMany({ where: { chatId } })
+      // console.log("User goodPriceMessages:", goodUserPriceMessages)
+
+      const messagesToDelete = goodUserPriceMessages.filter((el) => el.giftId == firstGift.gift_id)
+
+      console.log(messagesToDelete.map(el => ({ giftId: el.giftId, chatId: el.chatId, messageId: el.messageId })))
+
+      console.log(messagesToDelete)
+
+      await this.deleteArUserGoodPriceMessages(messagesToDelete)
+
+
       try {
         const messageText =
           `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
@@ -92,7 +124,7 @@ export class TelegramService {
           `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
           `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
           `🔗 Ссылка: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.gift_num}`;
-  
+
         const message = await this.bot.telegram.sendMessage(chatId, messageText, {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -101,15 +133,17 @@ export class TelegramService {
             ],
           },
         });
-  
-        const messageKey = `${chatId}_${message.message_id}`;
-        this.goodPriceMessages.set(messageKey, {
-          chatId,
-          messageId: message.message_id,
-        });
+
+        await this.saveGoodPriceMessage(chatId, message.message_id, firstGift.gift_id)
+
+        // const messageKey = `${chatId}_${message.message_id}`;
+        // this.goodPriceMessages.set(messageKey, {
+        //   chatId,
+        //   messageId: message.message_id,
+        // });
       } catch (error: any) {
         console.error(error);
-  
+
         if (error.code === 400 && error.response?.body?.error_code === 400) {
           // Удаляем чат из базы, если бот не может отправить сообщение
           await this.database.activeChat.delete({
@@ -124,6 +158,6 @@ export class TelegramService {
       }
     }
   }
-  
+
 
 }

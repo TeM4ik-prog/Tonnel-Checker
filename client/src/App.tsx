@@ -10,6 +10,7 @@ import { ITelegramUser, IUser } from './types/auth';
 import { useDispatch } from 'react-redux';
 import { getTokenFromLocalStorage, setTokenToLocalStorage } from './utils/localstorage';
 import { login, logout } from './store/user/user.slice';
+import { toast } from 'react-toastify';
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -81,7 +82,8 @@ function App() {
         }
       }
       else {
-        alert('no telegram data')
+        toast.warning('no telegram data')
+        // alert('no telegram data')
       }
 
 
