@@ -7,6 +7,8 @@ import { Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
 import { Context, Markup, Scenes } from 'telegraf';
 import { TelegramService } from './telegram.service';
 
+import * as path from 'path'
+import * as fs from 'fs';
 
 
 @Update()
@@ -24,12 +26,19 @@ export class TelegramUpdate {
 
   @Start()
   async onStart(@Ctx() ctx: Context) {
+    await this.userService.findOrCreateUser(ctx.from);
+    this.telegramService.addToActiveChats(ctx.message);
 
-    await this.userService.findOrCreateUser(ctx.from)
-    this.telegramService.addToActiveChats(ctx.message)
-    
+    const stickersDir = path.join(__dirname, '..', '..', 'public', 'images', 'stickers');
 
-    const stream = this.telegramService.getPhotoStream("./public/images/sticker.png")
+    const files = fs.readdirSync(stickersDir).filter(file => { return /\.(png|jpg|jpeg)$/i.test(file) })
+
+    const randomFile = files[Math.floor(Math.random() * files.length)];
+
+    const stream = this.telegramService.getPhotoStream(
+      path.join(stickersDir, randomFile)
+    );
+
     await ctx.telegram.sendPhoto(ctx.chat.id, stream, {
       reply_markup: {
         inline_keyboard: [
@@ -40,7 +49,6 @@ export class TelegramUpdate {
         ],
       },
     });
-
   }
 
   @Help()

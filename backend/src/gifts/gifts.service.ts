@@ -217,7 +217,7 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-  @Cron('*/20 * * * * *')
+  @Cron('*/60 * * * * *')
   async handleCron() {
     await this.fetchGiftsDataFromTonnel();
   }
