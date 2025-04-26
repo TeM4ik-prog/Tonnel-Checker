@@ -210,6 +210,8 @@ export class GiftsService implements OnModuleInit {
   async applyFilters(filters: IFilters[]) {
     await this.database.filters.deleteMany()
 
+    await this.fetchGiftsDataFromTonnel();
+
     return await this.database.filters.createMany({
       data: filters.map(filter => ({
         ...filter
@@ -217,7 +219,7 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-  @Cron('*/60 * * * * *')
+  @Cron('*/180 * * * * *')
   async handleCron() {
     await this.fetchGiftsDataFromTonnel();
   }

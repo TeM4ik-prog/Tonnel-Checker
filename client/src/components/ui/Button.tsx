@@ -54,7 +54,7 @@ export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, class
     return (
         <>
             {!formSubmit ? (
-                <NavLink to={path || href || ''} target={openNewPage ? "_blank" : ''} className="flex justify-center z-10">
+                <NavLink to={path || href || ''} target={openNewPage ? "_blank" : ''} className="flex z-10">
                     {renderButton()}
                 </NavLink>
             ) : (

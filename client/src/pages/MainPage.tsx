@@ -1,10 +1,11 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { Button } from "@/components/ui/Button";
 import { GiftService } from "@/services/gift.service";
 import { useUserData } from "@/store/hooks";
 import { onRequest } from "@/types";
 import { IGift, IGiftDataUpdate, IUserFilters } from "@/types/gift";
-import { BanIcon, CheckCircle } from "lucide-react";
+import { BanIcon, CheckCircle, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface GroupedUpdates {
@@ -34,11 +35,31 @@ const MainPage: React.FC = () => {
     const groupUpdates = (updates: IGiftDataUpdate[], userFilters: IUserFilters[]) => {
         const grouped: GroupedUpdates = {};
 
-        updates.forEach((update: IGiftDataUpdate) => {
+        const buildLink = (filterItem: IUserFilters, index: number) => {
+            const assembled = [
+                "filter",
+                "",
+                JSON.stringify([filterItem.nft]),
+                JSON.stringify(filterItem.models[index] ? [filterItem.models[index]] : []),
+                JSON.stringify(filterItem.backgrounds ? [filterItem.backgrounds[index]] : []),
+                JSON.stringify(filterItem.symbols[index] ? [filterItem.symbols[index]] : []),
+                'TON',
+                JSON.stringify(["", ""])
+            ].join(";") + ";";
+
+            console.log(assembled)
+
+            const encoded = btoa(unescape(encodeURIComponent(assembled)));
+
+            const url = `https://t.me/tonnel_network_bot/gifts?startapp=${encoded}`;
+
+            console.log(url)
+            return url;
+        }
+
+        updates.forEach((update: IGiftDataUpdate, index: number) => {
             const name = update.Gifts[0]?.name || 'Unknown';
-
-
-            const filterItem = (userFilters.find((filter) => (name === filter.nft)))!
+            const filterItem: IUserFilters = (userFilters.find((filter) => (name === filter.nft)))!
 
             console.log(filterItem)
 
@@ -50,10 +71,17 @@ const MainPage: React.FC = () => {
                 };
             }
 
+            update.tonnelLink = buildLink(filterItem, index)
+
             grouped[name].items.push(update);
+
+
+            console.log("grouped:")
+
+            console.log(grouped[name])
+
         });
 
-        console.log(grouped)
 
         setGroupedUpdates(grouped);
     };
@@ -141,7 +169,7 @@ const MainPage: React.FC = () => {
                             className="mt-3 px-4 py-2 bg-red-800/40 text-red-100 rounded-md hover:bg-red-700/60 transition-all duration-200 text-sm border border-red-700/50 hover:border-red-600" */}
                         {/* // onClick={() => requestRights()} */}
                         {/* > */}
-                            {/* <span className="flex items-center justify-center">
+                        {/* <span className="flex items-center justify-center">
                                 <KeyIcon className="w-4 h-4 mr-2" />
                                 Запросить доступ
                             </span> */}
@@ -234,20 +262,39 @@ const MainPage: React.FC = () => {
                                     <div className="mt-3 space-y-3">
                                         {group.items.map((update) => (
                                             <div key={update.id} className="bg-gray-100 dark:bg-gray-800 rounded p-1">
-                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className={`text-lg font-bold ${getProfitColor(update.profit)}`}>
-                                                                {update.profit} TON
+                                                <div className="flex flex-col md:flex-col gap-2">
+
+                                                    <div className="flex flex-row md:flex-col justify-between gap-2">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className={`text-lg font-bold ${getProfitColor(update.profit)}`}>
+                                                                    {update.profit} TON
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="">
+                                                            <span className="text-sm text-gray-600 dark:text-gray-400">Цена продажи: </span>
+                                                            <span className="font-bold text-blue-600 dark:text-blue-400">
+                                                                {update.sellPrice} TON
                                                             </span>
                                                         </div>
+
                                                     </div>
-                                                    <div className="text-right">
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400">Цена продажи: </span>
-                                                        <span className="font-bold text-blue-600 dark:text-blue-400">
-                                                            {update.sellPrice} TON
-                                                        </span>
-                                                    </div>
+
+
+
+                                                    <Button
+                                                        className="justify-start"
+                                                        text="Перейти на этот фильтр"
+                                                        href={update.tonnelLink}
+                                                        icon={<Filter />}
+                                                        // widthMin={true}
+
+
+                                                    />
+
+
                                                 </div>
 
                                                 <div className="mt-3">

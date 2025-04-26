@@ -20,6 +20,9 @@ export interface IGiftDataUpdate {
     profit: number;
     sellPrice: number;
 
+    tonnelLink?: string
+
+
     createdAt: Date;
     updatedAt: Date;
 }
