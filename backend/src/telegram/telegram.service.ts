@@ -41,11 +41,11 @@ export class TelegramService {
         await this.bot.telegram.deleteMessage(message.chatId, message.messageId)
         await this.database.goodPriceMessage.deleteMany({
           where: {
-              chatId: message.chatId,
-              giftId: message.giftId            
+            chatId: message.chatId,
+            giftId: message.giftId
           }
         })
-        
+
       } catch (error) {
         console.log('cant delete')
         console.log(error)
@@ -77,14 +77,18 @@ export class TelegramService {
   }
 
   async saveGoodPriceMessage(chatId: number, messageId: number, giftId: number) {
+
+    const user = await this.usersService.findUserByTelegramId(chatId)
+
     await this.database.goodPriceMessage.upsert({
       where: { chatId_messageId: { chatId, messageId } },
       update: {},
       create: {
         chatId,
         messageId,
-        giftId
-      },
+        giftId,
+        userId: user.id
+      }
     });
   }
 
@@ -94,68 +98,94 @@ export class TelegramService {
     secondGift: CreateGiftDto,
     profit: number,
     sellPrice: number,
-  ) {
-    const activeChats = await this.database.activeChat.findMany();
 
-    const users: { telegramId: number; minProfit: number }[] = await this.usersService.getAllUsersMinProfit();
-    const userProfitMap = new Map(users.map(user => [user.telegramId, user.minProfit]));
+    activeChats: { id: number, chatId: number, userTelegramId: number }[],
+    users: { telegramId: number, minProfit: number, messages: number[] }[]
+  ) {
+
 
     for (const { chatId, userTelegramId } of activeChats) {
-      const minProfit = userProfitMap.get(userTelegramId);
-      if (minProfit === undefined || profit < minProfit) continue;
-
+      const user = users.find((user) => user.telegramId == userTelegramId);
+      if (user === undefined || profit < user.minProfit) continue;
 
       const goodUserPriceMessages = await this.database.goodPriceMessage.findMany({ where: { chatId } })
-      // console.log("User goodPriceMessages:", goodUserPriceMessages)
+      const messagesToDelete = goodUserPriceMessages.filter((el) => el.giftId == firstGift.gift_id && !el.hidden)
 
-      const messagesToDelete = goodUserPriceMessages.filter((el) => el.giftId == firstGift.gift_id)
-
-      console.log(messagesToDelete.map(el => ({ giftId: el.giftId, chatId: el.chatId, messageId: el.messageId })))
-
-      console.log(messagesToDelete)
+      // console.log(messagesToDelete.map(el => ({ giftId: el.giftId, chatId: el.chatId, messageId: el.messageId })))
+      // console.log(messagesToDelete)
 
       await this.deleteArUserGoodPriceMessages(messagesToDelete)
 
+      if (user.messages.includes(firstGift.gift_id)){
+        console.log('this gift hidden ')
+      }
 
-      try {
-        const messageText =
-          `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
-          `💰 товар 2: ${(secondGift.price * 1.1).toFixed(2)} TON\n\n` +
-          `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
-          `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
-          `🔗 Ссылка: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.gift_num}`;
 
-        const message = await this.bot.telegram.sendMessage(chatId, messageText, {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: 'Просмотреть!!!', url: `https://t.me/tonnel_network_bot/gift?startapp=${firstGift.gift_id}` }],
-            ],
-          },
-        });
+        try {
+          const messageText =
+            `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
+            `💰 товар 2: ${(secondGift.price * 1.1).toFixed(2)} TON\n\n` +
+            `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
+            `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
+            `🔗 Ссылка: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.gift_num}`;
 
-        await this.saveGoodPriceMessage(chatId, message.message_id, firstGift.gift_id)
-
-        // const messageKey = `${chatId}_${message.message_id}`;
-        // this.goodPriceMessages.set(messageKey, {
-        //   chatId,
-        //   messageId: message.message_id,
-        // });
-      } catch (error: any) {
-        console.error(error);
-
-        if (error.code === 400 && error.response?.body?.error_code === 400) {
-          // Удаляем чат из базы, если бот не может отправить сообщение
-          await this.database.activeChat.delete({
-            where: {
-              chatId_userTelegramId: {
-                chatId,
-                userTelegramId,
-              },
+          const message = await this.bot.telegram.sendMessage(chatId, messageText, {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: 'Просмотреть!!!', url: `https://t.me/tonnel_network_bot/gift?startapp=${firstGift.gift_id}` },
+                  { text: 'Скрыть', callback_data: 'hideGiftMessage' }
+                ],
+              ],
             },
           });
+
+          await this.saveGoodPriceMessage(chatId, message.message_id, firstGift.gift_id)
+
+          // const messageKey = `${chatId}_${message.message_id}`;
+          // this.goodPriceMessages.set(messageKey, {
+          //   chatId,
+          //   messageId: message.message_id,
+          // });
+        } catch (error: any) {
+          console.error(error);
+
+          if (error.code === 400 && error.response?.body?.error_code === 400) {
+            // Удаляем чат из базы, если бот не может отправить сообщение
+            await this.database.activeChat.delete({
+              where: {
+                chatId_userTelegramId: {
+                  chatId,
+                  userTelegramId,
+                },
+              },
+            });
+          }
         }
-      }
+    }
+  }
+
+
+  async hideGiftMessage(ctx: Context) {
+    console.log(ctx);
+    try {
+      await this.database.goodPriceMessage.update({
+        where: {
+          chatId_messageId: {
+            messageId: ctx.message.message_id,
+            chatId: ctx.message.chat.id,
+          },
+        },
+        data: {
+          hidden: true
+        },
+      });
+
+      // Можно удалить сообщение, если нужно
+      await this.bot.telegram.deleteMessage(ctx.message.chat.id, ctx.message.message_id)
+    } catch (error) {
+      console.error('Ошибка при скрытии сообщения:', error);
     }
   }
 

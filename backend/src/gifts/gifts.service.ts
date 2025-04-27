@@ -50,6 +50,9 @@ export class GiftsService implements OnModuleInit {
     const combinations = []
     const filters = await this.getFilters()
 
+    const activeChats = await this.database.activeChat.findMany()
+    const users = await this.usersService.getAllUsersData()
+
     // console.log(userFilters)
 
     if (!filters || filters.length === 0) {
@@ -142,19 +145,21 @@ export class GiftsService implements OnModuleInit {
           items[0],
           items[1],
           profit,
-          sellPrice
+          sellPrice,
+          activeChats,
+          users
         );
       }
     }
 
     if (resultDataUpdate.length > 0) {
       const existingCount = await this.database.packGiftsDataUpdate.count();
-    
+
       if (existingCount > 100) {
         await this.database.packGiftsDataUpdate.deleteMany();
         console.log('Deleted all records because count > 100');
       }
-    
+
       const data = await this.database.packGiftsDataUpdate.create({
         data: {
           GiftsDataUpdate: {
@@ -165,14 +170,14 @@ export class GiftsService implements OnModuleInit {
           GiftsDataUpdate: true
         }
       });
-    
+
       console.log('created');
     } else {
       console.error('no data');
     }
 
   }
-    
+
 
   // ___________-
 
@@ -219,7 +224,7 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-  @Cron('*/180 * * * * *')
+  @Cron('*/20 * * * * *')
   async handleCron() {
     await this.fetchGiftsDataFromTonnel();
   }

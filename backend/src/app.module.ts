@@ -32,7 +32,7 @@ export class AppModule implements OnModuleInit {
 
   async onModuleInit() {
     // полная очистка базы данных
-    await this.cleanDatabase();
+    // await this.cleanDatabase();
   }
 
   async cleanDatabase() {

@@ -3,12 +3,13 @@ import { BotScenes } from '@/types/types';
 import { UsersService } from '@/users/users.service';
 import { formatMessage } from '@/utils/formatMessage';
 import { ConfigService } from '@nestjs/config';
-import { Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
 import { Context, Markup, Scenes } from 'telegraf';
 import { TelegramService } from './telegram.service';
 
 import * as path from 'path'
 import * as fs from 'fs';
+import { CallbackQuery, Message } from 'telegraf/typings/core/types/typegram';
 
 
 @Update()
@@ -172,6 +173,27 @@ export class TelegramUpdate {
 
 
 
+  @Action('hideGiftMessage')
+  async onHideButton(ctx: any) {
+
+    const callbackQuery = ctx.update.callback_query;
+
+    // if (!callbackQuery || !callbackQuery.message) {
+    //   console.error('Нет сообщения в callback!');
+    //   return;
+    // }
+
+    // const chatId = callbackQuery.message.chat.id;
+    // const messageId = callbackQuery.message.message_id;
+
+    // console.log('chatId:', chatId);
+    // console.log('messageId:', messageId);
+    await this.telegramService.hideGiftMessage(callbackQuery)
+
+
+  }
+
+
 
   @On('callback_query')
   async onCallbackQuery(@Ctx() ctx) {
@@ -194,6 +216,8 @@ export class TelegramUpdate {
     }
 
   }
+
+
 
 
 

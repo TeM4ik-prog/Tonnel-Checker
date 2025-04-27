@@ -17,6 +17,8 @@ model User {
   authTonnelData String?
 
   minProfit Float @default(0.5)
+
+  messages GoodPriceMessage[]
   // UserFilters UserFilters[]
 }
 
@@ -87,8 +89,22 @@ model GoodPriceMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  hidden Boolean @default(false)
+
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
+
   @@unique([chatId, messageId])
 }
+
+// model HiddenGoodPriceMessage {
+//   // id         Int @id @default(autoincrement())
+//   telegramId Int @id
+
+//   messages GoodPriceMessage[]
+
+//   @@unique([telegramId])
+// }
 
 model GiftModel {
   id String @id @default(uuid())

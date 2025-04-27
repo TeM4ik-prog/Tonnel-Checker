@@ -12,14 +12,31 @@ export class UsersService {
   ) { }
 
 
-  async getAllUsersMinProfit() {
-    return await this.database.user.findMany({
+  async getAllUsersData() {
+    const users = await this.database.user.findMany({
       select: {
         telegramId: true,
-        minProfit: true
+        minProfit: true,
+        messages: {
+          select: {
+            giftId: true,
+            hidden: true
+          }
+        }
       }
-    })
+    });
+
+    return users.map(user => ({
+      telegramId: user.telegramId,
+      minProfit: user.minProfit,
+      messages: user.messages.filter(msg => msg.hidden === true)
+        .map(msg => ({
+          giftId: msg.giftId,
+          hidden: msg.hidden
+        }))
+    }));
   }
+
 
   async findUserById(userBaseId: string) {
     return await this.database.user.findUnique({
