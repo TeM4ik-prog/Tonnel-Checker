@@ -15,6 +15,13 @@ export class userService implements ApiRoute {
         const { data } = await this.instance.patch('', formData)
         return data
     }
+
+    async getUserGiftMessages() {
+        const { data } = await this.instance.get(this.baseUrl.getGiftMessages)
+        return data;
+    }
+
+    
 }
 
 

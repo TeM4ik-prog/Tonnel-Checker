@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon, FilterIcon } from "lucide-react";
+import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon, FilterIcon, EyeOff } from "lucide-react";
 
 export interface Route {
     path: string;
@@ -28,6 +28,17 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         showInHeader: false,
         icon: FilterIcon,
     },
+
+    GIFT_MESSAGES: {
+        path: '/hiddenMessages',
+        label: 'скрытые сообщения',
+        shortLabel: 'скрытые сообщения',
+        showInHeader: false,
+        icon: EyeOff,
+    },
+
+
+
 
 
     // CONTACTS: {
@@ -84,6 +95,7 @@ class ApiConfig {
         login: "login",
 
 
+
     }
 
     admin = {
@@ -92,12 +104,17 @@ class ApiConfig {
             main: "users",
             ban: "users/ban",
             passwordChange: "password/change",
+
         }
+
+
     }
 
 
     users = {
         baseInstance: createAxiosInstance('users/'),
+        getGiftMessages: 'giftMessages',
+
     }
 
     gifts = {
@@ -106,7 +123,9 @@ class ApiConfig {
         lastUpdate: "last-update",
         giftModels: 'gift-models',
         applyFilters: 'apply-filters',
-        userFilters: "user-filters"
+        userFilters: "filters",
+        restoreGiftMessage: 'restore-gift-message'
+
     }
 
 }

@@ -118,6 +118,9 @@ export class GiftsService implements OnModuleInit {
 
         const { profit, sellPrice } = this.calculateProfit(items[0]?.price, items[1]?.price);
 
+        // console.log(items[0]?.gift_id)
+        // console.log(items[1]?.gift_id)
+
         const createdGiftsDataUpdate = await this.database.giftsDataUpdate.create({
           data: {
             profit,
@@ -142,8 +145,8 @@ export class GiftsService implements OnModuleInit {
         resultDataUpdate.push(createdGiftsDataUpdate);
 
         await this.telegramService.sendMessageGoodPriceGiftToAll(
-          items[0],
-          items[1],
+          createdGiftsDataUpdate.Gifts[0],
+          createdGiftsDataUpdate.Gifts[1],
           profit,
           sellPrice,
           activeChats,
@@ -231,7 +234,7 @@ export class GiftsService implements OnModuleInit {
 
 
   async onModuleInit() {
-    // await this.fetchGiftsDataFromTonnel();
+    await this.fetchGiftsDataFromTonnel();
 
     await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)

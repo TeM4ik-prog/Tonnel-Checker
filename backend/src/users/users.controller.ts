@@ -1,13 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthTonnelData } from './dto/user-data-dto';
 import { TelegramService } from '@/telegram/telegram.service';
+import { UserId } from '@/decorators/userid.decorator';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    
+
   ) { }
 
   @Post('authData')
@@ -15,7 +17,7 @@ export class UsersController {
     // console.log(body)
 
 
-    const authData: AuthTonnelData = this.usersService.decodeInitData(body.initData); 
+    const authData: AuthTonnelData = this.usersService.decodeInitData(body.initData);
 
     console.log(authData)
 
@@ -25,6 +27,16 @@ export class UsersController {
     // console.log(body)
     return { status: 'ok!' }
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Get('giftMessages')
+  async getHiddenMessages(@UserId() userId: string) {
+    return await this.usersService.getUserSortedMessages(userId)
+  }
+
+
+ 
 
 
 }

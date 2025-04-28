@@ -33,6 +33,11 @@ export class giftService implements ApiRoute {
         const { data } = await this.instance.get(`${this.baseUrl.userFilters}`)
         return data
     }
+
+    async restoreUserGiftMessage(messageId: number, chatId: number) {
+        const { data } = await this.instance.patch(this.baseUrl.restoreGiftMessage, { messageId, chatId })
+        return data;
+    }
 }
 
 

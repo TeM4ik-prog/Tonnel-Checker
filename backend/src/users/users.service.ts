@@ -18,30 +18,55 @@ export class UsersService {
         telegramId: true,
         minProfit: true,
         messages: {
-          select: {
-            giftId: true,
-            hidden: true
+          include: {
+            Gift: {
+              select: {
+                giftId: true,
+              }
+            },
           }
         }
       }
     });
 
+
     return users.map(user => ({
       telegramId: user.telegramId,
       minProfit: user.minProfit,
-      messages: user.messages.filter(msg => msg.hidden === true)
-        .map(msg => ({
-          giftId: msg.giftId,
-          hidden: msg.hidden
-        }))
+      hiddenMessages: user.messages
+        .filter(msg => msg.hidden === true)
+        .map(msg => msg.Gift.giftId)
     }));
   }
+
 
 
   async findUserById(userBaseId: string) {
     return await this.database.user.findUnique({
       where: { id: userBaseId },
     });
+  }
+
+  async getUserSortedMessages(userId: string) {
+    const user = await this.database.user.findUnique({
+      where: { id: userId },
+      include: {
+        messages: {
+          include: {
+            Gift: true
+          }
+        }
+
+
+      }
+    });
+
+    // console.log(user.messages)
+
+    return {
+      displayed: user.messages.filter(msg => msg.hidden === false),
+      hidden: user.messages.filter(msg => msg.hidden === true)
+    }
   }
 
   async findUserByTelegramId(telegramId: number) {
@@ -132,6 +157,22 @@ export class UsersService {
         authTonnelData: authTonnelData
       }
     })
+  }
+
+  async restoreGiftMessage(messageData: { messageId: string, chatId: string }, userId: string) {
+    return await this.database.goodPriceMessage.update({
+      where: {
+        userId,
+        chatId_messageId: {
+          messageId: Number(messageData.messageId),
+          chatId: Number(messageData.chatId)
+        }
+      },
+      data: {
+        hidden: false
+      }
+    })
+
   }
 
 

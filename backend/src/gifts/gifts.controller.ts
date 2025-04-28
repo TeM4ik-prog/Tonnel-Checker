@@ -5,6 +5,7 @@ import { UsersService } from '@/users/users.service';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { UserId } from '@/decorators/userid.decorator';
 
 @Controller('gifts')
 export class GiftsController {
@@ -16,10 +17,8 @@ export class GiftsController {
   @Get('last-update')
   // @UseGuards(JwtAuthGuard)
   async findLastUpdate(@Req() req) {
-    // console.log("user last-update", req.user)
     const filters = await this.giftsService.getFilters()
     const lastUpdate = await this.giftsService.findLastUpdate()
-
     return { lastUpdate: lastUpdate?.GiftsDataUpdate || [], filters }
   }
 
@@ -47,6 +46,16 @@ export class GiftsController {
     // await this.giftsService.fetchGiftsDataFromTonnel()
 
     return await this.giftsService.applyFilters(body.filters)
+  }
+
+
+  @Patch('restore-gift-message')
+  @UseGuards(JwtAuthGuard)
+  async restoreGiftMessage(@Body() messageData: { messageId: string, chatId: string }, @UserId() userId: string) {
+
+    console.log(messageData)
+
+    return await this.usersService.restoreGiftMessage(messageData, userId)
   }
 
 

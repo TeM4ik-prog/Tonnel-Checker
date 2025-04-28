@@ -36,7 +36,7 @@ export class AuthController {
 	async login(
 		@Body() telegramData: User,
 	) {
-		console.log(telegramData);
+		// console.log(telegramData);
 		const user = await this.usersService.findOrCreateUser(telegramData);
 
 		return await this.authService.login(user);

@@ -1,5 +1,6 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { GiftsList } from "@/components/shared/gift/giftsList";
 import { Button } from "@/components/ui/Button";
 import { GiftService } from "@/services/gift.service";
 import { useUserData } from "@/store/hooks";
@@ -11,20 +12,19 @@ import { useEffect, useState } from "react";
 interface GroupedUpdates {
     [name: string]: {
         items: IGiftDataUpdate[];
-        itemFilters: IUserFilters
+        itemFilters: IUserFilters;
         isExpanded: boolean;
     };
 }
 
 const MainPage: React.FC = () => {
-    const [lastUpdate, setLastUpdate] = useState<IGiftDataUpdate | null>(null)
+    const [lastUpdate, setLastUpdate] = useState<IGiftDataUpdate | null>(null);
     const [groupedUpdates, setGroupedUpdates] = useState<GroupedUpdates>({});
-    const { user } = useUserData()
+    const { user } = useUserData();
 
     const updateData = async () => {
-        const data: { lastUpdate: any, filters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate())
-        console.log(data)
-
+        const data: { lastUpdate: any, filters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate());
+        console.log(data);
 
         if (data) {
             setLastUpdate(data.lastUpdate);
@@ -47,21 +47,13 @@ const MainPage: React.FC = () => {
                 JSON.stringify(["", ""])
             ].join(";") + ";";
 
-            console.log(assembled)
-
             const encoded = btoa(unescape(encodeURIComponent(assembled)));
-
-            const url = `https://t.me/tonnel_network_bot/gifts?startapp=${encoded}`;
-
-            console.log(url)
-            return url;
-        }
+            return `https://t.me/tonnel_network_bot/gifts?startapp=${encoded}`;
+        };
 
         updates.forEach((update: IGiftDataUpdate, index: number) => {
             const name = update.Gifts[0]?.name || 'Unknown';
-            const filterItem: IUserFilters = (userFilters.find((filter) => (name === filter.nft)))!
-
-            console.log(filterItem)
+            const filterItem: IUserFilters = (userFilters.find((filter) => (name === filter.nft)))!;
 
             if (!grouped[name]) {
                 grouped[name] = {
@@ -71,17 +63,9 @@ const MainPage: React.FC = () => {
                 };
             }
 
-            update.tonnelLink = buildLink(filterItem, index)
-
+            update.tonnelLink = buildLink(filterItem, index);
             grouped[name].items.push(update);
-
-
-            console.log("grouped:")
-
-            console.log(grouped[name])
-
         });
-
 
         setGroupedUpdates(grouped);
     };
@@ -105,7 +89,6 @@ const MainPage: React.FC = () => {
         if (profit < 0) return 'text-red-500';
         return 'text-gray-500';
     };
-
 
     const displayGiftInfo = (itemFilters: IUserFilters, gift: IGift,) => {
         console.log(gift)
@@ -141,7 +124,6 @@ const MainPage: React.FC = () => {
     return (
         <PageContainer className="!px-0">
             <div className="w-full max-w-6xl mx-auto p-1">
-
                 {user?.hasRights ? (
                     <div className="m-2 p-4 bg-green-900/20 border-l-4 border-green-500 rounded-lg backdrop-blur-sm">
                         <div className="flex items-center">
@@ -165,21 +147,8 @@ const MainPage: React.FC = () => {
                         <p className="mt-2 text-sm text-red-300/90">
                             Требуются административные привилегии
                         </p>
-                        {/* <button
-                            className="mt-3 px-4 py-2 bg-red-800/40 text-red-100 rounded-md hover:bg-red-700/60 transition-all duration-200 text-sm border border-red-700/50 hover:border-red-600" */}
-                        {/* // onClick={() => requestRights()} */}
-                        {/* > */}
-                        {/* <span className="flex items-center justify-center">
-                                <KeyIcon className="w-4 h-4 mr-2" />
-                                Запросить доступ
-                            </span> */}
-                        {/* </button> */}
                     </div>
                 )}
-
-
-
-
 
                 <div className="mb-3">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -206,8 +175,6 @@ const MainPage: React.FC = () => {
                                             </h2>
 
                                             <div className="space-y-2">
-
-
                                                 {group.itemFilters && (
                                                     <div className="space-y-1">
                                                         {group.itemFilters.models?.length > 0 && (
@@ -263,7 +230,6 @@ const MainPage: React.FC = () => {
                                         {group.items.map((update) => (
                                             <div key={update.id} className="bg-gray-100 dark:bg-gray-800 rounded p-1">
                                                 <div className="flex flex-col md:flex-col gap-2">
-
                                                     <div className="flex flex-row md:flex-col justify-between gap-2">
                                                         <div className="flex-1">
                                                             <div className="flex items-center gap-3">
@@ -279,45 +245,20 @@ const MainPage: React.FC = () => {
                                                                 {update.sellPrice} TON
                                                             </span>
                                                         </div>
-
                                                     </div>
-
-
 
                                                     <Button
                                                         className="justify-start"
                                                         text="Перейти на этот фильтр"
                                                         href={update.tonnelLink}
                                                         icon={<Filter />}
-                                                        // widthMin={true}
-
-
                                                     />
-
-
                                                 </div>
 
-                                                <div className="mt-3">
-                                                    <div className="grid grid-cols-1 gap-2">
-                                                        {update.Gifts.map((gift, index) => (
-                                                            <div
-                                                                key={gift.id}
-                                                                className="bg-gray-50 dark:bg-gray-700 rounded p-1 flex justify-between items-center text-sm"
-                                                            >
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-gray-700 dark:text-gray-300">
-                                                                        Товар {index + 1}
-                                                                    </span>
-
-                                                                    {displayGiftInfo(group.itemFilters, gift)}
-                                                                </div>
-                                                                <span className="font-medium text-gray-800 w-min dark:text-white end-0">
-                                                                    {formatPrice(gift.price * 1.1)} TON
-                                                                </span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
+                                                <GiftsList 
+                                                    update={update} 
+                                                    itemFilters={group.itemFilters} 
+                                                />
                                             </div>
                                         ))}
                                     </div>

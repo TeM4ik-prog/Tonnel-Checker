@@ -85,6 +85,22 @@ export class TelegramUpdate {
     await ctx.reply('pong')
   }
 
+
+  @Command('hiddenmessages')
+  async onShowHiddenGifts(@Ctx() ctx: Context) {
+    await ctx.reply('Ваши скрытые сообщения:', {
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: '⚙️ Перейти к сообщениям',
+            web_app: { url: this.configService.get('APP_URL') + 'hiddenMessages' }
+          }]
+        ]
+      }
+    });
+
+  }
+
   @Command('getminprofit')
   async onGetMinProfit(@Ctx() ctx: Context) {
 
