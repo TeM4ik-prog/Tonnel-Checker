@@ -7,7 +7,7 @@ export const TelegramBot: string = "tonnel_ckecker_bot"
 export type userIdParam = number | string
 
 
-export enum UserRole {
+export enum UserRoles {
     Admin = 'admin',
     User = 'user',
     SuperAdmin = 'superAdmin',

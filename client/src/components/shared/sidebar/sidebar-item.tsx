@@ -11,9 +11,10 @@ interface Props {
     routeKey: keyof Routes;
     children?: ReactNode;
     closeSidebar: () => void;
+    admin?: boolean;
 }
 
-export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Props) => {
+export const SidebarItem = ({ icon: Icon, routeKey, children, admin, closeSidebar }: Props) => {
     const currentPath  = useLocation().pathname
     
     const data = RoutesConfig[routeKey]
@@ -28,7 +29,10 @@ export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Pr
     }
 
 
-    if(!label) return
+    if (data.admin && !admin) return
+
+
+    if (!label) return
 
 
 
@@ -40,6 +44,8 @@ export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Pr
                 <>
                     <div className={`flex ${currentPath == path ? "bg-gray-600" : ''} items-center justify-between w-full p-2 rounded hover:bg-gray-700 transition`}>
                         {subRoutes ? (
+
+                            
                             <DisclosureButton className="flex items-center w-full text-left ">
                                 {Icon && <Icon size={20} />}
                                 <span className="ml-3">{label}</span>
@@ -66,10 +72,16 @@ export const SidebarItem = ({ icon: Icon, routeKey, children, closeSidebar }: Pr
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: open ? 1 : 0, y: open ? 0 : -10 }}
                                 transition={{ duration: 0.3 }}
-                                className="flex flex-col gap-2 pl-6 overflow-hidden"
+                                className="flex flex-col pl-8 mt-1 gap-1"
                             >
-                                {Object.entries(subRoutes).map(([subKey, { path, label }]) => (
-                                    <SidebarSubItem key={subKey} text={label} href={RoutesConfig.POSTS.path + path} closeSidebar={closeSidebar} />
+                                {Object.entries(subRoutes).map(([subKey, subRoute]) => (
+                                    <SidebarSubItem 
+                                        key={subKey} 
+                                        text={subRoute.label} 
+                                        href={subRoute.path} 
+                                        closeSidebar={closeSidebar} 
+                                        icon={subRoute.icon}
+                                    />
                                 ))}
                             </motion.div>
                         </DisclosurePanel>

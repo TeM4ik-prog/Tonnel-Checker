@@ -18,10 +18,12 @@ export const userSlice = createSlice({
     login: (state, action) => {
       state.user = action.payload;
       state.isAuth = true;
+      state.isLoading = false;
     },
     logout: (state) => {
       state.isAuth = false;
       state.user = null;
+      state.isLoading = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;

@@ -51,6 +51,7 @@ const NotFoundPage = () => {
                             text="Вернуться на главную" 
                             routeKey="HOME"
                             className="px-8 py-4 text-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105"
+                            widthMin={true}
                         />
                     </motion.div>
                 </motion.div>

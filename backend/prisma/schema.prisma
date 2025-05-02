@@ -18,6 +18,10 @@ model User {
 
   minProfit Float @default(0.5)
 
+  role String @default("user")
+
+  hasRights Boolean @default(false)
+
   messages GoodPriceMessage[]
   // UserFilters UserFilters[]
 }

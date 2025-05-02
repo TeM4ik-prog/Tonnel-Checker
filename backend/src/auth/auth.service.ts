@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '@/users/users.service';
 import { DatabaseService } from '@/database/database.service';
-import { IBasicUser, validTelegramIds } from '@/types/types';
+import { IBasicUser, adminTelegramIds } from '@/types/types';
 import { User } from 'telegraf/typings/core/types/typegram';
 import { Prisma } from '@prisma/client';
 
@@ -29,22 +29,21 @@ export class AuthService {
 
 
   async login(user: Prisma.UserCreateInput) {
-    const { id, telegramId, firstName, username } = user;
+    const { id, telegramId, firstName, username, role, hasRights } = user;
 
     return {
-      user: {
-        ...user,
-        hasRights: this.hasUserRight(user.telegramId)
-
-      },
-      token: this.jwtService.sign({ id, telegramId, firstName, username }),
+      user,
+      token: this.jwtService.sign({ id, telegramId, username, role, hasRights }),
     };
   }
 
 
   hasUserRight(telegramId: number): boolean {
 
-    return validTelegramIds.includes(telegramId)
+
+    if(adminTelegramIds.includes(telegramId)) return true
+
+    return adminTelegramIds.includes(telegramId)
 
   }
 

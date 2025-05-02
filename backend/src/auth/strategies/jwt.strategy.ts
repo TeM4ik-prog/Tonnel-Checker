@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
-import { validTelegramIds } from '@/types/types';
+// import { adminTelegramIds } from '@/types/types';
 import { AuthService } from '../auth.service';
 
 
@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     
-    if (!this.authService.hasUserRight(user.telegramId)) throw new UnauthorizedException('You have no rights!');
+    if (!user.hasRights) throw new UnauthorizedException('You have no rights!');
 
 
     return user;

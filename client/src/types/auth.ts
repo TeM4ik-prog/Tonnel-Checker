@@ -1,3 +1,5 @@
+import { UserRoles } from "./index";
+
 export interface IEmailAuth {
     email: string
 }
@@ -18,6 +20,7 @@ export interface IUser {
     lastName: string | null;
     firstName: string;
     hasRights: boolean
+    role: UserRoles
     // authTonnelData: any | null;
     minProfit: number;
   }

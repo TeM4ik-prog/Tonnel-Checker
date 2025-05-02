@@ -39,7 +39,6 @@ export class TelegramService {
   async deleteArUserGoodPriceMessages(messages: { chatId: number, giftId: number, messageId: number }[]) {
     for (const message of messages) {
       try {
-        await this.bot.telegram.deleteMessage(message.chatId, message.messageId)
         await this.database.goodPriceMessage.deleteMany({
           where: {
             chatId: message.chatId,
@@ -47,9 +46,12 @@ export class TelegramService {
           }
         })
 
+        await this.bot.telegram.deleteMessage(message.chatId, message.messageId)
+       
+
       } catch (error) {
         console.log('cant delete')
-        console.log(error)
+        // console.log(error)
       }
     }
   }

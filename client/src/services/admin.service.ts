@@ -13,7 +13,8 @@ export class adminService implements ApiRoute {
 
 
     async getUsers(params: any) {
-        const { data } = await this.instance.get(`${this.baseUrl.users.main}/?query=${JSON.stringify(params)}`)
+        // /?query=${JSON.stringify(params)}
+        const { data } = await this.instance.get(`${this.baseUrl.users.main}`)
         return data
     }
 
@@ -24,6 +25,11 @@ export class adminService implements ApiRoute {
 
     async switchBanUser(id: number) {
         const { data } = await this.instance.patch(`${this.baseUrl.users.ban}/${id}`)
+        return data
+    }
+
+    async updateUserRights(telegramId: number, hasRights?: boolean) {
+        const { data } = await this.instance.patch(`${this.baseUrl.users.updateRights}`, { telegramId, hasRights })
         return data
     }
 

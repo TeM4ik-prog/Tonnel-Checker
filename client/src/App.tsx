@@ -1,17 +1,24 @@
 import { Header } from '@/components/layout/Header';
 import { RoutesConfig } from '@/types/pagesConfig';
-import { lazy, useEffect, useState } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { createContext, lazy, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Route, BrowserRouter as Router, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { MainAdmin } from './components/admin/main';
+import { UsersShow } from './components/admin/usersShow';
+import { Footer } from './components/layout/Footer';
+import { AdminPage } from './pages/AdminPage';
 import FiltersPage from './pages/FiltersPage';
-import MainPage from './pages/MainPage';
-import { onRequest } from './types';
-import { AuthService } from './services/auth.service';
-import { ITelegramUser, IUser } from './types/auth';
-import { useDispatch } from 'react-redux';
-import { getTokenFromLocalStorage, setTokenToLocalStorage } from './utils/localstorage';
-import { login, logout } from './store/user/user.slice';
-import { toast } from 'react-toastify';
 import { GiftMessagesPage } from './pages/GiftMessagesPage';
+import MainPage from './pages/MainPage';
+import { NoRightsPage } from './pages/NoRightsPage';
+import { AuthService } from './services/auth.service';
+import { login, logout } from './store/user/user.slice';
+import { onRequest, UserRoles } from './types';
+import { ITelegramUser, IUser } from './types/auth';
+import { setTokenToLocalStorage } from './utils/localstorage';
+import { useGetUserRole, useUserData, useUserLoading } from './store/hooks';
+import { toast } from 'react-toastify';
+import { ProfilePage } from './pages/ProfilePage';
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -35,34 +42,52 @@ declare global {
   }
 }
 
-function App() {
-  const dispatch = useDispatch()
-  // const trigger = useUpdateUserTrigger()
 
-  const [userData, setUserData] = useState<any>(null);
+const RestoreGiftUpdateContext = createContext<boolean>(false);
+
+export const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) => {
+  const userRole = useGetUserRole();
+  const isLoading = useUserLoading()
+
+  if (isLoading) {
+      return
+  }
+
+  if (!userRole || !allowedRoles.includes(userRole)) {
+      toast.error('You have no rights');
+      return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
+function App() {
+  const dispatch = useDispatch();
 
   const checkAuth = async () => {
-
-    // dispatch(setLoading(true))
     try {
-      // const savedUserData = getTokenFromLocalStorage()
-
-      // const mockData = { "id": 2027571609, "first_name": "Artem", "last_name": "", "username": "TeM4ik20", "language_code": "ru", "is_premium": true, "allows_write_to_pm": true, "photo_url": "https://t.me/i/userpic/320/kf7ulebcULGdGk8Fpe4W3PkcpX2DxWO1rIHZdwT60vM.svg" }
-
-      // const data: { token: string, user: IUser } = await onRequest(AuthService.login(mockData))
-      // console.log(data)
-
-      // setTokenToLocalStorage(data.token)
-
-      // // setUserData(data)
-
-      // if (data) {
-      //   dispatch(login(data.user))
-      // } else {
-      //   dispatch(logout())
+      // const mockData = {
+      //   "id": 2027571609,
+      //   "first_name": "Artem",
+      //   "last_name": "",
+      //   "username": "TeM4ik20",
+      //   "language_code": "ru",
+      //   "is_premium": true,
+      //   "allows_write_to_pm": true,
+      //   "photo_url": "https://t.me/i/userpic/320/kf7ulebcULGdGk8Fpe4W3PkcpX2DxWO1rIHZdwT60vM.svg"
       // }
 
 
+      // const data: { token: string, user: IUser } = await onRequest(AuthService.login(mockData));
+
+      // console.log(data)
+
+      // if (data?.user?.hasRights) {
+      //   setTokenToLocalStorage(data.token);
+      //   dispatch(login(data.user));
+      // } else {
+      //   dispatch(logout());
+      // }
 
 
 
@@ -76,7 +101,7 @@ function App() {
 
         // setUserData(data)
 
-        if (data) {
+        if (data?.user?.hasRights) {
           dispatch(login(data.user))
         } else {
           dispatch(logout())
@@ -84,67 +109,92 @@ function App() {
       }
       else {
         toast.warning('no telegram data')
+        dispatch(logout())
+
+
         // alert('no telegram data')
       }
 
-
-
     } catch (error) {
-      console.error("Ошибка при получении профиля:", error)
-      // dispatch(logout())
-    } finally {
-      // dispatch(setLoading(false))
+      console.error("Ошибка при получении профиля:", error);
+      dispatch(logout());
     }
-
   }
 
-  // // const savedUserData = localStorage.getItem('userData');
-  // // if (savedUserData) {
-  // //   setUserData(JSON.parse(savedUserData));
-  // // }
-
-  // // console.log(JSON.parse(`{"id":2027571609,"first_name":"Artem","last_name":"","username":"TeM4ik20","language_code":"ru","is_premium":true,"allows_write_to_pm":true,"photo_url":"https://t.me/i/userpic/320/kf7ulebcULGdGk8Fpe4W3PkcpX2DxWO1rIHZdwT60vM.svg","lastVisit":"2025-04-16T13:36:17.055Z"}`));
-
-  // if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-  //   const newUserData = window.Telegram.WebApp.initDataUnsafe.user
-
-  //   const data = await onRequest(AuthService.Telegram.login(newUserData))
-
-  //   const data
-
-  //   localStorage.setItem('userData', JSON.stringify(newUserData));
-  //   setUserData(newUserData);
-  // }
-  // else {
-  //   alert('no telegram data')
-  // }
-
-
   useEffect(() => {
-    checkAuth()
+    checkAuth();
   }, []);
 
   return (
-    <div className='min-h-screen flex flex-col bg-gray-800'>
+    <div className='min-h-screen flex flex-col bg-gray-800 z-10'>
       <Router>
-        <Header />
-
-        <p className='break-words'>{userData && JSON.stringify(userData)}</p>
-        <main className='h-full z-[0]'>
-          <Routes>
-            <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
-            <Route path={RoutesConfig.FILTERS.path} element={<FiltersPage />} />
-
-            <Route path={RoutesConfig.GIFT_MESSAGES.path} element={<GiftMessagesPage />} />
-
-
-            
-            <Route path='*' element={<NotFoundPage />} />
-          </Routes>
-        </main>
+        <RestoreGiftUpdateContext.Provider value={false}>
+          <Header />
+          <main className='h-full z-[0]'>
+            <Routes>
+              <Route path={RoutesConfig.NO_RIGHTS.path} element={<NoRightsPage />} />
+              <Route path="*" element={<ProtectedRoutes />} />
+            </Routes>
+          </main>
+          {/* <Footer /> */}
+        </RestoreGiftUpdateContext.Provider>
       </Router>
     </div>
   );
 }
 
-export default App;
+const ProtectedRoutes = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isLoading } = useUserData()
+
+  console.log(user, isLoading)
+
+  useEffect(() => {
+    if (!isLoading && !user?.hasRights && location.pathname !== RoutesConfig.NO_RIGHTS.path) {
+      navigate(RoutesConfig.NO_RIGHTS.path);
+    }
+  }, [user, location.pathname, navigate, isLoading]);
+
+  if (isLoading) {
+    return null; // или можно вернуть лоадер
+  }
+
+  if (!user?.hasRights) {
+    return <NoRightsPage />;
+  }
+
+
+  console.log(user, isLoading)
+
+  return (
+    <Routes>
+        <Route path={RoutesConfig.ADMIN.path + "/*"} element={
+          <ProtectedRoute allowedRoles={[UserRoles.Admin]}>
+            <AdminPage />
+          </ProtectedRoute>
+        }>
+          <Route index element={<MainAdmin />} />
+          <Route path="users" element={<UsersShow />} />
+        </Route>
+      
+
+      <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
+      <Route path={RoutesConfig.FILTERS.path} element={<FiltersPage />} />
+
+      
+      <Route path={RoutesConfig.GIFT_MESSAGES.path} element={
+        <RestoreGiftUpdateContext.Provider value={true}>
+          <GiftMessagesPage />
+        </RestoreGiftUpdateContext.Provider>
+      } />
+
+      <Route path={RoutesConfig.PROFILE.path} element={<ProfilePage />} />
+
+
+      <Route path='*' element={<NotFoundPage />} />
+    </Routes>
+  );
+};
+
+export { App, RestoreGiftUpdateContext };

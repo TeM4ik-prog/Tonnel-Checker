@@ -1,3 +1,5 @@
+import { IGiftMessage } from "./message";
+
 export interface IGift {
     id: string;
     giftId: number;
@@ -10,6 +12,8 @@ export interface IGift {
     createdAt: Date;
     updatedAt: Date;
     giftsDataUpdateId: string | null;
+
+    GiftDataUpdate?: IGiftDataUpdate
 }
 
 
@@ -20,11 +24,21 @@ export interface IGiftDataUpdate {
     profit: number;
     sellPrice: number;
 
-    tonnelLink?: string
+    tonnelLink?: string,
+    message? : IGiftMessage,
 
 
     createdAt: Date;
     updatedAt: Date;
+}
+
+
+export interface GroupedUpdates {
+    [name: string]: {
+        items: IGiftDataUpdate[];
+        itemFilters: IUserFilters;
+        isExpanded: boolean;
+    };
 }
 
 

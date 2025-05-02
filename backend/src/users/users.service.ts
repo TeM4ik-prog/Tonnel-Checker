@@ -1,15 +1,22 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/database/database.service';
-import { AuthTonnelData, CreateUserDto, UserTonnelData } from './dto/user-data-dto';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { User } from 'telegraf/typings/core/types/typegram';
-import { TelegramService } from '@/telegram/telegram.service';
+import { AuthTonnelData, UserTonnelData } from './dto/user-data-dto';
+import { adminTelegramIds, UserRoles } from '@/types/types';
+import e from 'express';
 
 @Injectable()
-export class UsersService {
-  constructor(private database: DatabaseService,
-    // @Inject(forwardRef(() => TelegramService))
-    // private readonly telegramService: TelegramService,
-  ) { }
+export class UsersService implements OnModuleInit {
+  constructor(private database: DatabaseService) { }
+
+
+  async findAllUsers() {
+    return await this.database.user.findMany({
+      include: {
+
+      }
+    })
+  }
 
 
   async getAllUsersData() {
@@ -39,8 +46,6 @@ export class UsersService {
     }));
   }
 
-
-
   async findUserById(userBaseId: string) {
     return await this.database.user.findUnique({
       where: { id: userBaseId },
@@ -48,25 +53,48 @@ export class UsersService {
   }
 
   async getUserSortedMessages(userId: string) {
-    const user = await this.database.user.findUnique({
-      where: { id: userId },
+    const messages = await this.database.goodPriceMessage.findMany({
+      where: { userId },
       include: {
-        messages: {
+        Gift: {
           include: {
-            Gift: true
+            GiftsDataUpdate: {
+              include: {
+                Gifts: true
+              }
+            },
+            giftMessages: {
+              where: {
+                userId: userId
+              }
+            }
           }
         }
-
-
       }
     });
 
-    // console.log(user.messages)
+    const filteredMessages = messages.map(msg => ({
+      ...msg,
+      Gift: {
+        ...msg.Gift,
+        GiftsDataUpdate: {
+          ...msg.Gift.GiftsDataUpdate,
+          Gifts: msg.Gift.GiftsDataUpdate?.Gifts.filter(gift => gift.id == msg.giftId) || [], // length also 1
+          message: msg.Gift.giftMessages[0],
+
+
+        }
+      }
+    }));
 
     return {
-      displayed: user.messages.filter(msg => msg.hidden === false),
-      hidden: user.messages.filter(msg => msg.hidden === true)
-    }
+      displayed: filteredMessages
+        .filter(msg => msg.hidden === false)
+        .map(msg => msg.Gift.GiftsDataUpdate),
+      hidden: filteredMessages
+        .filter(msg => msg.hidden === true)
+        .map(msg => msg.Gift.GiftsDataUpdate)
+    };
   }
 
   async findUserByTelegramId(telegramId: number) {
@@ -99,6 +127,20 @@ export class UsersService {
       }
     })
 
+    if (existingUser && adminTelegramIds.includes(existingUser.telegramId)) {
+      return await this.database.user.update({
+        where: {
+          telegramId: existingUser.telegramId
+        },
+        data: {
+          role: UserRoles.admin,
+          hasRights: true
+        }
+
+
+      })
+    }
+
     // console.log('existingUser',existingUser)
 
     if (existingUser) return existingUser
@@ -114,7 +156,6 @@ export class UsersService {
     })
 
   }
-
 
   async getUserMinProfit(telegramId: number) {
 
@@ -159,6 +200,19 @@ export class UsersService {
     })
   }
 
+  async updateUserRights(telegramId: number) {
+    const user = await this.findUserByTelegramId(telegramId)
+
+    return await this.database.user.update({
+      where: {
+        telegramId
+      },
+      data: {
+        hasRights: !user.hasRights
+      }
+    })
+  }
+
   async restoreGiftMessage(messageData: { messageId: string, chatId: string }, userId: string) {
     return await this.database.goodPriceMessage.update({
       where: {
@@ -196,6 +250,26 @@ export class UsersService {
     } catch (e) {
       throw new Error('Invalid initData format or decoding error');
     }
+  }
+
+  async findOrCreateAdmins() {
+
+    // const superAdmins = await this.database.user.findMany({
+    //   where: {
+    //     telegramId: {
+    //       in: superAdminTelegramIds
+    //     }
+    //   }
+    // })
+
+
+    // console.log(superAdmins)
+
+  }
+
+
+  onModuleInit() {
+    // this.findOrCreateAdmins()
   }
 
 

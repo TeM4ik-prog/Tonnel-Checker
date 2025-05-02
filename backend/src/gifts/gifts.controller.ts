@@ -19,7 +19,7 @@ export class GiftsController {
   async findLastUpdate(@Req() req) {
     const filters = await this.giftsService.getFilters()
     const lastUpdate = await this.giftsService.findLastUpdate()
-    return { lastUpdate: lastUpdate?.GiftsDataUpdate || [], filters }
+    return { lastUpdate, filters }
   }
 
 

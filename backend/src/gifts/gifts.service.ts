@@ -37,8 +37,12 @@ export class GiftsService implements OnModuleInit {
           orderBy: {
             profit: 'desc'
           },
-          include: {
-            Gifts: true
+         
+          select:{
+            updatedAt: true,
+            Gifts: true,
+            profit: true,
+            sellPrice: true
           }
         }
       }
@@ -234,7 +238,7 @@ export class GiftsService implements OnModuleInit {
 
 
   async onModuleInit() {
-    await this.fetchGiftsDataFromTonnel();
+    // await this.fetchGiftsDataFromTonnel();
 
     await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)

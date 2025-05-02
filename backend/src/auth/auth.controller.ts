@@ -26,6 +26,8 @@ export class AuthController {
 		protected readonly jwtService: JwtService,
 	) { }
 
+	
+
 	@Get('profile')
 	@UseGuards(JwtAuthGuard)
 	async getProfile(@Request() req) {
@@ -41,6 +43,9 @@ export class AuthController {
 
 		return await this.authService.login(user);
 	}
+
+
+
 }
 
 

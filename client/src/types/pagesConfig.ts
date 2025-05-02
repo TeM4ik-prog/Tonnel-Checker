@@ -1,13 +1,21 @@
-import { createAxiosInstance } from "@/api/axios.api"
-import { GroupIcon, GlobeIcon, BuildingIcon, FlagIcon, BookIcon, PenIcon, PodcastIcon, LandmarkIcon, HomeIcon, UserCircle2, StarIcon, UserCog2Icon, RocketIcon, DramaIcon, SproutIcon, HeartIcon, Contact2Icon, FilterIcon, EyeOff } from "lucide-react";
+import { createAxiosInstance } from "@/api/axios.api";
+import { EyeOff, FilterIcon, HomeIcon, UserCog2Icon, UserIcon } from "lucide-react";
 
-export interface Route {
+export type Route = {
     path: string;
     label: string;
     shortLabel?: string;
     showInHeader?: boolean;
     icon?: React.ElementType;
+    disabled?: boolean;
     subRoutes?: { [key: string]: Route };
+    admin?: boolean;
+}
+
+export const defaultRoute: Partial<Route> = {
+    showInHeader: false,
+    disabled: false,
+    admin: false
 }
 
 export interface Routes {
@@ -20,6 +28,28 @@ export let RoutesConfigMain: { [key: string]: Route } = {
 
     // __________
 
+    ADMIN: {
+        path: '/admin',
+        label: 'Админка',
+        showInHeader: false,
+        icon: UserCog2Icon,
+        admin: true,
+
+        subRoutes: {
+            MAIN: {
+                path: '/',
+                label: 'Главная',
+                showInHeader: false,
+                icon: HomeIcon
+            },
+            USERS: {
+                path: '/users',
+                label: 'Пользователи',
+                showInHeader: false,
+                icon: UserIcon
+            }
+        }
+    },
 
     FILTERS: {
         path: '/filters',
@@ -38,8 +68,14 @@ export let RoutesConfigMain: { [key: string]: Route } = {
     },
 
 
-
-
+    NO_RIGHTS: {
+        path: '/no-rights',
+        label: 'Нет прав',
+        shortLabel: 'Нет прав',
+        showInHeader: false,
+        disabled: true,
+        icon: UserIcon,
+    },
 
     // CONTACTS: {
     //     path: '/contacts',
@@ -47,9 +83,7 @@ export let RoutesConfigMain: { [key: string]: Route } = {
     //     shortLabel: 'Контакты',
     //     showInHeader: false,
     //     icon: Contact2Icon,
-
     // },
-
 }
 
 
@@ -104,6 +138,7 @@ class ApiConfig {
             main: "users",
             ban: "users/ban",
             passwordChange: "password/change",
+            updateRights: "users/update-rights",
 
         }
 

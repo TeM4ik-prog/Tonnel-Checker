@@ -1,8 +1,14 @@
-import { IGift, IUserFilters } from "@/types/gift";
+import { IGift, IGiftDataUpdate, IUserFilters } from "@/types/gift";
 
 interface GiftProps {
     gift: IGift;
     itemFilters: IUserFilters;
+}
+
+
+interface GiftsListProps {
+    update: IGiftDataUpdate
+    itemFilters: IUserFilters
 }
 
 export const Gift = ({ gift, itemFilters }: GiftProps) => {
@@ -36,3 +42,22 @@ export const Gift = ({ gift, itemFilters }: GiftProps) => {
         </div>
     );
 };
+
+
+
+
+export const GiftsList = ({ update, itemFilters }: GiftsListProps) => {
+    return (
+        <div className="mt-3">
+            <div className="grid grid-cols-1 gap-2">
+                {update.Gifts.map((gift, index) => (
+                    <Gift 
+                        key={gift.id} 
+                        gift={gift} 
+                        itemFilters={itemFilters}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
