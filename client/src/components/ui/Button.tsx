@@ -30,7 +30,7 @@ export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, class
             : color === "green"
             ? "bg-green-500 active:bg-green-600 md:hover:bg-green-600"
             : "bg-blue-500 active:bg-blue-600 md:hover:bg-blue-600";
-    const buttonWidth = widthMin ? "w-full" : "w-min"
+    const buttonWidth = !widthMin ? "w-full flex-1" : "w-min"
 
 
     const path = routeKey && RoutesConfig[routeKey]?.path ? RoutesConfig[routeKey].path : null
@@ -42,7 +42,7 @@ export const Button = ({ text, FC, routeKey, icon, widthMin = false, href, class
                 onClick={FC} className={`
                      ${buttonWidth} 
                      ${disabled ? "bg-gray-400 cursor-not-allowed" : buttonColor} 
-                     ${className} flex flex-row items-center text-nowrap transition font-bold text-white gap-3 py-2 px-4 rounded`}
+                     ${className} flex flex-row justify-center items-center text-nowrap transition font-bold text-white gap-3 py-2 px-4 rounded`}
                 disabled={disabled}
             >
                 {icon}

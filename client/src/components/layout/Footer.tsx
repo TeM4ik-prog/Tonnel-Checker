@@ -5,7 +5,7 @@ import { Button } from "../ui/Button";
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-900/95 text-white relative overflow-hidden p-4 z-10">
+        <footer className="bg-gray-900/95 text-white w-full relative overflow-hidden p-4 z-10">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
 

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { Block } from "../layout/Block"
 import { Button } from "../ui/Button"
-
+import { PageContainer } from "../layout/PageContainer"
 interface IPagination {
   totalCount: number
   maxPage: number
@@ -58,39 +58,38 @@ export const UsersShow: React.FC = () => {
     const data = await onRequest(AdminService.updateUserRights(telegramId))
 
 
-    if(data){
+    if (data) {
       toast.success('Права успешно обновлены')
     }
   }
 
   return (
     // <Section className="p-4">
-    <div className="flex flex-col w-full h-full max-w-4xl mx-auto gap-4">
-      <h1 className="text-2xl font-bold mb-6 text-white">Пользователи</h1>
+    <PageContainer title="Пользователи">
 
-      <Block className="p-2 flex flex-col gap-4">
+
+
+
+      <Block className="p-1 flex flex-col gap-4">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-gray-700 sticky top-0">
+            <thead className="bg-gray-700 sticky top-0 ">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                {/* <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Имя
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                </th> */}
+                <th className="text-center px-1 py-3 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Username
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th className="text-center p  x-1 py-3 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Telegram ID
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th className="text-center px-1 py-3 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Права
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                <th className="text-center px-1 py-3 text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Роль
                 </th>
-                {/* <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Мин. прибыль
-                  </th> */}
               </tr>
             </thead>
 
@@ -117,7 +116,7 @@ export const UsersShow: React.FC = () => {
         </div>
 
       </Block>
-    </div>
+    </PageContainer>
 
 
 

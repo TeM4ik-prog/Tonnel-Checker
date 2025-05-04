@@ -4,11 +4,11 @@ export interface IBasicUser {
   role: string;
 }
 
-export class UserRoles {
-  static readonly user: string = 'user'
-  static readonly admin: string = 'admin'
-  static readonly superAdmin: string = 'superAdmin'
-}
+// export class UserRoles {
+//   static readonly user: string = 'user'
+//   static readonly admin: string = 'admin'
+//   static readonly superAdmin: string = 'superAdmin'
+// }
 
 
 // export const superAdminTelegramIds = [2027571609]

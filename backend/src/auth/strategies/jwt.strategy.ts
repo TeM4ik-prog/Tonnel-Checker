@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     
-    if (!user.hasRights) throw new UnauthorizedException('You have no rights!');
+    if (!user.hasAccess) throw new UnauthorizedException('You have no access!');
 
 
     return user;

@@ -1,5 +1,5 @@
 import { createAxiosInstance } from "@/api/axios.api";
-import { EyeOff, FilterIcon, HomeIcon, UserCog2Icon, UserIcon } from "lucide-react";
+import { EyeOff, FilterIcon, HomeIcon, UserCog2Icon, UserIcon, UserPlusIcon } from "lucide-react";
 
 export type Route = {
     path: string;
@@ -36,17 +36,23 @@ export let RoutesConfigMain: { [key: string]: Route } = {
         admin: true,
 
         subRoutes: {
-            MAIN: {
-                path: '/',
-                label: 'Главная',
-                showInHeader: false,
-                icon: HomeIcon
-            },
+            // MAIN: {
+            //     path: '/',
+            //     label: 'Главная',
+            //     showInHeader: false,
+            //     icon: HomeIcon
+            // },
             USERS: {
                 path: '/users',
                 label: 'Пользователи',
                 showInHeader: false,
                 icon: UserIcon
+            },
+            ACCESS_REQUESTS: {
+                path: '/access-requests',
+                label: 'Запросы на доступ',
+                showInHeader: false,
+                icon: UserPlusIcon
             }
         }
     },
@@ -139,6 +145,7 @@ class ApiConfig {
             ban: "users/ban",
             passwordChange: "password/change",
             updateRights: "users/update-rights",
+            accessRequests: "users/access-requests",
 
         }
 

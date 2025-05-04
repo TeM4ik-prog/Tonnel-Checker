@@ -1,4 +1,4 @@
-import { ApiRoute } from "@/types";
+import { ApiRoute, RequestStatus } from "@/types";
 import { apiConfig } from "@/types/pagesConfig";
 
 
@@ -37,8 +37,28 @@ export class adminService implements ApiRoute {
         const { data } = await this.instance.patch(`${this.baseUrl.users.passwordChange}/${id}/${password}`)
         return data
     }
+
+
+    async getAccessRequestsByStatus(status: RequestStatus) {
+        const { data } = await this.instance.get(`${this.baseUrl.users.accessRequests}/${status}`)
+        return data
+    }
+
+    async approveAccessRequest(id: string) {
+        const { data } = await this.instance.patch(`${this.baseUrl.users.accessRequests}/approve/${id}`)
+        return data
+    }   
+
+    async rejectAccessRequest(id: string) {
+        const { data } = await this.instance.patch(`${this.baseUrl.users.accessRequests}/reject/${id}`)
+        return data
+    }
+    
+    
 }
 
 
 
-export const AdminService = new adminService()
+export const 
+
+AdminService = new adminService()

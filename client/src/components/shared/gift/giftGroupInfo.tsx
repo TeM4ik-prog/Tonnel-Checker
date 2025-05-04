@@ -183,7 +183,7 @@ export const GiftData: React.FC<GiftDataProps> = ({ update, itemFilters }) => {
                     </div>
                 </div>
 
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-col gap-2 md:flex-row">
                     <Button
                         className="justify-start"
                         text="Перейти на этот фильтр"
@@ -192,7 +192,6 @@ export const GiftData: React.FC<GiftDataProps> = ({ update, itemFilters }) => {
                     />
 
                     {restoreGiftUpdate && (
-
                         <Button
                             className="justify-start"
                             text="Восстановить"
@@ -200,19 +199,13 @@ export const GiftData: React.FC<GiftDataProps> = ({ update, itemFilters }) => {
                             FC={() => restoreGift(update.message?.messageId, update.message?.chatId)}
                         />
                     )}
-
-
                 </div>
-
-
-
             </div>
 
             <GiftsList
                 update={update}
                 itemFilters={itemFilters}
             />
-
         </div>
     )
 }

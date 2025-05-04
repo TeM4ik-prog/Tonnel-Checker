@@ -100,7 +100,7 @@ const MultiSelectModal: React.FC<MultiSelectModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-gray-800 rounded-lg w-full max-w-md mx-4">
                 <div className="flex items-center justify-between p-4 border-b border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-200">{title}</h3>
@@ -338,7 +338,7 @@ const FiltersPage: React.FC = () => {
     const renderParameterSelectors = () => (
 
 
-        <div className="space-y-4">
+        <div className="flex flex-col h-full space-y-4">
             {selectedParameters.map(params => {
                 const modelOptions = getOptionsForNft(params.nft, 'models');
                 // const backgroundOptions = getOptionsForNft(params.nft, 'backgrounds');
@@ -466,43 +466,10 @@ const FiltersPage: React.FC = () => {
         }
     };
 
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const jsonData = JSON.parse(e.target?.result as string);
-                if (Array.isArray(jsonData)) {
-                    setSelectedParameters(jsonData);
-                    toast.success('Фильтры успешно загружены!');
-                } else {
-                    toast.error('Неверный формат файла. Ожидается массив фильтров.');
-                }
-            } catch (error) {
-                toast.error('Ошибка при чтении файла. Проверьте формат JSON.');
-            }
-        };
-        reader.readAsText(file);
-    };
-
-    const handleExportFilters = () => {
-        const jsonString = JSON.stringify(selectedParameters, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'filters.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
 
     return (
         <PageContainer className="pt-0">
-            <div className="w-full max-w-6xl mx-auto">
+            <div className="flex flex-col w-full h-full max-w-6xl mx-auto">
                 {loading ? (
                     <div className="text-center py-4">
                         <p className="text-gray-400">Загрузка...</p>

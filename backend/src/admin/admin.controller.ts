@@ -1,18 +1,20 @@
-import { Controller, Get, UseGuards, Query, Patch, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query, Patch, Body, Param } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UsersService } from 'src/users/users.service';
-import { usersSearchDto } from './dto/usersSearch-dto';
-import { UserRoles } from 'src/types/types';
 import { RolesGuard } from 'src/auth/strategies/roles.strategy';
+import { RequestStatus, UserRoles } from '@prisma/client';
+import { AdminService } from './admin.service';
 import { Roles } from '@/decorators/roles.decorator';
-import { Update } from 'nestjs-telegraf';
-
-
 @Controller('admin')
+
+
 @UseGuards(RolesGuard, JwtAuthGuard)
-// @Roles(UserRoles.admin, UserRoles.superAdmin)
+@Roles(UserRoles.ADMIN, UserRoles.SUPER_ADMIN)
 export class AdminController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly adminService: AdminService
+  ) { }
 
   @Get("users")
   async findAllUsers(@Query('query') queryJSON: string) {
@@ -22,27 +24,26 @@ export class AdminController {
     return await this.usersService.findAllUsers()
   }
 
-
   @Patch('users/update-rights')
   async updateUserRights(@Body() body: { telegramId: number }) {
     console.log(body)
-
     return await this.usersService.updateUserRights(body.telegramId)
   }
 
+  @Get('users/access-requests/:status')
+  async getAccessRequests(@Param('status') status: RequestStatus) {
+    return await this.adminService.getAccessRequests(status)
+  }
 
-  // @Get(':id')
-  // async getDetailedData(@Param('id') id: string) {
-  //   return await this.usersService.getDetailedData(id);
-  // }
+  @Patch('users/access-requests/approve/:id')
+  async approveAccessRequest(@Param('id') id: string) {
+    console.log(id)
+    return await this.adminService.approveAccessRequest(id)
+  }
 
-
-
-  // @Patch("/ban/switch/:id")
-  // async switchBanAdmins(@Param("id") id: string) {
-  //   return await this.usersService.switchBanUser(id)
-
-  // }
-
+  @Patch('users/access-requests/reject/:id')
+  async rejectAccessRequest(@Param('id') id: string) {
+    return await this.adminService.rejectAccessRequest(id)
+  }
 }
 

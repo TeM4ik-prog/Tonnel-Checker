@@ -2,30 +2,49 @@ import { DatabaseService } from '@/database/database.service';
 import { CreateGiftDto } from '@/gifts/dto/create-gift.dto';
 import { UsersService } from '@/users/users.service';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRoles } from '@prisma/client';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context, Input, Telegraf } from 'telegraf';
 import { InputFile, Message } from 'telegraf/typings/core/types/typegram';
-
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TelegramService {
-  // private activeChats: Map<string, { chatId: number, userTelegramId: number }> = new Map();
-  // private goodPriceMessages: Map<string, { chatId: number, messageId: number }> = new Map();
-
   constructor(
     @InjectBot() private readonly bot: Telegraf,
     @Inject('DEFAULT_BOT_NAME') private readonly botName: string,
     private readonly usersService: UsersService,
-    private readonly database: DatabaseService
+    private readonly database: DatabaseService,
+    private readonly configService: ConfigService
   ) { }
 
-  getInfo(userId: number | undefined): string {
-    return `ID пользователя: ${userId}`;
-  }
 
   getPhotoStream(filePath: string): InputFile {
     return Input.fromLocalFile(filePath)
+  }
+
+  async sendMessage(telegramIdId: number, message: string) {
+    return await this.bot.telegram.sendMessage(telegramIdId, message)
+  }
+
+  async sendMessageToAdmins(message: string) {
+    const allAdmins = await this.usersService.findUsersByRole(UserRoles.ADMIN)
+    const appUrl = this.configService.get('APP_URL')
+
+    console.log(`${appUrl}/admin/access-requests`)
+
+    for (const admin of allAdmins) {
+      await this.bot.telegram.sendMessage(admin.telegramId, message, {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'Просмотреть', web_app: { url: `${appUrl}admin/access-requests` } },
+            ]
+          ]
+        }
+      })
+    }
   }
 
   async deleteGoodPriceMessage(id: string) {
@@ -47,7 +66,7 @@ export class TelegramService {
         })
 
         await this.bot.telegram.deleteMessage(message.chatId, message.messageId)
-       
+
 
       } catch (error) {
         console.log('cant delete')
@@ -61,7 +80,6 @@ export class TelegramService {
       where: { id: id }
     })
   }
-
 
   async addToActiveChats(msg: Message) {
 
@@ -109,14 +127,9 @@ export class TelegramService {
     profit: number,
     sellPrice: number,
     activeChats: { id: number, chatId: number, userTelegramId: number }[],
-    users: { telegramId: number, minProfit: number, hiddenMessages: number[] }[]
+    users: { telegramId: number, minProfit: number, hiddenMessages: number[] }[],
+    giftLink: string
   ) {
-    // console.log('send Message')
-
-    // console.log(firstGift)
-    // console.log(secondGift)
-
-
     for (const { chatId, userTelegramId } of activeChats) {
       const user = users.find((user) => user.telegramId == userTelegramId);
       if (user === undefined || profit < user.minProfit) continue;
@@ -129,8 +142,6 @@ export class TelegramService {
       })
       const messagesToDelete = goodUserPriceMessages.filter((el) => el.Gift.giftId == firstGift.giftId)
 
-      // console.log(messagesToDelete)
-
       if ((user.hiddenMessages).includes(firstGift.giftId)) {
         console.log(firstGift.giftId + ' this gift hidden ')
         continue
@@ -138,15 +149,13 @@ export class TelegramService {
 
       await this.deleteArUserGoodPriceMessages(messagesToDelete)
 
-
-
       try {
         const messageText =
           `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
           `💰 товар 2: ${(secondGift.price * 1.1).toFixed(2)} TON\n\n` +
           `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
           `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
-          `🔗 Ссылка: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.giftNum}`;
+          `🔗 Ссылка на товар: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.giftNum}\n\n`
 
         const message = await this.bot.telegram.sendMessage(chatId, messageText, {
           parse_mode: 'Markdown',
@@ -154,6 +163,7 @@ export class TelegramService {
             inline_keyboard: [
               [
                 { text: 'Просмотреть!!!', url: `https://t.me/tonnel_network_bot/gift?startapp=${firstGift.giftId}` },
+                // { text: 'Фильтр', url: giftLink },
                 { text: 'Скрыть', callback_data: 'hideGiftMessage' }
               ],
             ],

@@ -19,6 +19,7 @@ import { setTokenToLocalStorage } from './utils/localstorage';
 import { useGetUserRole, useUserData, useUserLoading } from './store/hooks';
 import { toast } from 'react-toastify';
 import { ProfilePage } from './pages/ProfilePage';
+import { AccessRequests } from './components/admin/accessRequests';
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -82,7 +83,7 @@ function App() {
 
       // console.log(data)
 
-      // if (data?.user?.hasRights) {
+      // if (data?.user?.hasAccess) {
       //   setTokenToLocalStorage(data.token);
       //   dispatch(login(data.user));
       // } else {
@@ -101,7 +102,7 @@ function App() {
 
         // setUserData(data)
 
-        if (data?.user?.hasRights) {
+        if (data?.user?.hasAccess) {
           dispatch(login(data.user))
         } else {
           dispatch(logout())
@@ -110,9 +111,6 @@ function App() {
       else {
         toast.warning('no telegram data')
         dispatch(logout())
-
-
-        // alert('no telegram data')
       }
 
     } catch (error) {
@@ -126,17 +124,17 @@ function App() {
   }, []);
 
   return (
-    <div className='min-h-screen flex flex-col bg-gray-800 z-10'>
+    <div className='flex flex-1 flex-col bg-gray-800 items-start'>
       <Router>
         <RestoreGiftUpdateContext.Provider value={false}>
           <Header />
-          <main className='h-full z-[0]'>
+          <main className='w-full min-h-screen z-[0]'>
             <Routes>
               <Route path={RoutesConfig.NO_RIGHTS.path} element={<NoRightsPage />} />
               <Route path="*" element={<ProtectedRoutes />} />
             </Routes>
           </main>
-          {/* <Footer /> */}
+          <Footer />
         </RestoreGiftUpdateContext.Provider>
       </Router>
     </div>
@@ -148,10 +146,10 @@ const ProtectedRoutes = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useUserData()
 
-  console.log(user, isLoading)
+  // console.log(user, isLoading)
 
   useEffect(() => {
-    if (!isLoading && !user?.hasRights && location.pathname !== RoutesConfig.NO_RIGHTS.path) {
+    if (!isLoading && !user?.hasAccess && location.pathname !== RoutesConfig.NO_RIGHTS.path) {
       navigate(RoutesConfig.NO_RIGHTS.path);
     }
   }, [user, location.pathname, navigate, isLoading]);
@@ -160,12 +158,12 @@ const ProtectedRoutes = () => {
     return null; // или можно вернуть лоадер
   }
 
-  if (!user?.hasRights) {
+  if (!user?.hasAccess) {
     return <NoRightsPage />;
   }
 
 
-  console.log(user, isLoading)
+  // console.log(user, isLoading)
 
   return (
     <Routes>
@@ -176,6 +174,7 @@ const ProtectedRoutes = () => {
         }>
           <Route index element={<MainAdmin />} />
           <Route path="users" element={<UsersShow />} />
+          <Route path="access-requests" element={<AccessRequests />} />
         </Route>
       
 

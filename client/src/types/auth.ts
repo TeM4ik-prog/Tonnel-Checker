@@ -1,4 +1,4 @@
-import { UserRoles } from "./index";
+import { RequestStatus, UserRoles } from "./index";
 
 export interface IEmailAuth {
     email: string
@@ -19,11 +19,24 @@ export interface IUser {
     username: string;
     lastName: string | null;
     firstName: string;
-    hasRights: boolean
+    hasAccess: boolean
     role: UserRoles
     // authTonnelData: any | null;
     minProfit: number;
-  }
+}
+
+
+export interface IUserRequest {
+    id: string;
+    telegramId: string;
+    status: RequestStatus;
+    user: IUser
+
+}
+
+
+
+
 
 export interface IGoogleAuth {
     clientId?: string;

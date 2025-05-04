@@ -4,7 +4,7 @@ import { ShieldAlert } from "lucide-react";
 
 export const NoRightsPage: React.FC = () => {
     return (
-        <Section className="min-h-[calc(100vh-200px)] flex items-center justify-center">
+        <Section className="min-h-[calc(100vh-200px)] p-1 flex items-center justify-center">
             <div className="flex flex-col items-center gap-6 text-center max-w-md p-8 bg-gray-800/50 rounded-lg backdrop-blur-sm border border-gray-700">
                 <div className="p-4 bg-red-500/20 rounded-full">
                     <ShieldAlert className="h-12 w-12 text-red-400" />

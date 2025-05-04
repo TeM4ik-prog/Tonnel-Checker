@@ -3,27 +3,29 @@ import { BotScenes } from '@/types/types';
 import { UsersService } from '@/users/users.service';
 import { formatMessage } from '@/utils/formatMessage';
 import { ConfigService } from '@nestjs/config';
-import { Action, Command, Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
+import { Action, Command, Ctx, Help, On, Start, Update, Use } from 'nestjs-telegraf';
 import { Context, Markup, Scenes } from 'telegraf';
 import { TelegramService } from './telegram.service';
 
 import * as path from 'path'
 import * as fs from 'fs';
 import { CallbackQuery, Message } from 'telegraf/typings/core/types/typegram';
+import { UserCheckMiddleware } from '@/auth/strategies/telegram.strategy';
+import { UseGuards } from '@nestjs/common';
+import { AdminService } from '@/admin/admin.service';
 
-
+@UseGuards(UserCheckMiddleware)
 @Update()
 export class TelegramUpdate {
   constructor(
     private readonly telegramService: TelegramService,
     private configService: ConfigService,
     private giftsService: GiftsService,
-    private readonly userService: UsersService
+    private readonly userService: UsersService,
+    private readonly adminService: AdminService
   ) { }
 
   private tempStorage = new Map<number, number[]>();
-
-
 
   @Start()
   async onStart(@Ctx() ctx: Context) {
@@ -57,12 +59,6 @@ export class TelegramUpdate {
     await ctx.reply(`Вот список доступных команд: \n/start \n/help \n/info`);
   }
 
-  @Command('info')
-  async onInfo(@Ctx() ctx: Context) {
-    const info = this.telegramService.getInfo(ctx.from?.id);
-    await ctx.reply(`Информация: ${info}`);
-  }
-
   @Command('filters')
   async onFilters(@Ctx() ctx: Context) {
     console.log(this.configService.get('APP_URL') + 'filters')
@@ -77,14 +73,6 @@ export class TelegramUpdate {
       }
     });
   }
-
-
-
-  @Command('ping')
-  async onPing(@Ctx() ctx: Context) {
-    await ctx.reply('pong')
-  }
-
 
   @Command('hiddenmessages')
   async onShowHiddenGifts(@Ctx() ctx: Context) {
@@ -128,7 +116,6 @@ export class TelegramUpdate {
   async onSetMinProfit(@Ctx() ctx: Scenes.SceneContext) {
     return ctx.scene.enter(BotScenes.MIN_PROFIT);
   }
-
 
   @Command('autobuy')
   async autoBuy(@Ctx() ctx: Context) {
@@ -187,8 +174,6 @@ export class TelegramUpdate {
     this.tempStorage.set(ctx.from.id, messageIds);
   }
 
-
-
   @Action('hideGiftMessage')
   async onHideButton(ctx: any) {
 
@@ -210,6 +195,10 @@ export class TelegramUpdate {
   }
 
 
+  @Action('get_access')
+  async onGetAccess(@Ctx() ctx: Context) {
+    await this.adminService.createAccessRequest(ctx);
+  }
 
   @On('callback_query')
   async onCallbackQuery(@Ctx() ctx) {
@@ -232,17 +221,12 @@ export class TelegramUpdate {
     }
 
   }
+}
 
 
 
+export class TelegramAction {
 
+ 
 
-
-
-  // @On('message'){
-  // async onText(@Ctx() ctx: Context) {
-
-  //   console.log('message')
-
-  // }
 }

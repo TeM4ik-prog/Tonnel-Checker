@@ -13,18 +13,18 @@ interface UserProps {
 }
 
 export const User: React.FC<UserProps> = ({ user, isAdmin, onToggleRights }) => {
-    const [hasRights, setHasRights] = useState(user.hasRights)
+    const [hasAccess, setHasAccess] = useState(user.hasAccess)
 
     const handleToggleRights = () => {
         if (onToggleRights) {
-            setHasRights(!hasRights)
+            setHasAccess(!hasAccess)
             onToggleRights(user.telegramId)
         }
     }
 
     return (
         <tr className="hover:bg-gray-700/50 transition-colors h-12">
-            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+            {/* <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
                 <div className="flex items-center gap-2">
                     <span className="text-gray-200 font-medium">
                         {user.firstName} {user.lastName || ''}
@@ -35,43 +35,53 @@ export const User: React.FC<UserProps> = ({ user, isAdmin, onToggleRights }) => 
                         </span>
                     )}
                 </div>
+            </td> */}
+            <td className="px-1 py-3 whitespace-nowrap text-sm text-gray-300">
+
+            <span className="text-gray-200 font-medium">
+                    {user.username}
+                </span>
+                {isAdmin && (
+                    <span className="text-xs text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">
+                        Вы
+                    </span>
+                )}
+
+               
             </td>
-            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
-                {user.username}
-            </td>
-            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">
+            <td className="px-1 py-3 whitespace-nowrap text-sm text-gray-300">
                 {user.telegramId}
             </td>
-            <td className="px-4 py-3 whitespace-nowrap">
+            <td className="px-1 py-3 whitespace-nowrap">
                 {onToggleRights && !isAdmin ? (
                     <div className="flex items-center gap-2">
                         <Switch
-                            checked={hasRights}
+                            checked={hasAccess}
                             onChange={handleToggleRights}
                             className={`${
-                                hasRights ? 'bg-green-600' : 'bg-gray-700'
+                                hasAccess ? 'bg-green-600' : 'bg-gray-700'
                             } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
                         >
                             <span
                                 className={`${
-                                    hasRights ? 'translate-x-6' : 'translate-x-1'
+                                    hasAccess ? 'translate-x-6' : 'translate-x-1'
                                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                             />
                         </Switch>
-                        <span className={`text-xs font-semibold ${hasRights ? 'text-green-300' : 'text-red-300'}`}>
-                            {hasRights ? 'Есть права' : 'Нет прав'}
+                        <span className={`text-xs font-semibold ${hasAccess ? 'text-green-300' : 'text-red-300'}`}>
+                            {hasAccess ? 'Есть права' : 'Нет прав'}
                         </span>
                     </div>
                 ) : (
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${hasRights
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${hasAccess
                         ? 'bg-green-900 text-green-300'
                         : 'bg-red-900 text-red-300'
                         }`}>
-                        {hasRights ? 'Есть права' : 'Нет прав'}
+                        {hasAccess ? 'Есть права' : 'Нет прав'}
                     </span>
                 )}
             </td>
-            <td className="px-4 py-3 whitespace-nowrap">
+            <td className="px-1 py-3 whitespace-nowrap">
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${user.role === UserRoles.Admin
                     ? 'bg-green-900 text-green-300'
                     : 'bg-red-900 text-red-300'

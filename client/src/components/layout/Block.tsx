@@ -14,7 +14,7 @@ export const Block = ({ children, className, lighter }: Props) => {
 
 
     return (
-        <div className={`${bgColor} relative shadow-lg rounded-lg overflow-hidden w-full ${className}`}>
+        <div className={`${bgColor} flex flex-col relative shadow-lg rounded-lg overflow-hidden w-full ${className}`}>
             {children}
         </div>
     )

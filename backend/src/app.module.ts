@@ -43,7 +43,12 @@ export class AppModule implements OnModuleInit {
     // await this.databaseService.packGiftsDataUpdate.deleteMany()
     // await this.databaseService.giftsDataUpdate.deleteMany()
     // await this.databaseService.giftModel.deleteMany()
-    await this.databaseService.goodPriceMessage.deleteMany()
+    // await this.databaseService.goodPriceMessage.deleteMany()
+    // await this.databaseService.accessRequest.deleteMany()
+    await this.databaseService.user.deleteMany()
+
+
+    // this.databaseService.drop
 
 
 

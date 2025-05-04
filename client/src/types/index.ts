@@ -8,9 +8,16 @@ export type userIdParam = number | string
 
 
 export enum UserRoles {
-    Admin = 'admin',
-    User = 'user',
-    SuperAdmin = 'superAdmin',
+    Admin = 'ADMIN',
+    User = 'USER',
+    SuperAdmin = 'SUPER_ADMIN',
+}
+
+
+export enum RequestStatus {
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED'
 }
 
 

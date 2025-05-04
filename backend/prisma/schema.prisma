@@ -18,12 +18,14 @@ model User {
 
   minProfit Float @default(0.5)
 
-  role String @default("user")
+  role UserRoles @default(USER)
 
-  hasRights Boolean @default(false)
+  hasAccess Boolean @default(false)
 
   messages GoodPriceMessage[]
-  // UserFilters UserFilters[]
+
+  AccessRequest AccessRequest?
+
 }
 
 model Filters {
@@ -39,7 +41,7 @@ model Filters {
 }
 
 model Gift {
-  id       Int @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   giftId   Int
   giftNum  Int
   name     String
@@ -54,7 +56,6 @@ model Gift {
   updatedAt         DateTime         @updatedAt
   GiftsDataUpdate   GiftsDataUpdate? @relation(fields: [giftsDataUpdateId], references: [id], onUpdate: Cascade)
   giftsDataUpdateId String?
-
 }
 
 model GiftsDataUpdate {
@@ -96,16 +97,25 @@ model GoodPriceMessage {
 
   hidden Boolean @default(false)
 
-  User   User   @relation(fields: [userId], references: [id])
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  Gift Gift @relation(fields: [giftId], references: [id])
+  Gift   Gift @relation(fields: [giftId], references: [id], onDelete: Cascade)
   giftId Int
-
 
   @@unique([chatId, messageId])
 }
 
+model AccessRequest {
+  id        String        @id @default(uuid())
+  telegramId    Int
+  user      User          @relation(fields: [telegramId], references: [telegramId], onDelete: Cascade)
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([telegramId])
+}
 
 // ______________
 
@@ -128,4 +138,17 @@ model GiftBackground {
   textColor    Int
   name         String
   permille     Int
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+enum UserRoles {
+  USER
+  ADMIN
+  SUPER_ADMIN
 }

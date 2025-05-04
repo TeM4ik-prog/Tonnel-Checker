@@ -29,11 +29,11 @@ export class AuthService {
 
 
   async login(user: Prisma.UserCreateInput) {
-    const { id, telegramId, firstName, username, role, hasRights } = user;
+    const { id, telegramId, firstName, username, role, hasAccess } = user;
 
     return {
       user,
-      token: this.jwtService.sign({ id, telegramId, username, role, hasRights }),
+      token: this.jwtService.sign({ id, telegramId, username, role, hasAccess }),
     };
   }
 

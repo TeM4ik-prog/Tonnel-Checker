@@ -8,6 +8,7 @@ import { CreateGiftDto } from './dto/create-gift.dto';
 import { fetchPattern } from './dto/fetch-pattern';
 import { BackgroundItem, BACKGROUNDS } from './entities/backgrounds';
 import { ModelItem, MODELS_GIFTS } from './entities/output';
+import { buildLink } from '@/utils/buildFilterLink';
 
 @Injectable()
 export class GiftsService implements OnModuleInit {
@@ -148,15 +149,19 @@ export class GiftsService implements OnModuleInit {
 
         resultDataUpdate.push(createdGiftsDataUpdate);
 
+        console.log(buildLink(filters[0], createdGiftsDataUpdate.Gifts[0]))
+
         await this.telegramService.sendMessageGoodPriceGiftToAll(
           createdGiftsDataUpdate.Gifts[0],
           createdGiftsDataUpdate.Gifts[1],
           profit,
           sellPrice,
           activeChats,
-          users
+          users,
+          buildLink(filters[i], createdGiftsDataUpdate.Gifts[0])
         );
       }
+
     }
 
     if (resultDataUpdate.length > 0) {
@@ -182,6 +187,7 @@ export class GiftsService implements OnModuleInit {
     } else {
       console.error('no data');
     }
+
 
   }
 
@@ -238,7 +244,7 @@ export class GiftsService implements OnModuleInit {
 
 
   async onModuleInit() {
-    // await this.fetchGiftsDataFromTonnel();
+    await this.fetchGiftsDataFromTonnel();
 
     await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)

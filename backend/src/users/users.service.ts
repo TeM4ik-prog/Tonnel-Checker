@@ -2,8 +2,8 @@ import { DatabaseService } from '@/database/database.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { User } from 'telegraf/typings/core/types/typegram';
 import { AuthTonnelData, UserTonnelData } from './dto/user-data-dto';
-import { adminTelegramIds, UserRoles } from '@/types/types';
-import e from 'express';
+import { adminTelegramIds } from '@/types/types';
+import { RequestStatus, UserRoles } from '@prisma/client';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -21,9 +21,14 @@ export class UsersService implements OnModuleInit {
 
   async getAllUsersData() {
     const users = await this.database.user.findMany({
+
+      where: {
+        hasAccess: true
+      },
       select: {
         telegramId: true,
         minProfit: true,
+        
         messages: {
           include: {
             Gift: {
@@ -117,6 +122,14 @@ export class UsersService implements OnModuleInit {
 
   }
 
+  async findUsersByRole(role: UserRoles) {
+    return await this.database.user.findMany({
+      where: {
+        role
+      }
+    })
+  }
+
   async findOrCreateUser(createUserDto: User) {
     const { id, last_name, first_name, username, is_premium } = createUserDto
 
@@ -133,9 +146,10 @@ export class UsersService implements OnModuleInit {
           telegramId: existingUser.telegramId
         },
         data: {
-          role: UserRoles.admin,
-          hasRights: true
+          role: UserRoles.ADMIN,
+          hasAccess: true
         }
+
 
 
       })
@@ -208,7 +222,13 @@ export class UsersService implements OnModuleInit {
         telegramId
       },
       data: {
-        hasRights: !user.hasRights
+        hasAccess: !user.hasAccess,
+
+        AccessRequest: {
+          update: {
+            status: user.hasAccess ? RequestStatus.REJECTED : RequestStatus.APPROVED
+          }
+        }
       }
     })
   }

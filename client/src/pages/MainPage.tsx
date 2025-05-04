@@ -48,43 +48,41 @@ const MainPage: React.FC = () => {
     }, []);
 
     return (
-        <PageContainer className="!px-0">
-            <div className="w-full max-w-6xl mx-auto p-1">
-                {user?.hasRights ? (
-                    <div className="m-2 p-4 bg-green-900/20 border-l-4 border-green-500 rounded-lg backdrop-blur-sm">
-                        <div className="flex items-center">
-                            <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                            <p className="text-green-100 font-medium">
-                                У вас есть права администратора
-                            </p>
-                        </div>
-                        <p className="mt-2 text-sm text-green-300/90">
-                            Полный доступ к управлению пользователями и фильтрами
+        <PageContainer className="">
+            {user?.hasAccess ? (
+                <div className="m-2 p-4 bg-green-900/20 border-l-4 border-green-500 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
+                        <p className="text-green-100 font-medium">
+                            У вас есть права администратора
                         </p>
                     </div>
-                ) : (
-                    <div className="m-2 p-4 bg-red-900/20 border-l-4 border-red-500 rounded-lg backdrop-blur-sm">
-                        <div className="flex items-center">
-                            <BanIcon className="h-5 w-5 text-red-400 mr-2" />
-                            <p className="text-red-100 font-medium">
-                                Доступ ограничен
-                            </p>
-                        </div>
-                        <p className="mt-2 text-sm text-red-300/90">
-                            Требуются административные привилегии
-                        </p>
-                    </div>
-                )}
-
-                <div className="mb-3">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Последнее обновление: {lastUpdate?.updatedAt ? new Date(lastUpdate.updatedAt).toLocaleString() : 'Нет данных'}
-                        <span className="ml-2 text-gray-500">(обновление раз в минуту)</span>
+                    <p className="mt-2 text-sm text-green-300/90">
+                        Полный доступ к управлению пользователями и фильтрами
                     </p>
                 </div>
+            ) : (
+                <div className="m-2 p-4 bg-red-900/20 border-l-4 border-red-500 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center">
+                        <BanIcon className="h-5 w-5 text-red-400 mr-2" />
+                        <p className="text-red-100 font-medium">
+                            Доступ ограничен
+                        </p>
+                    </div>
+                    <p className="mt-2 text-sm text-red-300/90">
+                        Требуются административные привилегии
+                    </p>
+                </div>
+            )}
 
-                <GiftDataUpdateList groupedUpdates={groupedUpdates} toggleGroup={toggleGroup} />
+            <div className="mb-3">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Последнее обновление: {lastUpdate?.updatedAt ? new Date(lastUpdate.updatedAt).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : 'Нет данных'}
+                    <span className="ml-2 text-gray-500">(обновление раз в минуту)</span>
+                </p>
             </div>
+
+            <GiftDataUpdateList groupedUpdates={groupedUpdates} toggleGroup={toggleGroup} />
         </PageContainer>
     );
 };
