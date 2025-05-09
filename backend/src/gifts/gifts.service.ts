@@ -331,7 +331,7 @@ export class GiftsService implements OnModuleInit {
 
 
 
-  @Cron('*/30 * * * * *')
+  @Cron('*/60 * * * * *')
   async handleCron() {
     await this.onSendDataToUsers();
   }
