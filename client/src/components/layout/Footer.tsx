@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
                         className="mr-auto"
                         text=""
                         openNewPage={true}
-                        href=""
+                        href="https://t.me/TeM4ik20"
                         icon={<FaTelegram size={24} className="relative z-10" />}
                     />
                 </div>

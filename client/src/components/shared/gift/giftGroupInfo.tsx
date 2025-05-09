@@ -40,9 +40,6 @@ interface GroupedUpdatesProps {
 
 
 
-
-
-
 export const GiftDataUpdateList: React.FC<GroupedUpdatesProps> = ({ groupedUpdates, toggleGroup }) => {
     return (
         <>
@@ -128,7 +125,7 @@ export const GiftDataUpdate: React.FC<GiftDataUpdateProps> = ({ group, name, tog
             </div>
 
             {group.isExpanded && (
-                <GiftDataList group={group} />
+                <GiftDataList key={name} group={group} />
             )}
         </Block>
     )
@@ -144,6 +141,7 @@ export const GiftDataList: React.FC<GiftDataListProps> = ({ group }) => {
         </div>
     )
 }
+
 
 export const GiftData: React.FC<GiftDataProps> = ({ update, itemFilters }) => {
     const restoreGiftUpdate = useContext(RestoreGiftUpdateContext);
@@ -187,7 +185,7 @@ export const GiftData: React.FC<GiftDataProps> = ({ update, itemFilters }) => {
                     <Button
                         className="justify-start"
                         text="Перейти на этот фильтр"
-                        href={update.tonnelLink}
+                        href={update.filterLink}
                         icon={<Filter />}
                     />
 

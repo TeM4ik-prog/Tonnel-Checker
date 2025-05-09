@@ -1,20 +1,19 @@
 import {
+	BadRequestException,
+	Body,
 	Controller,
 	Get,
 	Post,
-	Body,
-	UseGuards,
 	Request,
-	BadRequestException,
+	UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import {
 	UsersService,
 } from 'src/users/users.service';
-import { ITelegramAuthDto } from './dto/entry-dto';
 import { User } from 'telegraf/typings/core/types/typegram';
+import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 
 
@@ -38,8 +37,14 @@ export class AuthController {
 	async login(
 		@Body() telegramData: User,
 	) {
-		// console.log(telegramData);
+		console.log(telegramData)
 		const user = await this.usersService.findOrCreateUser(telegramData);
+
+		// console.log(user)
+		
+		if (!user) {
+			throw new BadRequestException('User not found');
+		}
 
 		return await this.authService.login(user);
 	}

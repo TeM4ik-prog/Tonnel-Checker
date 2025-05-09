@@ -1,19 +1,17 @@
-
 export interface IBasicUser {
   id: string;
   role: string;
 }
 
-// export class UserRoles {
-//   static readonly user: string = 'user'
-//   static readonly admin: string = 'admin'
-//   static readonly superAdmin: string = 'superAdmin'
-// }
-
-
-// export const superAdminTelegramIds = [2027571609]
 export const adminTelegramIds = [2027571609]
 
+
+export interface IUserGiftData {
+  id: string;
+  telegramId: number;
+  minProfit: number;
+  hiddenMessages: number[];
+}
 
 
 export interface ITelegramCommand {

@@ -1,5 +1,4 @@
 import { ApiRoute } from "@/types";
-import { IUserFilters } from "@/types/gift";
 import { apiConfig } from "@/types/pagesConfig";
 
 export class giftService implements ApiRoute {
@@ -16,21 +15,8 @@ export class giftService implements ApiRoute {
         return data
     }
 
-
     async getGiftModels() {
         const { data } = await this.instance.get(`${this.baseUrl.giftModels}`)
-        return data
-    }
-
-
-    async applyFilters(filters: any) {
-        const { data } = await this.instance.post(this.baseUrl.applyFilters, filters)
-        return data
-    }
-
-
-    async getUserFilters() {
-        const { data } = await this.instance.get(`${this.baseUrl.userFilters}`)
         return data
     }
 

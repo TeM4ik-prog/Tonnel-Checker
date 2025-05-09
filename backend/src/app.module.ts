@@ -8,6 +8,8 @@ import { DatabaseService } from './database/database.service';
 import { GiftsModule } from './gifts/gifts.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { AdminModule } from './admin/admin.module';
+import { ProxyModule } from './proxy/proxy.module';
+import { FiltersModule } from './filters/filters.module';
 
 @Module({
   imports: [
@@ -21,6 +23,10 @@ import { AdminModule } from './admin/admin.module';
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
+
+    ProxyModule,
+
+    FiltersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -40,12 +46,16 @@ export class AppModule implements OnModuleInit {
   }
 
   async cleanDatabase() {
-    // await this.databaseService.packGiftsDataUpdate.deleteMany()
-    // await this.databaseService.giftsDataUpdate.deleteMany()
-    // await this.databaseService.giftModel.deleteMany()
-    // await this.databaseService.goodPriceMessage.deleteMany()
-    // await this.databaseService.accessRequest.deleteMany()
+    await this.databaseService.packGiftsDataUpdate.deleteMany()
+    await this.databaseService.giftsDataUpdate.deleteMany()
+    await this.databaseService.giftModel.deleteMany()
+    await this.databaseService.goodPriceMessage.deleteMany()
+    await this.databaseService.accessRequest.deleteMany()
     await this.databaseService.user.deleteMany()
+
+    await this.databaseService.usersConfig.deleteMany()
+
+    await this.databaseService.filter.deleteMany()
 
 
     // this.databaseService.drop

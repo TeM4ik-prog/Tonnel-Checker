@@ -3,13 +3,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from '@/users/users.service';
 import { DatabaseService } from '@/database/database.service';
-import { IBasicUser, adminTelegramIds } from '@/types/types';
-import { User } from 'telegraf/typings/core/types/typegram';
-import { Prisma } from '@prisma/client';
+import { adminTelegramIds } from '@/types/types';
+import { UsersService } from '@/users/users.service';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
@@ -28,8 +26,8 @@ export class AuthService {
   }
 
 
-  async login(user: Prisma.UserCreateInput) {
-    const { id, telegramId, firstName, username, role, hasAccess } = user;
+  async login(user: any) {
+    const { id, telegramId, firstName, username, role, hasAccess, config } = user;
 
     return {
       user,

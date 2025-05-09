@@ -15,49 +15,23 @@ export class GiftsController {
   ) { }
 
   @Get('last-update')
-  // @UseGuards(JwtAuthGuard)
-  async findLastUpdate(@Req() req) {
-    const filters = await this.giftsService.getFilters()
-    const lastUpdate = await this.giftsService.findLastUpdate()
-    return { lastUpdate, filters }
+  @UseGuards(JwtAuthGuard)
+  async findLastUpdate(@UserId() userId: string) {
+    const lastUpdate = await this.giftsService.findLastUpdate(userId)
+    return lastUpdate
   }
-
 
   @Get('/gift-models')
   async getGiftModels() {
-    const filters = await this.giftsService.getFilters()
-
     const models = await this.giftsService.getGiftModels()
-    return { models, filters }
+    return models
   }
-
-
-  @Get('filters')
-  async getUserFilters() {
-    return await this.giftsService.getFilters()
-  }
-
-
-  @Post('apply-filters')
-  @UseGuards(JwtAuthGuard)
-  async applyFilters(@Body() body: { filters: IFilters[] }, res: Response) {
-    console.log(body)
-
-    // await this.giftsService.fetchGiftsDataFromTonnel()
-
-    return await this.giftsService.applyFilters(body.filters)
-  }
-
 
   @Patch('restore-gift-message')
   @UseGuards(JwtAuthGuard)
   async restoreGiftMessage(@Body() messageData: { messageId: string, chatId: string }, @UserId() userId: string) {
-
     console.log(messageData)
-
     return await this.usersService.restoreGiftMessage(messageData, userId)
   }
-
-
 
 }

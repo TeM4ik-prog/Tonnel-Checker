@@ -1,25 +1,26 @@
 import { Header } from '@/components/layout/Header';
 import { RoutesConfig } from '@/types/pagesConfig';
 import { createContext, lazy, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, Route, BrowserRouter as Router, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Route, BrowserRouter as Router, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { AccessRequests } from './components/admin/accessRequests';
 import { MainAdmin } from './components/admin/main';
 import { UsersShow } from './components/admin/usersShow';
 import { Footer } from './components/layout/Footer';
+import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { AdminPage } from './pages/AdminPage';
 import FiltersPage from './pages/FiltersPage';
 import { GiftMessagesPage } from './pages/GiftMessagesPage';
 import MainPage from './pages/MainPage';
 import { NoRightsPage } from './pages/NoRightsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { AuthService } from './services/auth.service';
+import { useUserData } from './store/hooks';
 import { login, logout } from './store/user/user.slice';
 import { onRequest, UserRoles } from './types';
 import { ITelegramUser, IUser } from './types/auth';
 import { setTokenToLocalStorage } from './utils/localstorage';
-import { useGetUserRole, useUserData, useUserLoading } from './store/hooks';
-import { toast } from 'react-toastify';
-import { ProfilePage } from './pages/ProfilePage';
-import { AccessRequests } from './components/admin/accessRequests';
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -46,72 +47,68 @@ declare global {
 
 const RestoreGiftUpdateContext = createContext<boolean>(false);
 
-export const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) => {
-  const userRole = useGetUserRole();
-  const isLoading = useUserLoading()
 
-  if (isLoading) {
-      return
-  }
-
-  if (!userRole || !allowedRoles.includes(userRole)) {
-      toast.error('You have no rights');
-      return <Navigate to="/" replace />;
-  }
-
-  return children;
-}
 
 function App() {
   const dispatch = useDispatch();
 
   const checkAuth = async () => {
     try {
-      // const mockData = {
-      //   "id": 2027571609,
-      //   "first_name": "Artem",
-      //   "last_name": "",
-      //   "username": "TeM4ik20",
-      //   "language_code": "ru",
-      //   "is_premium": true,
-      //   "allows_write_to_pm": true,
-      //   "photo_url": "https://t.me/i/userpic/320/kf7ulebcULGdGk8Fpe4W3PkcpX2DxWO1rIHZdwT60vM.svg"
-      // }
 
+      const fnCheckAuth = async () => {
+        if (import.meta.env.DEV) {
+          const mockData = {
+            "id": 2027571609,
+            "first_name": "Artem",
+            "last_name": "",
+            "username": "TeM4ik20",
+            "language_code": "ru",
+            "is_premium": true,
+            "allows_write_to_pm": true,
+            "photo_url": "https://t.me/i/userpic/320/kf7ulebcULGdGk8Fpe4W3PkcpX2DxWO1rIHZdwT60vM.svg"
+          }
 
-      // const data: { token: string, user: IUser } = await onRequest(AuthService.login(mockData));
+          const data: { token: string, user: IUser } = await onRequest(AuthService.login(mockData));
 
-      // console.log(data)
+          console.log(data.user)
 
-      // if (data?.user?.hasAccess) {
-      //   setTokenToLocalStorage(data.token);
-      //   dispatch(login(data.user));
-      // } else {
-      //   dispatch(logout());
-      // }
+          if (data?.user?.hasAccess) {
+            setTokenToLocalStorage(data.token);
+            dispatch(login(data.user));
+          } else {
+            dispatch(logout());
+          }
 
-
-
-      if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-        const newUserData = window.Telegram.WebApp.initDataUnsafe.user
-
-        const data: { token: string, user: IUser } = await onRequest(AuthService.login(newUserData))
-        console.log(data)
-
-        setTokenToLocalStorage(data.token)
-
-        // setUserData(data)
-
-        if (data?.user?.hasAccess) {
-          dispatch(login(data.user))
-        } else {
-          dispatch(logout())
+          
         }
+        else {
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+            const newUserData = window.Telegram.WebApp.initDataUnsafe.user
+
+            const data: { token: string, user: IUser } = await onRequest(AuthService.login(newUserData))
+            console.log(data.user)
+
+            setTokenToLocalStorage(data.token)
+
+  
+            if (data?.user?.hasAccess) {
+              dispatch(login(data.user))
+            } else {
+              dispatch(logout())
+            }
+          }
+          else {
+            toast.warning('no telegram data')
+            dispatch(logout())
+          }
+
+
+        }
+
+
       }
-      else {
-        toast.warning('no telegram data')
-        dispatch(logout())
-      }
+
+      fnCheckAuth()
 
     } catch (error) {
       console.error("Ошибка при получении профиля:", error);
@@ -146,8 +143,6 @@ const ProtectedRoutes = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useUserData()
 
-  // console.log(user, isLoading)
-
   useEffect(() => {
     if (!isLoading && !user?.hasAccess && location.pathname !== RoutesConfig.NO_RIGHTS.path) {
       navigate(RoutesConfig.NO_RIGHTS.path);
@@ -155,33 +150,30 @@ const ProtectedRoutes = () => {
   }, [user, location.pathname, navigate, isLoading]);
 
   if (isLoading) {
-    return null; // или можно вернуть лоадер
+    return null;
   }
 
-  if (!user?.hasAccess) {
-    return <NoRightsPage />;
-  }
+  if (!user?.hasAccess) return <NoRightsPage />
 
 
-  // console.log(user, isLoading)
 
   return (
     <Routes>
-        <Route path={RoutesConfig.ADMIN.path + "/*"} element={
-          <ProtectedRoute allowedRoles={[UserRoles.Admin]}>
-            <AdminPage />
-          </ProtectedRoute>
-        }>
-          <Route index element={<MainAdmin />} />
-          <Route path="users" element={<UsersShow />} />
-          <Route path="access-requests" element={<AccessRequests />} />
-        </Route>
-      
+      <Route path={RoutesConfig.ADMIN.path + "/*"} element={
+        <ProtectedRoute allowedRoles={[UserRoles.Admin]}>
+          <AdminPage />
+        </ProtectedRoute>
+      }>
+        <Route index element={<MainAdmin />} />
+        <Route path="users" element={<UsersShow />} />
+        <Route path="access-requests" element={<AccessRequests />} />
+      </Route>
+
 
       <Route path={RoutesConfig.HOME.path} element={<MainPage />} />
       <Route path={RoutesConfig.FILTERS.path} element={<FiltersPage />} />
 
-      
+
       <Route path={RoutesConfig.GIFT_MESSAGES.path} element={
         <RestoreGiftUpdateContext.Provider value={true}>
           <GiftMessagesPage />

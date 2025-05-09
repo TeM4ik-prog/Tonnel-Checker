@@ -2,7 +2,9 @@ import { FilterActions } from "@/components/filter/FilterActions";
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/Button";
+import { FiltersService } from "@/services/filters.service";
 import { GiftService } from "@/services/gift.service";
+import { UserService } from "@/services/user.service";
 import { onRequest } from "@/types";
 import { IUserFilters } from "@/types/gift";
 import { useEffect, useState } from "react";
@@ -13,7 +15,7 @@ interface GiftModel {
     name: string;
     models: Record<string, any>;
     backgrounds: Record<string, any>;
-    symbols: any;
+    symbols: Record<string, any>;
 }
 
 interface FilterOption {
@@ -165,7 +167,6 @@ const MultiSelectModal: React.FC<MultiSelectModalProps> = ({
 
 const FiltersPage: React.FC = () => {
     const [giftModels, setGiftModels] = useState<GiftModel[]>([]);
-    const [filteredNfts, setFilteredNfts] = useState<GiftModel[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedParameters, setSelectedParameters] = useState<IUserFilters[]>([]);
     const [applying, setApplying] = useState(false);
@@ -177,21 +178,14 @@ const FiltersPage: React.FC = () => {
     const fetchGiftModels = async () => {
         setLoading(true);
         try {
-            const data: { models: any, filters: IUserFilters[] } = await onRequest(GiftService.getGiftModels());
+            const models: GiftModel[] = await onRequest(GiftService.getGiftModels());
+            const filters: IUserFilters[] = await onRequest(FiltersService.getUserFilters())
 
-            console.log(data)
-            if (data) {
-                const sortedData = [...data.models].sort((a, b) => a.name.localeCompare(b.name));
+            console.log({ models, filters })
+            if (models && filters) {
+                const sortedData = models.sort((a, b) => a.name.localeCompare(b.name));
                 setGiftModels(sortedData);
-                setFilteredNfts(sortedData);
-
-                // _______
-
-
-                setSelectedParameters(data.filters);
-                console.log(data.filters)
-
-
+                setSelectedParameters(filters);
             }
         } catch (error) {
             console.error('Ошибка при загрузке моделей:', error);
@@ -199,11 +193,36 @@ const FiltersPage: React.FC = () => {
         setLoading(false);
     };
 
+    const handleApplyFilters = async () => {
+        setApplying(true);
+        try {
+            const parametersWithNames = selectedParameters.map(params => ({
+                nft: params.nft,
+                models: params.models.map(key => getValueName(params.nft, 'models', key)),
+                backgrounds: params.backgrounds.map(key => getValueName(params.nft, 'backgrounds', key)),
+                symbols: params.symbols.map(key => getValueName(params.nft, 'symbols', key))
+            }));
+
+            console.log('Применяем фильтры:', parametersWithNames);
+            const data: { count: number } = await onRequest(FiltersService.applyFilters({ filters: parametersWithNames }));
 
 
-    useEffect(() => {
-        fetchGiftModels();
-    }, []);
+            if (data) {
+                toast.success(`Фильтры (${data.count}) успешно применины!`)
+
+            }
+
+
+            console.log('Ответ от сервера:', data);
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error) {
+            console.error('Ошибка при применении фильтров:', error);
+        } finally {
+            setApplying(false);
+        }
+    };
+
 
     const handleNftToggle = (nftName: string) => {
         setSelectedParameters(prev => {
@@ -273,11 +292,17 @@ const FiltersPage: React.FC = () => {
         return gift[type][key] || key;
     };
 
-   
+
+    useEffect(() => {
+        fetchGiftModels();
+    }, []);
+
+
+
+
 
     const renderNftSelector = () => (
-        <div className="bg-gray-800 rounded-lg p-0 mb-6">
-            <h3 className="text-lg font-semibold text-gray-300 mb-3">Выберите NFT</h3>
+        <div className="bg-gray-800 rounded-lg p-0 mb-3">
             <div className="flex items-center justify-between">
                 <span className="text-gray-400 text-sm">Выбрано: {selectedParameters.length}</span>
                 <button
@@ -315,30 +340,28 @@ const FiltersPage: React.FC = () => {
                 .replace("-", "")
                 .replace("'", "")
                 .toLowerCase();
-            
+
             const url = `https://nft.fragment.com/gift/${formattedName}-${id}.lottie.json`;
-            
+
             console.log('URL запроса:', url);
-            
+
             const response = await fetch(url);
-            
+
             if (!response.ok) {
                 console.error(`Ошибка HTTP: ${response.status}`);
                 return;
             }
-            
+
             const animationData = await response.json();
             console.log('Данные анимации:', animationData);
-            
+
         } catch (error) {
             console.error('Ошибка при получении анимации:', error);
         }
     }
 
     const renderParameterSelectors = () => (
-
-
-        <div className="flex flex-col h-full space-y-4">
+        <div className="flex flex-col h-full space-y-2">
             {selectedParameters.map(params => {
                 const modelOptions = getOptionsForNft(params.nft, 'models');
                 // const backgroundOptions = getOptionsForNft(params.nft, 'backgrounds');
@@ -359,9 +382,9 @@ const FiltersPage: React.FC = () => {
                     const remainingCount = items.length - 2;
 
                     return (
-                        <div className="flex flex-wrap gap-2 items-center">
+                        <div className="flex flex-wrap gap-1 items-center">
                             {visibleItems.map(item => (
-                                <span key={item} className="bg-blue-500/20 text-sm text-gray-300 px-3 py-1.5 rounded">
+                                <span key={item} className="bg-blue-500/20 text-sm text-gray-300 px-2 py-1 rounded">
                                     {getValueName(params.nft, type, item)}
                                 </span>
                             ))}
@@ -375,9 +398,9 @@ const FiltersPage: React.FC = () => {
                 };
 
                 return (
-                    <Block key={params.nft} className="p-2">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-300">
+                    <Block key={params.nft} className="p-1">
+                        <div className="flex items-center justify-between mb-1">
+                            <h3 className="text-lg font-semibold text-gray-200">
                                 {params.nft}
                             </h3>
                             <button
@@ -387,30 +410,38 @@ const FiltersPage: React.FC = () => {
                                 Удалить
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-gray-800/50 rounded-lg p-3">
-                                <div className="flex items-center justify-between mb-2">
-                                    <label className="text-gray-400 text-sm">Модели</label>
-                                    <button
-                                        onClick={() => setActiveModal({ type: 'models', nftName: params.nft })}
-                                        className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                                    >
-                                        Выбрать ({params.models.length})
-                                    </button>
+
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+
+
+                            <div className="flex flex-row justify-between bg-gray-800/50 rounded-lg p-1.5">
+                                <div className="flex flex-col items-start justify-between gap-1">
+                                    <label className="text-gray-400  text-sm">Модели</label>
+                                    {renderParameterTags(params.models, 'models')}
                                 </div>
-                                {renderParameterTags(params.models, 'models')}
+
+                                <button
+                                    onClick={() => setActiveModal({ type: 'models', nftName: params.nft })}
+                                    className="px-3 py-1.5 bg-blue-500 text-white rounded h-min hover:bg-blue-600 text-sm"
+                                >
+                                    Выбрать ({params.models.length})
+                                </button>
                             </div>
-                            <div className="bg-gray-800/50 rounded-lg p-3">
-                                <div className="flex items-center justify-between mb-2">
+
+
+                            <div className="flex flex-row justify-between bg-gray-800/50 rounded-lg p-1.5">
+                                <div className="flex flex-col items-start justify-between gap-1">
                                     <label className="text-gray-400 text-sm">Фоны</label>
-                                    <button
-                                        onClick={() => setActiveModal({ type: 'backgrounds', nftName: params.nft })}
-                                        className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                                    >
-                                        Выбрать ({params.backgrounds.length})
-                                    </button>
+                                    {renderParameterTags(params.backgrounds, 'backgrounds')}
                                 </div>
-                                {renderParameterTags(params.backgrounds, 'backgrounds')}
+
+                                <button
+                                    onClick={() => setActiveModal({ type: 'backgrounds', nftName: params.nft })}
+                                    className="px-3 py-1.5 bg-blue-500 text-white rounded  h-min hover:bg-blue-600 text-sm"
+                                >
+                                    Выбрать ({params.backgrounds.length})
+                                </button>
                             </div>
 
                             {/* <div className="bg-gray-800/50 rounded-lg p-3">
@@ -430,41 +461,10 @@ const FiltersPage: React.FC = () => {
                 );
             })}
         </div>
-
     );
 
 
-    const handleApplyFilters = async () => {
-        setApplying(true);
-        try {
-            const parametersWithNames = selectedParameters.map(params => ({
-                nft: params.nft,
-                models: params.models.map(key => getValueName(params.nft, 'models', key)),
-                backgrounds: params.backgrounds.map(key => getValueName(params.nft, 'backgrounds', key)),
-                symbols: params.symbols.map(key => getValueName(params.nft, 'symbols', key))
-            }));
 
-            console.log('Применяем фильтры:', parametersWithNames);
-            const data: { count: number } = await onRequest(GiftService.applyFilters({ filters: parametersWithNames }));
-
-
-            if (data) {
-                toast.success(`Фильтры (${data.count}) успешно применины!`)
-
-            }
-
-
-
-
-            console.log('Ответ от сервера:', data);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        } catch (error) {
-            console.error('Ошибка при применении фильтров:', error);
-        } finally {
-            setApplying(false);
-        }
-    };
 
 
     return (
@@ -481,7 +481,7 @@ const FiltersPage: React.FC = () => {
                             onFiltersChange={setSelectedParameters}
                         />
 
-                        
+
                         {renderNftSelector()}
                         {selectedParameters.length > 0 && renderParameterSelectors()}
 

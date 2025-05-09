@@ -1,22 +1,48 @@
 import { DatabaseService } from '@/database/database.service';
 import { TelegramService } from '@/telegram/telegram.service';
-import { IFilters } from '@/types/types';
 import { UsersService } from '@/users/users.service';
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { CreateGiftDto } from './dto/create-gift.dto';
 import { fetchPattern } from './dto/fetch-pattern';
-import { BackgroundItem, BACKGROUNDS } from './entities/backgrounds';
 import { ModelItem, MODELS_GIFTS } from './entities/output';
+
+import { IFilters, IUserGiftData } from '@/types/types';
+import { Cron } from '@nestjs/schedule';
+import { Browser } from 'puppeteer';
+import { BackgroundItem } from './entities/backgrounds';
+
+import puppeteer from 'puppeteer-extra';
+import { fetchProxyPattern } from './dto/proxyFetch';
 import { buildLink } from '@/utils/buildFilterLink';
+import { FiltersService } from '@/filters/filters.service';
+import { getRandomProxy, proxies } from './proxies';
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
+
+
+
 
 @Injectable()
 export class GiftsService implements OnModuleInit {
+  private browser: Browser | null = null
+
+  private readonly PROXY = {
+    host: '46.8.15.16',
+    port: 5500,
+    username: 'shegzfs',
+    password: 'gukwiHj66dtnrsdb'
+  };
+
   constructor(
     private database: DatabaseService,
     private readonly telegramService: TelegramService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly filtersService: FiltersService
+
   ) { }
+
+
 
   calculateProfit(firstPrice: number, secondPrice: number) {
     const buyPrice = parseFloat((firstPrice * 1.1).toFixed(3)); // 8.8
@@ -28,8 +54,14 @@ export class GiftsService implements OnModuleInit {
     return { profit, sellPrice };
   }
 
-  async findLastUpdate() {
+  async findLastUpdate(userId: string) {
     return await this.database.packGiftsDataUpdate.findFirst({
+
+      where: {
+        userId
+      },
+
+
       orderBy: {
         updatedAt: 'desc'
       },
@@ -38,10 +70,11 @@ export class GiftsService implements OnModuleInit {
           orderBy: {
             profit: 'desc'
           },
-         
-          select:{
+
+          select: {
             updatedAt: true,
             Gifts: true,
+            filterLink: true,
             profit: true,
             sellPrice: true
           }
@@ -50,24 +83,103 @@ export class GiftsService implements OnModuleInit {
     });
   }
 
-  async fetchGiftsDataFromTonnel() {
-    const resultDataUpdate = []
-    const combinations = []
-    const filters = await this.getFilters()
 
-    const activeChats = await this.database.activeChat.findMany()
+  async deleteGiftPacksByProfit() {
+    const deleted = await this.database.gift.deleteMany({
+      where: {
+        GiftsDataUpdate: {
+          profit: { lt: 0.5 },
+        },
+      },
+    });
+
+    console.log('deleted gifts', deleted.count)
+
+
+    await this.database.packGiftsDataUpdate.deleteMany({
+      where: {
+        GiftsDataUpdate: {
+          none: {},
+        },
+      },
+    });
+  }
+
+
+  private async getBrowser(): Promise<Browser> {
+    if (!this.browser) {
+      this.browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          `--proxy-server=${this.PROXY.host}:${this.PROXY.port}`,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--disable-gpu',
+          '--single-process',
+          '--blink-settings=imagesEnabled=false',
+        ],
+        defaultViewport: { width: 1920, height: 1080 },
+        ignoreDefaultArgs: ['--enable-automation'],
+      });
+    }
+    return this.browser;
+  }
+
+
+
+
+
+  async onSendDataToUsers() {
     const users = await this.usersService.getAllUsersData()
 
-    // console.log(userFilters)
+    users.forEach(async (user, index) => {
+      const proxy = proxies[index]
+
+      console.log(user.id)
+      await this.fetchGiftsDataFromTonnel(user, proxy)
+
+    });
+
+
+  }
+
+  async fetchGiftsDataFromTonnel(user: IUserGiftData, proxy) {
+    const browser = await this.getBrowser();
+    const page = await browser.newPage();
+
+    await page.authenticate({
+      username: proxy.username,
+      password: proxy.password,
+    });
+
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+      if (['image', 'media', 'font', 'stylesheet'].includes(request.resourceType())) {
+        request.abort();
+      } else {
+        request.continue();
+      }
+    });
+
+    // ___________
+
+
+    const resultDataUpdate = []
+    const combinations = []
+    const filters = await this.filtersService.getUserFilters(user.id)
+    const activeChat = await this.database.activeChat.findUnique({
+      where: { userTelegramId: user.telegramId }
+    })
+    // const users = await this.usersService.getAllUsersData()
 
     if (!filters || filters.length === 0) {
       console.log('Нет фильтров для проверки');
       return;
     }
 
-
     const uniqueGifts = [...new Set(filters.map(filter => filter.nft))];
-
 
     for (const gift of uniqueGifts) {
       const giftFilters = filters.find(filter => filter.nft === gift)
@@ -98,17 +210,16 @@ export class GiftsService implements OnModuleInit {
       combinations.push({ [gift]: giftComb })
     }
 
-    // console.log(combinations[0])
-    // console.log(JSON.stringify(combinations))
-
     for (let i = 0; i < combinations.length; i++) {
       const combination = combinations[i];
       const giftName = Object.keys(combination)[0];
-
       const data = []
+
       for (let i = 0; i < combination[giftName].length; i++) {
         const element = combination[giftName][i];
-        const items: CreateGiftDto[] = await fetchPattern(element.gift, element.background, element.model);
+        console.log(element.gift, element.background, element.model, page)
+
+        const items: CreateGiftDto[] = await fetchProxyPattern(element.gift, element.background, element.model, page);
 
         // console.log(items)
 
@@ -123,13 +234,12 @@ export class GiftsService implements OnModuleInit {
 
         const { profit, sellPrice } = this.calculateProfit(items[0]?.price, items[1]?.price);
 
-        // console.log(items[0]?.gift_id)
-        // console.log(items[1]?.gift_id)
-
         const createdGiftsDataUpdate = await this.database.giftsDataUpdate.create({
           data: {
             profit,
             sellPrice,
+            filterLink: buildLink(filters.find(filter => filter.nft == items[0].name), items[0]),
+
             Gifts: {
               create: items.map(item => ({
                 giftId: item.gift_id,
@@ -138,7 +248,7 @@ export class GiftsService implements OnModuleInit {
                 price: item.price,
                 model: item.model,
                 symbol: item.symbol,
-                backdrop: item.backdrop
+                backdrop: item.backdrop,
               }))
             },
           },
@@ -149,16 +259,14 @@ export class GiftsService implements OnModuleInit {
 
         resultDataUpdate.push(createdGiftsDataUpdate);
 
-        console.log(buildLink(filters[0], createdGiftsDataUpdate.Gifts[0]))
-
         await this.telegramService.sendMessageGoodPriceGiftToAll(
-          createdGiftsDataUpdate.Gifts[0],
-          createdGiftsDataUpdate.Gifts[1],
+          createdGiftsDataUpdate,
+
           profit,
           sellPrice,
-          activeChats,
-          users,
-          buildLink(filters[i], createdGiftsDataUpdate.Gifts[0])
+
+          activeChat,
+          user,
         );
       }
 
@@ -173,9 +281,11 @@ export class GiftsService implements OnModuleInit {
       }
 
       const data = await this.database.packGiftsDataUpdate.create({
+
         data: {
+          userId: user.id,
           GiftsDataUpdate: {
-            connect: resultDataUpdate.map(update => ({ id: update.id }))
+            connect: resultDataUpdate.map(update => ({ id: update.id })),
           }
         },
         include: {
@@ -191,13 +301,7 @@ export class GiftsService implements OnModuleInit {
 
   }
 
-
   // ___________-
-
-  async getFilters() {
-    return await this.database.filters.findMany()
-  }
-
 
   async createGiftModels(data: ModelItem[]): Promise<void> {
     const existingGiftsModel = await this.database.giftModel.findFirst()
@@ -225,26 +329,31 @@ export class GiftsService implements OnModuleInit {
     return await this.database.giftModel.findMany()
   }
 
-  async applyFilters(filters: IFilters[]) {
-    await this.database.filters.deleteMany()
 
-    await this.fetchGiftsDataFromTonnel();
 
-    return await this.database.filters.createMany({
-      data: filters.map(filter => ({
-        ...filter
-      })),
-    });
-  }
-
-  @Cron('*/60 * * * * *')
+  @Cron('*/30 * * * * *')
   async handleCron() {
-    await this.fetchGiftsDataFromTonnel();
+    await this.onSendDataToUsers();
   }
 
 
   async onModuleInit() {
-    await this.fetchGiftsDataFromTonnel();
+
+    try {
+      await this.getBrowser();
+    } catch (error) {
+      console.error('Error during onModuleInit:', error);
+    }
+
+
+    // await this.getBrowser()
+    await this.onSendDataToUsers();
+
+
+
+
+    // puppeteer.use(StealthPlugin());
+
 
     await this.createGiftModels(MODELS_GIFTS)
     // await this.createBackgrounds(BACKGROUNDS)

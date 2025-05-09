@@ -1,12 +1,12 @@
 import { DatabaseService } from '@/database/database.service';
-import { CreateGiftDto } from '@/gifts/dto/create-gift.dto';
+import { IUserGiftData } from '@/types/types';
 import { UsersService } from '@/users/users.service';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma, UserRoles } from '@prisma/client';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context, Input, Telegraf } from 'telegraf';
 import { InputFile, Message } from 'telegraf/typings/core/types/typegram';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TelegramService {
@@ -82,16 +82,13 @@ export class TelegramService {
   }
 
   async addToActiveChats(msg: Message) {
-
-    const chatId = msg.chat.id
     const userTelegramId = msg.from.id
 
 
     await this.database.activeChat.upsert({
-      where: { chatId_userTelegramId: { chatId, userTelegramId } },
+      where: {  userTelegramId  },
       update: {},
       create: {
-        chatId,
         userTelegramId,
       },
     });
@@ -122,71 +119,76 @@ export class TelegramService {
 
 
   async sendMessageGoodPriceGiftToAll(
-    firstGift: Prisma.GiftGetPayload<{}>,
-    secondGift: Prisma.GiftGetPayload<{}>,
+    giftsDataUpdate: Prisma.GiftsDataUpdateGetPayload<{ include: { Gifts: true }}>,
     profit: number,
     sellPrice: number,
-    activeChats: { id: number, chatId: number, userTelegramId: number }[],
-    users: { telegramId: number, minProfit: number, hiddenMessages: number[] }[],
-    giftLink: string
+    activeChat: Prisma.ActiveChatGetPayload<{}>,
+    user: IUserGiftData,
   ) {
-    for (const { chatId, userTelegramId } of activeChats) {
-      const user = users.find((user) => user.telegramId == userTelegramId);
-      if (user === undefined || profit < user.minProfit) continue;
+    const firstGift = giftsDataUpdate.Gifts[0]
+    const secondGift = giftsDataUpdate.Gifts[1]
+   
+    if (user === undefined || profit < user.minProfit){
+      console.log('min profit')
+      return
+    };
 
-      const goodUserPriceMessages = await this.database.goodPriceMessage.findMany({
-        where: { chatId },
-        include: {
-          Gift: true
-        }
-      })
-      const messagesToDelete = goodUserPriceMessages.filter((el) => el.Gift.giftId == firstGift.giftId)
-
-      if ((user.hiddenMessages).includes(firstGift.giftId)) {
-        console.log(firstGift.giftId + ' this gift hidden ')
-        continue
+    const goodUserPriceMessages = await this.database.goodPriceMessage.findMany({
+      where: { chatId: activeChat.userTelegramId },
+      include: {
+        Gift: true
       }
+    })
+    const messagesToDelete = goodUserPriceMessages.filter((el) => el.Gift.giftId == firstGift.giftId)
 
-      await this.deleteArUserGoodPriceMessages(messagesToDelete)
-
-      try {
-        const messageText =
-          `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
-          `💰 товар 2: ${(secondGift.price * 1.1).toFixed(2)} TON\n\n` +
-          `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
-          `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
-          `🔗 Ссылка на товар: https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.giftNum}\n\n`
-
-        const message = await this.bot.telegram.sendMessage(chatId, messageText, {
-          parse_mode: 'Markdown',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: 'Просмотреть!!!', url: `https://t.me/tonnel_network_bot/gift?startapp=${firstGift.giftId}` },
-                // { text: 'Фильтр', url: giftLink },
-                { text: 'Скрыть', callback_data: 'hideGiftMessage' }
-              ],
-            ],
-          },
-        });
-
-        await this.saveGoodPriceMessage(chatId, message.message_id, firstGift)
-
-      } catch (error: any) {
-        console.error(error);
-
-        // if (error.code === 400 && error.response?.body?.error_code === 400) {
-        //   await this.database.activeChat.delete({
-        //     where: {
-        //       chatId_userTelegramId: {
-        //         chatId,
-        //         userTelegramId,
-        //       },
-        //     },
-        //   });
-        // }
-      }
+    if ((user.hiddenMessages).includes(firstGift.giftId)) {
+      console.log(firstGift.giftId + ' this gift hidden ')
+      return
     }
+
+    await this.deleteArUserGoodPriceMessages(messagesToDelete)
+
+    try {
+      const messageText =
+        `💰 товар 1: ${(firstGift.price * 1.1).toFixed(2)} TON\n` +
+        `💰 товар 2: ${(secondGift.price * 1.1).toFixed(2)} TON\n\n` +
+        `💰 Прибыль: ${profit.toFixed(3)} TON\n` +
+        `💵 Цена продажи: ${sellPrice.toFixed(3)} TON\n\n` +
+        `🔗 [Ссылка на товар](https://t.me/nft/${firstGift.name.replace(/[\s-]+/g, '')}-${firstGift.giftNum})\n\n` +
+        `[Просмотреть!!!](https://t.me/tonnel_network_bot/gift?startapp=${firstGift.giftId}) | [Фильтр](${giftsDataUpdate.filterLink})`
+
+      const message = await this.bot.telegram.sendMessage(activeChat.userTelegramId, messageText, {
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'Просмотреть!!!', url: `https://t.me/tonnel_network_bot/gift?startapp=${firstGift.giftId}` },
+              { text: 'Скрыть', callback_data: 'hideGiftMessage' }
+            ],
+            [
+              { text: 'Фильтр', url: giftsDataUpdate.filterLink },
+            ]
+          ],
+        },
+      });
+
+      await this.saveGoodPriceMessage(activeChat.userTelegramId, message.message_id, firstGift)
+
+    } catch (error: any) {
+      console.error(error);
+
+      // if (error.code === 400 && error.response?.body?.error_code === 400) {
+      //   await this.database.activeChat.delete({
+      //     where: {
+      //       chatId_userTelegramId: {
+      //         chatId,
+      //         userTelegramId,
+      //       },
+      //     },
+      //   });
+      // }
+    }
+    
   }
 
 

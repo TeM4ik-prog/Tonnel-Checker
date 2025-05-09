@@ -1,10 +1,16 @@
 import axios from "axios";
 import { getTokenFromLocalStorage } from "@/utils/localstorage";
 
+const prefix = import.meta.env.DEV ? 'http://localhost:3000' : ''
+
+console.log(import.meta.env)
+
 
 export const createAxiosInstance = (basePath: string) => {
+
+
     const instance = axios.create({
-        baseURL: `/api/${basePath}`,
+        baseURL: `${prefix}/api/${basePath}`,
         headers: {
             Authorization: 'Bearer ' + (getTokenFromLocalStorage() || '')
         }

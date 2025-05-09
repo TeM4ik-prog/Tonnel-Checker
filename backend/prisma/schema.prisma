@@ -7,28 +7,47 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model User {
-  id         String  @id @default(uuid())
-  telegramId Int     @unique
-  username   String
-  lastName   String?
-  firstName  String?
-
-  authTonnelData String?
-
-  minProfit Float @default(0.5)
-
-  role UserRoles @default(USER)
-
-  hasAccess Boolean @default(false)
-
-  messages GoodPriceMessage[]
-
-  AccessRequest AccessRequest?
-
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
-model Filters {
+enum UserRoles {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id             String    @id @default(uuid())
+  telegramId     Int       @unique
+  username       String
+  lastName       String?
+  firstName      String?
+  authTonnelData String?
+  role           UserRoles @default(USER)
+
+  hasAccess     Boolean        @default(false)
+  AccessRequest AccessRequest?
+
+  messages      GoodPriceMessage[]
+  UsersConfig   UsersConfig        @relation(fields: [usersConfigId], references: [id])
+  usersConfigId String
+
+  PackGiftsDataUpdate PackGiftsDataUpdate[]
+}
+
+model UsersConfig {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  filters   Filter[]
+  minProfit Float    @default(0.5)
+  User      User[]
+}
+
+model Filter {
   id String @id @default(uuid())
 
   nft         String
@@ -36,9 +55,13 @@ model Filters {
   backgrounds Json
   symbols     Json
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  UsersConfig   UsersConfig @relation(fields: [usersConfigId], references: [id])
+  usersConfigId String
 }
+
+// _____________
 
 model Gift {
   id       Int    @id @default(autoincrement())
@@ -49,6 +72,7 @@ model Gift {
   model    String
   symbol   String
   backdrop String
+
 
   giftMessages GoodPriceMessage[]
 
@@ -64,6 +88,9 @@ model GiftsDataUpdate {
 
   profit    Float
   sellPrice Float
+  
+  filterLink String
+
 
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @default(now())
@@ -72,19 +99,24 @@ model GiftsDataUpdate {
 }
 
 model PackGiftsDataUpdate {
-  id              String            @id @default(uuid())
+  id String @id @default(uuid())
+
   GiftsDataUpdate GiftsDataUpdate[]
-  updatedAt       DateTime          @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  updatedAt DateTime @default(now())
 }
 
-model ActiveChat {
-  id             Int      @id @default(autoincrement())
-  chatId         Int
-  userTelegramId Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+// _____________----
 
-  @@unique([chatId, userTelegramId])
+model ActiveChat {
+  id             Int @id @default(autoincrement())
+  userTelegramId Int @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GoodPriceMessage {
@@ -107,12 +139,12 @@ model GoodPriceMessage {
 }
 
 model AccessRequest {
-  id        String        @id @default(uuid())
-  telegramId    Int
-  user      User          @relation(fields: [telegramId], references: [telegramId], onDelete: Cascade)
-  status    RequestStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         String        @id @default(uuid())
+  telegramId Int
+  user       User          @relation(fields: [telegramId], references: [telegramId], onDelete: Cascade)
+  status     RequestStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   @@unique([telegramId])
 }
@@ -138,17 +170,4 @@ model GiftBackground {
   textColor    Int
   name         String
   permille     Int
-}
-
-enum RequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-
-enum UserRoles {
-  USER
-  ADMIN
-  SUPER_ADMIN
 }

@@ -24,7 +24,7 @@ export interface IGiftDataUpdate {
     profit: number;
     sellPrice: number;
 
-    tonnelLink?: string,
+    filterLink?: string,
     message? : IGiftMessage,
 
 

@@ -1,14 +1,12 @@
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import { getRandomProxy } from '../proxies';
 
+// _____________________
 export const fetchPattern = async (
   name: string,
   backdrop: string | null,
   model: string | null = null,
-  timeoutMs = 5000
 ) => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
     const filter: any = {
@@ -22,9 +20,6 @@ export const fetchPattern = async (
 
     if (backdrop) filter.backdrop = { $in: [backdrop] };
     if (model) filter.model = { $in: [model] };
-
-    // const proxy = getRandomProxy();
-    // const agent = new HttpsProxyAgent(proxy);
 
     const response = await fetch('https://gifts2.tonnel.network/api/pageGifts', {
       method: 'POST',
@@ -48,16 +43,18 @@ export const fetchPattern = async (
 
     clearTimeout(timeout);
 
-    const text = await response.text(); // читаем один раз
+    const text = await response.text(); 
 
     try {
-      return JSON.parse(text); // пробуем распарсить
+      return JSON.parse(text); 
     } catch (jsonError) {
+
+      // console.log(text)
       if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
         console.error('❌ Слишком много запросов, fetch отклонен:');
         return [];
       }
-      throw jsonError; // пробрасываем другие ошибки парсинга
+      throw jsonError;
     }
 
   } catch (e: any) {

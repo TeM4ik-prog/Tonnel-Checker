@@ -46,7 +46,7 @@ export const FilterActions: React.FC<FilterActionsProps> = ({
     };
 
     return (
-        <div className="flex flex-col sm:flex-row justify-end gap-4 mb-6">
+        <div className="flex flex-row sm:flex-row *:w-full gap-4 mb-2">
             <div className="relative">
                 <input
                     type="file"
@@ -56,14 +56,14 @@ export const FilterActions: React.FC<FilterActionsProps> = ({
                     id="file-upload"
                 />
                 <Button
-                    text="Загрузить фильтры"
+                    text="Загрузить"
                     color="green"
                     className="w-full"
                     FC={() => document.getElementById('file-upload')?.click()}
                 />
             </div>
             <Button
-                text="Экспорт фильтров"
+                text="Экспорт"
                 color="blue"
                 FC={handleExportFilters}
                 className="w-full sm:w-auto"

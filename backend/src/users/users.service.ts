@@ -1,34 +1,35 @@
 import { DatabaseService } from '@/database/database.service';
+import { adminTelegramIds, IUserGiftData } from '@/types/types';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { RequestStatus, UserRoles } from '@prisma/client';
 import { User } from 'telegraf/typings/core/types/typegram';
 import { AuthTonnelData, UserTonnelData } from './dto/user-data-dto';
-import { adminTelegramIds } from '@/types/types';
-import { RequestStatus, UserRoles } from '@prisma/client';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(private database: DatabaseService) { }
 
-
   async findAllUsers() {
     return await this.database.user.findMany({
       include: {
-
+        UsersConfig: true
       }
     })
   }
 
-
-  async getAllUsersData() {
+  async getAllUsersData(): Promise<IUserGiftData[]> {
     const users = await this.database.user.findMany({
-
       where: {
         hasAccess: true
       },
       select: {
+        id: true,
         telegramId: true,
-        minProfit: true,
-        
+        UsersConfig: {
+          select: {
+            minProfit: true
+          }
+        },
         messages: {
           include: {
             Gift: {
@@ -41,10 +42,10 @@ export class UsersService implements OnModuleInit {
       }
     });
 
-
     return users.map(user => ({
+      id: user.id,
       telegramId: user.telegramId,
-      minProfit: user.minProfit,
+      minProfit: user.UsersConfig.minProfit,
       hiddenMessages: user.messages
         .filter(msg => msg.hidden === true)
         .map(msg => msg.Gift.giftId)
@@ -54,6 +55,9 @@ export class UsersService implements OnModuleInit {
   async findUserById(userBaseId: string) {
     return await this.database.user.findUnique({
       where: { id: userBaseId },
+      include: {
+        UsersConfig: true
+      }
     });
   }
 
@@ -86,8 +90,6 @@ export class UsersService implements OnModuleInit {
           ...msg.Gift.GiftsDataUpdate,
           Gifts: msg.Gift.GiftsDataUpdate?.Gifts.filter(gift => gift.id == msg.giftId) || [], // length also 1
           message: msg.Gift.giftMessages[0],
-
-
         }
       }
     }));
@@ -107,19 +109,14 @@ export class UsersService implements OnModuleInit {
       where: {
         telegramId: telegramId
       },
-      // include:{
-
-      //   Filters: {
-      //     select: {
-      //       nft: true,
-      //       models: true,
-      //       backgrounds: true,
-      //       symbols: true
-      //     }
-      //   }
-      // }
+      include: {
+        UsersConfig: {
+          include: {
+            filters: true
+          }
+        }
+      }
     })
-
   }
 
   async findUsersByRole(role: UserRoles) {
@@ -136,74 +133,121 @@ export class UsersService implements OnModuleInit {
     const existingUser = await this.database.user.findUnique({
       where: {
         telegramId: id,
-
+      },
+      include: {
+        UsersConfig: {
+          include: {
+            filters: true
+          }
+        }
       }
     })
 
     if (existingUser && adminTelegramIds.includes(existingUser.telegramId)) {
-      return await this.database.user.update({
+      const user = await this.database.user.update({
         where: {
           telegramId: existingUser.telegramId
         },
         data: {
           role: UserRoles.ADMIN,
           hasAccess: true
+        },
+        include: {
+          UsersConfig: {
+            include: {
+              filters: true
+            }
+          }
         }
-
-
-
       })
-    }
 
-    // console.log('existingUser',existingUser)
+      return user
+    }
 
     if (existingUser) return existingUser
 
+    const tempConfig = await this.database.usersConfig.create({
+      data: {
+        userId: 'temp'
+      }
+    });
 
-    return await this.database.user.create({
+    const user = await this.database.user.create({
       data: {
         telegramId: id,
         firstName: first_name,
         lastName: last_name,
-        username: username
+        username: username,
+        usersConfigId: tempConfig.id
       }
-    })
+    });
 
+    const usersConfig = await this.database.usersConfig.create({
+      data: {
+        userId: user.id
+      }
+    });
+
+    const updatedUser = await this.database.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        usersConfigId: usersConfig.id
+      },
+      include: {
+        UsersConfig: {
+          include: {
+            filters: true
+          }
+        }
+      }
+    });
+
+    // Удаляем временную конфигурацию
+    await this.database.usersConfig.delete({
+      where: {
+        id: tempConfig.id
+      }
+    });
+
+    return updatedUser;
   }
 
   async getUserMinProfit(telegramId: number) {
-
-    return (await this.database.user.findUnique({
+    const user = await this.database.user.findUnique({
       where: {
         telegramId
+      },
+      include: {
+        UsersConfig: {
+          select: {
+            minProfit: true
+          }
+        }
       }
-    })).minProfit
+    });
 
-
+    return user.UsersConfig.minProfit;
   }
 
-
   async updateUserMinProfit(telegramId: number, minProfit: number) {
+    const user = await this.database.user.findUnique({
+      where: { telegramId },
+      include: { UsersConfig: true }
+    });
 
-    // TODO uncomment later
-
-    // if (minProfit < 0.3) {
-    //   return new BadRequestException('слишком маленький профит')
-    // }
-
-
-    return await this.database.user.update({
+    return await this.database.usersConfig.update({
       where: {
-        telegramId
+        id: user.UsersConfig.id
       },
       data: {
         minProfit
       }
-    })
+    });
   }
 
   async updateUserAuthTonnelData(telegramId: number, authTonnelData: string) {
-
     return await this.database.user.update({
       where: {
         telegramId
@@ -223,7 +267,6 @@ export class UsersService implements OnModuleInit {
       },
       data: {
         hasAccess: !user.hasAccess,
-
         AccessRequest: {
           update: {
             status: user.hasAccess ? RequestStatus.REJECTED : RequestStatus.APPROVED
@@ -246,9 +289,7 @@ export class UsersService implements OnModuleInit {
         hidden: false
       }
     })
-
   }
-
 
   decodeInitData(encoded: string): AuthTonnelData {
     try {
@@ -273,7 +314,6 @@ export class UsersService implements OnModuleInit {
   }
 
   async findOrCreateAdmins() {
-
     // const superAdmins = await this.database.user.findMany({
     //   where: {
     //     telegramId: {
@@ -282,18 +322,12 @@ export class UsersService implements OnModuleInit {
     //   }
     // })
 
-
     // console.log(superAdmins)
-
   }
-
 
   onModuleInit() {
     // this.findOrCreateAdmins()
   }
-
-
-
 }
 
 

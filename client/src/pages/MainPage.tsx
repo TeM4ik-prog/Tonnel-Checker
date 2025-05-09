@@ -1,6 +1,7 @@
 import { Block } from "@/components/layout/Block";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { GiftDataUpdate, GiftDataUpdateList } from "@/components/shared/gift/giftGroupInfo";
+import { FiltersService } from "@/services/filters.service";
 import { GiftService } from "@/services/gift.service";
 import { useUserData } from "@/store/hooks";
 import { onRequest } from "@/types";
@@ -24,12 +25,16 @@ const MainPage: React.FC = () => {
     const { user } = useUserData();
 
     const updateData = async () => {
-        const data: { lastUpdate: ILastUpdate, filters: IUserFilters[] } = await onRequest(GiftService.getLastUpdate());
-        console.log(data.lastUpdate.GiftsDataUpdate);
+        const lastUpdate: ILastUpdate = await onRequest(GiftService.getLastUpdate());
+        const filters: IUserFilters[] = await onRequest(FiltersService.getUserFilters())
+        console.log(lastUpdate.GiftsDataUpdate, filters);
 
-        if (data) {
-            setLastUpdate(data.lastUpdate);
-            setGroupedUpdates(groupGiftUpdates(data.lastUpdate.GiftsDataUpdate, data.filters));
+
+        // console.log(groupGiftUpdates(lastUpdate.GiftsDataUpdate, filters))
+
+        if (lastUpdate && filters) {
+            setLastUpdate(lastUpdate);
+            setGroupedUpdates(groupGiftUpdates(lastUpdate.GiftsDataUpdate, filters));
         }
     };
 

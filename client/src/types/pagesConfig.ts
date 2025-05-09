@@ -128,14 +128,8 @@ class ApiConfig {
     auth = {
         baseInstance: createAxiosInstance('auth/'),
         telegramInstance: createAxiosInstance('auth/telegram/'),
-
         profile: "profile",
-
-
         login: "login",
-
-
-
     }
 
     admin = {
@@ -157,15 +151,23 @@ class ApiConfig {
         baseInstance: createAxiosInstance('users/'),
         getGiftMessages: 'giftMessages',
 
+        filters:{
+            getFilters: 'filters'
+        }
+
+    }
+
+    filters= {
+        baseInstance: createAxiosInstance('filters/'),
+
+        applyFilters: 'apply-filters',
+
     }
 
     gifts = {
         baseInstance: createAxiosInstance('gifts/'),
-
         lastUpdate: "last-update",
         giftModels: 'gift-models',
-        applyFilters: 'apply-filters',
-        userFilters: "filters",
         restoreGiftMessage: 'restore-gift-message'
 
     }

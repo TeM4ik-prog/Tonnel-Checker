@@ -1,5 +1,6 @@
 import { PageContainer } from "@/components/layout/PageContainer"
 import { GiftDataUpdateList } from "@/components/shared/gift/giftGroupInfo"
+import { FiltersService } from "@/services/filters.service"
 import { GiftService } from "@/services/gift.service"
 import { UserService } from "@/services/user.service"
 import { onRequest } from "@/types"
@@ -20,14 +21,14 @@ export const GiftMessagesPage: React.FC = () => {
     const [groupedUpdates, setGroupedUpdates] = useState<GroupedUpdates>({});
 
     const getUserMessages = async () => {
-        const data: IGiftMessagesData = await onRequest(UserService.getUserGiftMessages())
-        const filtersData: IUserFilters[] = await onRequest(GiftService.getUserFilters())
-        console.log(data, filtersData)
+        const messages: IGiftMessagesData = await onRequest(UserService.getUserGiftMessages())
+        const filters: IUserFilters[] = await onRequest(FiltersService.getUserFilters())
+        console.log(messages, filters)
 
-        console.log(groupGiftUpdates(data.hidden, filtersData))
+        console.log(groupGiftUpdates(messages.hidden, filters))
 
-        if (data && filtersData) {
-            setGroupedUpdates(groupGiftUpdates(data.hidden, filtersData));
+        if (messages && filters) {
+            setGroupedUpdates(groupGiftUpdates(messages.hidden, filters));
         }
 
 
